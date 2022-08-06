@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Next-auth
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  email         String?       @unique
+  emailVerified DateTime?     @map("email_verified")
+  image         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @map("updated_at")
+  role          Role          @default(USER)
+  reservations  Reservation[]
+  Session       Session[]
+  Account       Account[]
+
+  @@map("users")
+}
+
+// 
+
+model Author {
+  id    Int    @id @default(autoincrement())
+  books Book[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("authors")
+}
+
+model Book {
+  id            Int          @id @default(autoincrement())
+  author        Author       @relation(fields: [authorId], references: [id])
+  authorId      Int          @unique @map("author_id")
+  title         String
+  pageCount     Int          @map("page_count")
+  isbn13        String
+  language      BookLanguage @relation(fields: [languageId], references: [id])
+  languageId    Int
+  publishedDate DateTime     @map("published_date")
+  publisher     Publisher    @relation(fields: [publisherId], references: [id])
+  publisherId   Int          @unique @map("published_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("books")
+}
+
+model Publisher {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+}
+
+model BookLanguage {
+  id           Int    @id @default(autoincrement())
+  languageCode String @map("language_code")
+  languageName String @map("language_name")
+  book         Book[]
+
+  @@map("book_languages")
+}
+
+model Reservation {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @map("user_id")
+
+  @@map("reservations")
+}
+
+enum Role {
+  USER
+  ADMIN
+}

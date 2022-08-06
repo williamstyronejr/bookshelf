@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-light-backgrouud: #ffffff;
+  --color-dark-background: #000000;
+
+  --color-light-card: #eeeeee;
+  --color-dark-card: #efefef;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+html {
+  background-color: var(--color-light-backgrouud);
+  --background: var(--color-light-backgrouud);
+  --card: var(--color-light-card);
+  color: black;
+}
+
+html.dark {
+  background-color: var(--color-dark-background);
+  --background: var(--color-dark-background);
+  --card: var(--color-dark-card);
+  color: white;
+}
+
+#__next {
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    /* color: white;
+    background: black; */
+  }
+}
