@@ -1,25 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 
 export default function DashboardPage() {
-  const data: { current: Array<Record<string, string>> } = {
-    current: [
-      {
-        id: 'test',
-        title: 'Title',
-        author: 'Author',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-      },
-      {
-        id: 'test2',
-        title: 'Title 2',
-        author: 'Author 3',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-      },
-    ],
-  };
+  const { data, isLoading } = useQuery(['dashboard'], async () => {
+    const res = await fetch('/api/users/dashboard');
+
+    const body = await res.json();
+    return body;
+  });
+
+  if (isLoading) return <div>loading</div>;
 
   return (
     <section className="">
@@ -28,7 +19,7 @@ export default function DashboardPage() {
         <div className="flex mb-3">
           <h3 className="flex-grow font-medium">Currently Books</h3>
 
-          <Link href="/dashboard">
+          <Link href="/dashboard/reservations">
             <a className="text-gray-400 hover:text-gray-600">See more</a>
           </Link>
         </div>
@@ -71,9 +62,22 @@ export default function DashboardPage() {
         <h3 className="font-medium">Favorite Author</h3>
 
         <ul className="flex flex-row flex-wrap ">
-          <li className="flex-grow text-center m-8">
-            <div>Start reading today to see authors</div>
-          </li>
+          {data.favoriteAuthor.map((author) => (
+            <li
+              className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
+              key={author.slug}
+            >
+              <Link href={`/author/${author.slug}`}>
+                <a className="">{author.name}</a>
+              </Link>
+            </li>
+          ))}
+
+          {data.favoriteAuthor.length === 0 ? (
+            <li className="flex-grow text-center m-8">
+              <div>Start reading today to see authors</div>
+            </li>
+          ) : null}
         </ul>
       </div>
     </section>
