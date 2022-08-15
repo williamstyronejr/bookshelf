@@ -93,7 +93,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <Header />
 
-        <main className="flex-grow bg-[#f6f8fb] p-3 overflow-y-auto">
+        <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
           <Component {...pageProps} />
         </main>
       </QueryClientProvider>
