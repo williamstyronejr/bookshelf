@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         custom: {
           background: 'var(--background)',
+          'btn-submit': '#3b5dd6',
         },
       },
     },
