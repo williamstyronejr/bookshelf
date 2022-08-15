@@ -62,6 +62,7 @@ const Header = () => {
       <nav className={`flex-grow ${menu ? '' : 'hidden'}`}>
         <ul className="">
           <NavLink to="/" label="Home" />
+          <NavLink to="/library" label="Library" />
           <NavLink to="/auth/signin" label="Signin" />
           <NavLink to="/auth/signup" label="Signup" />
         </ul>
@@ -92,7 +93,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <Header />
 
-        <main className="flex-grow bg-[#f6f8fb] p-3">
+        <main className="flex-grow bg-[#f6f8fb] p-3 overflow-y-auto">
           <Component {...pageProps} />
         </main>
       </QueryClientProvider>
