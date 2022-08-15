@@ -106,6 +106,8 @@ model Publisher {
   id    Int    @id @default(autoincrement())
   name  String
   books Book[]
+
+  @@map("publishers")
 }
 
 model BookLanguage {
