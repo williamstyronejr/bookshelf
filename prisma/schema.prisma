@@ -69,7 +69,12 @@ model User {
 // 
 
 model Author {
-  id    Int    @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
+  slug         String @unique
+  name         String
+  bio          String
+  profileImage String @map("profile_image")
+
   books Book[]
 
   createdAt DateTime @default(now()) @map("created_at")
