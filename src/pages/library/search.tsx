@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
+import Link from 'next/link';
 
 export default function SearchPage() {
   const { query } = useRouter();
@@ -54,18 +55,24 @@ export default function SearchPage() {
             data.pages.map((page) =>
               page.results.map((book) => (
                 <li key={book.id}>
-                  <div className="relative w-32 h-40">
-                    <Image
-                      className="rounded-lg"
-                      priority={true}
-                      layout="fill"
-                      // objectFit="contain"
-                      src={book.displayImage}
-                      alt="Book covers"
-                    />
-                  </div>
-                  <div className="font-medium">{book.title}</div>
-                  <div className="text-gray-600">{book.author}</div>
+                  <Link href={`/book/${book.slug}`}>
+                    <a>
+                      <div className="relative w-32 h-40">
+                        <Image
+                          className="rounded-lg"
+                          priority={true}
+                          layout="fill"
+                          src={book.displayImage}
+                          alt="Book covers"
+                        />
+                      </div>
+                      <div className="font-medium">{book.title}</div>
+                    </a>
+                  </Link>
+
+                  <Link href={`/author/${book.author}`}>
+                    <a className="text-gray-600">{book.author}</a>
+                  </Link>
                 </li>
               ))
             )}
