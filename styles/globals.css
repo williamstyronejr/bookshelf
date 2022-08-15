@@ -50,6 +50,15 @@ a {
   box-sizing: border-box;
 }
 
+/* Remove autofill color for inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+input[data-autocompleted] {
+  background-color: transparent !important;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
