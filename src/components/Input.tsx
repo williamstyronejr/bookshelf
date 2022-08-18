@@ -5,20 +5,20 @@ const Input = ({
   label,
   type,
   placeholder,
+  initialValue,
   error,
-  defaultValue,
 }: {
   name: string;
   label: string;
   type: string;
-  placeholder: string;
+  initialValue?: string;
+  placeholder?: string;
   error?: string | null;
-  defaultValue?: string | null;
 }) => {
-  const [value, setValue] = useState(defaultValue || '');
+  const [value, setValue] = useState(initialValue || '');
 
   return (
-    <label className="block my-5">
+    <label className="block my-5" htmlFor={name}>
       <span className="block my-1">{label}</span>
 
       {type !== 'textarea' ? (
@@ -36,7 +36,11 @@ const Input = ({
           onChange={(evt) => setValue(evt.target.value)}
         />
       ) : (
-        <textarea value={value} />
+        <textarea
+          className="w-full bg-white py-2 px-4 border rounded"
+          value={value}
+          onChange={(evt) => setValue(evt.currentTarget.value)}
+        />
       )}
 
       {error ? (
