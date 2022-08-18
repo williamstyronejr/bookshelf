@@ -3,33 +3,43 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
+import { prisma } from '../../../utils/db';
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  // const {
-  //   query: { name },
-  // } = ctx;
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const {
+    query: { slug, id },
+  } = ctx;
 
-  // const authorData = await prisma.author.findUnique({
-  //   where: { slug: name?.toString() },
-  // });
+  if (!slug || !id) return { notFound: true };
 
-  // if (!authorData) {
-  //   return {
-  //     notFound: true,
-  //   };
-  // }
+  const authorData = await prisma.author.findUnique({
+    where: { id: parseInt(id.toString()) },
+    select: {
+      name: true,
+      slug: true,
+      id: true,
+      bio: true,
+      profileImage: true,
+    },
+  });
+
+  if (!authorData) {
+    return {
+      notFound: true,
+    };
+  }
+
+  if (authorData.slug !== slug)
+    return {
+      redirect: {
+        destination: `/author/${id}/${authorData.slug}`,
+        permanent: false,
+      },
+    };
 
   return {
     props: {
-      // authorData,
-      authorData: {
-        id: 'test',
-        slug: 'test',
-        bio: 'This is a bio',
-        name: 'Author Name',
-        profileImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-      },
+      authorData,
     },
   };
 };

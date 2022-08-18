@@ -7,13 +7,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       notFound: true,
     };
 
-  // const book = await prisma.book.findFirst({ where: { title: '' } });
-
-  // if (!book)
-  //   return {
-  //     notFound: true,
-  //   };
-
   const test = {
     id: 'test',
     title: 'Title',
