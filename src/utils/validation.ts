@@ -140,3 +140,35 @@ export function validateBook({
     valid: Object.keys(errors).length === 0,
   };
 }
+
+/**
+ * Valdiation rules for  creating or updating author. Optional will list all
+ *  fields as optional.
+ * @param param Fields to be validated
+ * @param optional Flag indicating if fields are optional.
+ * @returns Return a valid flag and error list.
+ */
+export function validateAuthor(
+  { name, bio }: { name: string; bio: string },
+  optional = false
+) {
+  const errors: {
+    name?: string;
+    bio?: string;
+  } = {};
+
+  if (typeof name === 'string') {
+    if (name === '') "Must provide the author's name";
+  } else if (!optional) {
+    errors.name = "Must provide the author's name";
+  }
+
+  if (typeof bio === 'string') {
+    if (bio.length > 1000) errors.bio = 'Must be less than 1000 characters';
+  }
+
+  return {
+    valid: Object.keys(errors).length > 0,
+    errors,
+  };
+}
