@@ -11,7 +11,7 @@ type ErrorResponse = {
   author?: string;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data | ErrorResponse | String>
 ) {
@@ -22,8 +22,13 @@ export default function handler(
   const { errors, valid } = validateBook(body);
   if (!valid) return res.status(400).json(errors);
 
-  res.status(200).json({
-    id: 'test',
-    slug: 'testslug',
-  });
+  try {
+    res.status(200).json({
+      id: 'test',
+      slug: 'testslug',
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('');
+  }
 }

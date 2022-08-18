@@ -19,6 +19,7 @@ export default function handler(
         author: 'Author',
         displayImage:
           'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+        slug: 'testing',
       },
       {
         id: crypto.pseudoRandomBytes(10).toString('hex'),
@@ -26,6 +27,7 @@ export default function handler(
         author: 'Author 3',
         displayImage:
           'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+        slug: 'testing',
       },
     ],
     favoriteAuthor: [
