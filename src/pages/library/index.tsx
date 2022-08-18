@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const SearchBar = () => {
   const [search, setSearch] = useState('');
@@ -32,22 +33,37 @@ export const getServerSideProps = () => {
       topBooks: [
         {
           id: 'test',
+          slug: 'test',
           title: 'Title',
-          author: 'Author',
+          author: {
+            name: 'author name',
+            id: 1,
+            slug: 'author slug',
+          },
           displayImage:
             'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
         },
         {
           id: 'test2',
           title: 'Title 2',
-          author: 'Author 2',
+          slug: 'test',
+          author: {
+            name: 'author name',
+            id: 1,
+            slug: 'author slug',
+          },
           displayImage:
             'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
         },
         {
           id: 'test3',
           title: 'Title 3',
-          author: 'Author 3',
+          slug: 'test',
+          author: {
+            name: 'author name',
+            id: 1,
+            slug: 'author slug',
+          },
           displayImage:
             'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
         },
@@ -70,18 +86,26 @@ export default function LibraryPage({ topBooks }) {
               key={book.id}
               className="relative flex-grow h-56 w-1/5 mr-6 max-w-[175px]"
             >
-              <div className="relative h-56 shadow-md mb-2">
-                <Image
-                  className="rounded-lg"
-                  priority={true}
-                  layout="fill"
-                  // objectFit="contain"
-                  src={book.displayImage}
-                  alt="Book covers"
-                />
-              </div>
-              <div className="font-medium">{book.title}</div>
-              <div className="text-gray-600">{book.author}</div>
+              <Link href={`/book/${book.id}/${book.slug}`}>
+                <a>
+                  <div className="relative h-56 shadow-md mb-2">
+                    <Image
+                      className="rounded-lg"
+                      priority={true}
+                      layout="fill"
+                      src={book.displayImage}
+                      alt="Book covers"
+                    />
+                  </div>
+                  <div className="font-medium">{book.title}</div>
+                </a>
+              </Link>
+
+              <Link href={`/author/${book.author.id}/${book.author.slug}`}>
+                <a>
+                  <div className="text-gray-600">{book.author.name}</div>
+                </a>
+              </Link>
             </li>
           ))}
         </ul>
