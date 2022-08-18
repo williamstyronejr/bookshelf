@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import Input from '../../../components/Input';
+import FileInput from '../../../components/FileInput';
 import { validateBook } from '../../../utils/validation';
 
 export default function CreateBookPage() {
@@ -38,13 +39,18 @@ export default function CreateBookPage() {
   };
 
   if (data) router.push(`/book/${data.slug}`);
-
   return (
     <section>
       <form className="" onSubmit={handleSubmit}>
         <header></header>
 
         <fieldset className="">
+          <FileInput
+            name="displayImage"
+            label="Book Cover"
+            error={fieldErrors.displayImage}
+          />
+
           <Input
             type="text"
             name="title"
@@ -60,7 +66,24 @@ export default function CreateBookPage() {
             label="Author"
             error={fieldErrors.author}
           />
+
+          <Input
+            type="text"
+            name="isbn13"
+            placeholder="ISBN"
+            label="ISBN-13"
+            error={fieldErrors.isbn13s}
+          />
+
+          <Input
+            type="text"
+            name="pageCount"
+            placeholder="Page Count"
+            label="Page Count"
+            error={fieldErrors.pageCount}
+          />
         </fieldset>
+
         <button
           className="bg-custom-btn-submit text-white"
           type="submit"
