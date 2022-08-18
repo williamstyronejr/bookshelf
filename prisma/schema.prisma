@@ -66,14 +66,12 @@ model User {
   @@map("users")
 }
 
-// 
-
 model Author {
-  id           Int    @id @default(autoincrement())
-  slug         String @unique
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
   name         String
-  bio          String
-  profileImage String @map("profile_image")
+  bio          String? @default("")
+  profileImage String? @map("profile_image")
 
   books Book[]
 
@@ -87,6 +85,7 @@ model Book {
   id            Int          @id @default(autoincrement())
   author        Author       @relation(fields: [authorId], references: [id])
   authorId      Int          @unique @map("author_id")
+  displayImage  String       @map("display_image")
   title         String
   pageCount     Int          @map("page_count")
   isbn13        String
