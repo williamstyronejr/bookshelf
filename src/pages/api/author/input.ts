@@ -1,9 +1,9 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../utils/db';
 
 type Data = {
   authors: Array<{
+    id: number;
     name: string;
     slug: string;
   }>;
@@ -25,7 +25,7 @@ export default async function handler(
           mode: 'insensitive',
         },
       },
-      select: { name: true, slug: true },
+      select: { id: true, name: true, slug: true },
     });
 
     res.status(200).json({
