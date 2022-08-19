@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import Input from '../../../components/Input';
+import InputSuggestion from '../../../components/InputSuggestion';
 import FileInput from '../../../components/FileInput';
 import { validateBook } from '../../../utils/validation';
 
@@ -34,11 +35,11 @@ export default function CreateBookPage() {
 
     const { valid, errors } = validateBook(fields);
     if (!valid) return setFieldErrors(errors);
-
     mutate(fields);
   };
 
   if (data) router.push(`/book/${data.slug}`);
+
   return (
     <section>
       <form className="" onSubmit={handleSubmit}>
@@ -59,8 +60,7 @@ export default function CreateBookPage() {
             error={fieldErrors.title}
           />
 
-          <Input
-            type="text"
+          <InputSuggestion
             name="author"
             placeholder="Author"
             label="Author"
