@@ -5,7 +5,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { SessionProvider } from 'next-auth/react';
 import Link from 'next/link';
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const NavLink = ({ to, label }: { to: string; label: string }) => {
   const router = useRouter();
