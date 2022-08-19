@@ -6,42 +6,46 @@ import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { prisma } from '../../../utils/db';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const {
-    query: { slug, id },
-  } = ctx;
+  try {
+    const {
+      query: { slug, id },
+    } = ctx;
 
-  if (!slug || !id) return { notFound: true };
+    if (!slug || !id) return { notFound: true };
 
-  const authorData = await prisma.author.findUnique({
-    where: { id: parseInt(id.toString()) },
-    select: {
-      name: true,
-      slug: true,
-      id: true,
-      bio: true,
-      profileImage: true,
-    },
-  });
+    const authorData = await prisma.author.findUnique({
+      where: { id: parseInt(id.toString()) },
+      select: {
+        name: true,
+        slug: true,
+        id: true,
+        bio: true,
+        profileImage: true,
+      },
+    });
 
-  if (!authorData) {
+    if (!authorData) {
+      return {
+        notFound: true,
+      };
+    }
+
+    if (authorData.slug !== slug)
+      return {
+        redirect: {
+          destination: `/author/${id}/${authorData.slug}`,
+          permanent: false,
+        },
+      };
+
     return {
-      notFound: true,
-    };
-  }
-
-  if (authorData.slug !== slug)
-    return {
-      redirect: {
-        destination: `/author/${id}/${authorData.slug}`,
-        permanent: false,
+      props: {
+        authorData,
       },
     };
-
-  return {
-    props: {
-      authorData,
-    },
-  };
+  } catch (err) {
+    return { notFound: true };
+  }
 };
 
 export default function AuthorPage({ authorData }: { authorData: any }) {
@@ -97,7 +101,7 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
               className="rounded-full"
               priority={true}
               layout="fill"
-              src={authorData.profileImage}
+              src={authorData.profileImage || ''}
               alt="Book covers"
             />
           </div>
