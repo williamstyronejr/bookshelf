@@ -109,7 +109,7 @@ const AccountForm = () => {
   );
 };
 
-export default function SettingsPage() {
+function SettingsPage() {
   return (
     <section className="">
       <header className="mb-4">
@@ -123,3 +123,9 @@ export default function SettingsPage() {
     </section>
   );
 }
+
+SettingsPage.auth = {
+  role: 'any',
+};
+
+export default SettingsPage;
