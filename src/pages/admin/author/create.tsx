@@ -35,7 +35,14 @@ const AuthorCreatePage: NextPage = () => {
 
   return (
     <section>
-      <form onSubmit={submitHandler}>
+      <header className="my-4">
+        <h3>Create Author</h3>
+      </header>
+
+      <form
+        className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
+        onSubmit={submitHandler}
+      >
         <fieldset>
           <FileInput
             name="profileImage"
@@ -58,11 +65,7 @@ const AuthorCreatePage: NextPage = () => {
           />
         </fieldset>
 
-        <button
-          className="block bg-custom-btn-submit py-4 px-4 text-white rounded mx-auto"
-          type="submit"
-          disabled={isLoading}
-        >
+        <button className="btn-submit" type="submit" disabled={isLoading}>
           Create Author
         </button>
       </form>

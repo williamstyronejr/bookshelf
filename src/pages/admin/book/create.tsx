@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import * as React from 'react';
 import Input from '../../../components/Input';
 import InputSuggestion from '../../../components/InputSuggestion';
 import FileInput from '../../../components/FileInput';
@@ -42,13 +42,18 @@ export default function CreateBookPage() {
 
   return (
     <section>
-      <form className="" onSubmit={handleSubmit}>
-        <header></header>
+      <header className="my-4">
+        <h3 className="">Create Book</h3>
+      </header>
 
+      <form
+        className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
+        onSubmit={handleSubmit}
+      >
         <fieldset className="">
           <FileInput
             name="displayImage"
-            label="Book Cover"
+            label="Click to Change Book Cover"
             error={fieldErrors.displayImage}
           />
 
@@ -84,11 +89,7 @@ export default function CreateBookPage() {
           />
         </fieldset>
 
-        <button
-          className="bg-custom-btn-submit text-white"
-          type="submit"
-          disabled={isLoading}
-        >
+        <button className="btn-submit" type="submit" disabled={isLoading}>
           Create Book
         </button>
       </form>
