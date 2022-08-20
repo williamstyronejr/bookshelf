@@ -31,13 +31,22 @@ const FileInput = ({
   return (
     <label className="block my-5" htmlFor={name}>
       <button
-        className="w-20 h-20"
+        className="group w-full h-32 relative border-2 border-dashed rounded-lg hover:border-slate-900"
         type="button"
         onClick={() => (ref.current ? ref.current.click() : null)}
       >
-        <span className="block my-1">{label}</span>
+        <span
+          className={`${
+            fileUrl !== ''
+              ? 'flex invisible group-hover:visible h-full w-full items-center justify-center bg-neutral-500/50 top-0 left-0'
+              : 'block top-2/4 left-2/4 translate-x-[-50%] translate-y-[-50%]'
+          } absolute z-10 `}
+        >
+          {label}
+        </span>
+
         {fileUrl ? (
-          <div className="relative w-20 h-20">
+          <div className="relative h-full w-32 mx-auto">
             <Image
               className="rounded-lg"
               priority={true}
