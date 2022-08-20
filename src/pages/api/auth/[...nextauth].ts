@@ -1,34 +1,36 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import EmailProvider from 'next-auth/providers/email';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '../../../utils/db';
 
-export default NextAuth({
-  // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: 'jwt',
-  },
-  jwt: {
-    maxAge: 60 * 60 * 24 * 30,
-  },
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: { label: 'Username', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        // return {};
-        console.log(credentials);
+const { EMAIL_FROM, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } =
+  process.env;
 
-        return null;
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    EmailProvider({
+      type: 'email',
+      server: {
+        host: EMAIL_HOST,
+        port: EMAIL_PORT,
+        auth: {
+          user: EMAIL_USER,
+          pass: EMAIL_PASS,
+        },
       },
+      from: EMAIL_FROM,
     }),
   ],
-  pages: {
-    signIn: 'auth/signin',
-    error: 'auth/error',
+  callbacks: {
+    session: ({ user, session }) => {
+      if (session.user) {
+        session.user.id = user.id;
+      }
+
+      return session;
+    },
   },
-});
+};
+
+export default NextAuth(authOptions);
