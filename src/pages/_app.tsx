@@ -1,10 +1,15 @@
 import '../../styles/globals.css';
 import type { AppProps } from 'next/app';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Loading from '../components/Loading';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,6 +18,14 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const NoPermissionPage = ({ linkBack }: { linkBack?: string }) => {
+  return (
+    <main className="">
+      <Link href={linkBack || '/'}>Go back</Link>
+    </main>
+  );
+};
 
 const NavLink = ({ to, label }: { to: string; label: string }) => {
   const router = useRouter();
@@ -70,8 +83,8 @@ const Header = () => {
         <ul className="">
           <NavLink to="/" label="Home" />
           <NavLink to="/library" label="Library" />
-          <NavLink to="/auth/signin" label="Signin" />
-          <NavLink to="/auth/signup" label="Signup" />
+          <NavLink to="/api/auth/signin" label="Signin" />
+          <NavLink to="/api/auth/signup" label="Signup" />
         </ul>
       </nav>
 
@@ -94,15 +107,59 @@ const Header = () => {
   );
 };
 
+const Auth: React.FC<{
+  auth: { role?: string };
+  children: React.ReactNode;
+}> = ({ auth, children }) => {
+  const router = useRouter();
+  const { data, status } = useSession({ required: true });
+
+  const { data: userData, isFetching } = useQuery(
+    ['me'],
+    async () => {
+      const res = await fetch('/api/users/me');
+      const body = res.json();
+      return body;
+    },
+    { enabled: status !== 'loading' && auth.role !== 'any' }
+  );
+
+  if (status === 'loading' || isFetching)
+    return <Loading text="Checking Auth" />;
+
+  if (!data) {
+    router.replace('/api/auth/signin');
+    return <Loading text="Checking auth" />;
+  }
+
+  if (auth.role && auth.role !== 'any' && auth.role !== userData.user.role)
+    return <NoPermissionPage />;
+
+  return <>{children}</>;
+};
+
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
-        <Header />
+        {(Component as any).auth ? (
+          <>
+            <Auth auth={(Component as any).auth}>
+              <Header />
 
-        <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
-          <Component {...pageProps} />
-        </main>
+              <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+                <Component {...pageProps} />
+              </main>
+            </Auth>
+          </>
+        ) : (
+          <>
+            <Header />
+            <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+              <Component {...pageProps} />
+            </main>
+          </>
+        )}
       </QueryClientProvider>
     </SessionProvider>
   );
