@@ -1,8 +1,9 @@
+import type { NextPage } from 'next';
 import * as React from 'react';
 import Input from '../../../../components/Input';
 import { validateBook } from '../../../../utils/validation';
 
-export default function EditBookPage() {
+const EditBookPage: NextPage = () => {
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
   const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -41,4 +42,10 @@ export default function EditBookPage() {
       </form>
     </section>
   );
-}
+};
+
+EditBookPage.auth = {
+  admin: true,
+};
+
+export default EditBookPage;

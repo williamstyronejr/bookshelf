@@ -1,3 +1,4 @@
+import type { NextPage } from 'next';
 import * as React from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -6,7 +7,7 @@ import InputSuggestion from '../../../components/InputSuggestion';
 import FileInput from '../../../components/FileInput';
 import { validateBook } from '../../../utils/validation';
 
-export default function CreateBookPage() {
+const CreateBookPage: NextPage = () => {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
 
@@ -95,4 +96,10 @@ export default function CreateBookPage() {
       </form>
     </section>
   );
-}
+};
+
+CreateBookPage.auth = {
+  admin: true,
+};
+
+export default CreateBookPage;

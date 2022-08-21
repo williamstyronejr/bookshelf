@@ -108,7 +108,7 @@ const Header = () => {
 };
 
 const Auth: React.FC<{
-  auth: { role?: string };
+  auth: { admin?: boolean };
   children: React.ReactNode;
 }> = ({ auth, children }) => {
   const router = useRouter();
@@ -121,7 +121,7 @@ const Auth: React.FC<{
       const body = res.json();
       return body;
     },
-    { enabled: status !== 'loading' && auth.role !== 'any' }
+    { enabled: status !== 'loading' && auth.admin }
   );
 
   if (status === 'loading' || isFetching)
@@ -132,8 +132,7 @@ const Auth: React.FC<{
     return <Loading text="Checking auth" />;
   }
 
-  if (auth.role && auth.role !== 'any' && auth.role !== userData.user.role)
-    return <NoPermissionPage />;
+  if (auth.admin && userData.user.role !== 'ADMIN') return <NoPermissionPage />;
 
   return <>{children}</>;
 };

@@ -73,4 +73,8 @@ const AuthorCreatePage: NextPage = () => {
   );
 };
 
+AuthorCreatePage.auth = {
+  admin: true,
+};
+
 export default AuthorCreatePage;

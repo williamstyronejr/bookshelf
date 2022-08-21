@@ -1,4 +1,6 @@
-export default function ProfilePage() {
+import type { NextPage } from 'next';
+
+const ProfilePage: NextPage = () => {
   return (
     <section className="">
       <div>
@@ -6,4 +8,10 @@ export default function ProfilePage() {
       </div>
     </section>
   );
-}
+};
+
+ProfilePage.auth = {
+  admin: false,
+};
+
+export default ProfilePage;

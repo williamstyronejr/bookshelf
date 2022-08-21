@@ -112,7 +112,7 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
 };
 
 AuthorEditPage.auth = {
-  role: 'ADMIN',
+  admin: true,
 };
 
 export default AuthorEditPage;

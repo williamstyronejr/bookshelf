@@ -1,8 +1,9 @@
+import type { NextPage } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 
-export default function DashboardPage() {
+const DashboardPage: NextPage = () => {
   const { data, isLoading } = useQuery(['dashboard'], async () => {
     const res = await fetch('/api/users/dashboard');
 
@@ -82,4 +83,10 @@ export default function DashboardPage() {
       </div>
     </section>
   );
-}
+};
+
+DashboardPage.auth = {
+  admin: false,
+};
+
+export default DashboardPage;

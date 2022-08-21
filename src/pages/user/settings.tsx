@@ -1,3 +1,4 @@
+import type { NextPage } from 'next';
 import * as React from 'react';
 import Input from '../../components/Input';
 import { validateNewPassword, validateUser } from '../../utils/validation';
@@ -109,7 +110,7 @@ const AccountForm = () => {
   );
 };
 
-function SettingsPage() {
+const SettingsPage: NextPage = () => {
   return (
     <section className="">
       <header className="mb-4">
@@ -122,10 +123,10 @@ function SettingsPage() {
       </div>
     </section>
   );
-}
+};
 
 SettingsPage.auth = {
-  role: 'any',
+  admin: false,
 };
 
 export default SettingsPage;

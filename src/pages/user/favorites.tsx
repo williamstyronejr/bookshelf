@@ -1,7 +1,8 @@
+import type { NextPage } from 'next';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 
-export default function UserFavoritesPage() {
+const UserFavoritesPage: NextPage = () => {
   const { data, isLoading } = useQuery(['favorites-all'], async () => {
     const res = await fetch('/api/users/favorites');
     if (res.statusText !== 'OK') throw new Error('invalid request');
@@ -38,4 +39,10 @@ export default function UserFavoritesPage() {
       </ul>
     </section>
   );
-}
+};
+
+UserFavoritesPage.auth = {
+  admin: false,
+};
+
+export default UserFavoritesPage;

@@ -104,4 +104,8 @@ const ManageAuthorsPage: NextPage = () => {
   );
 };
 
+ManageAuthorsPage.auth = {
+  admin: true,
+};
+
 export default ManageAuthorsPage;

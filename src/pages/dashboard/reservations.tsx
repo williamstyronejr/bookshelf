@@ -52,4 +52,8 @@ const ReservationsPage: NextPage = () => {
   );
 };
 
+ReservationsPage.auth = {
+  admin: false,
+};
+
 export default ReservationsPage;
