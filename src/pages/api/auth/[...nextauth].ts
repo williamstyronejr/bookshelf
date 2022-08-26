@@ -35,14 +35,11 @@ export const authOptions: NextAuthOptions = {
 
           if (results.length === 0 || results.length > 1) {
             // Error with storage base url
+          } else {
+            session.user.image = `${results[0].baseUrl}${session.user.image}?alt=media`;
           }
-
-          console.log(results[0].baseUrl);
-
-          session.user.image = `${results[0].baseUrl}${session.user.image}?alt=media`;
         }
       }
-      console.log(session);
       return session;
     },
   },
