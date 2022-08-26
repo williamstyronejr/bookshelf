@@ -45,13 +45,17 @@ model User {
   name          String?
   email         String?       @unique
   emailVerified DateTime?     @map("email_verified")
-  image         String?
+  image         String?       @default("user%default.jpeg")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @default(now()) @map("updated_at")
   role          Role          @default(USER)
   reservations  Reservation[]
   accounts      Account[]
   sessions      Session[]
+  List          List?
+  Favorite      Favorite?
+
+  @@map("users")
 }
 
 model VerificationToken {
@@ -79,7 +83,7 @@ model Author {
 }
 
 model Book {
-  id            Int          @id @default(autoincrement())
+  id            BigInt       @id @default(autoincrement()) @db.BigInt
   author        Author       @relation(fields: [authorId], references: [id])
   authorId      Int          @unique @map("author_id")
   displayImage  String       @map("display_image")
@@ -92,8 +96,10 @@ model Book {
   publisher     Publisher    @relation(fields: [publisherId], references: [id])
   publisherId   Int          @unique @map("published_id")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @map("updated_at")
+  ListBooks ListBooks[]
+  Favorite  Favorite[]
 
   @@map("books")
 }
@@ -115,12 +121,53 @@ model BookLanguage {
   @@map("book_languages")
 }
 
+model List {
+  id        BigInt      @id @default(autoincrement()) @db.BigInt
+  name      String
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String      @unique @map("user_id")
+  ListBooks ListBooks[]
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @map("updated_at")
+
+  @@map("lists")
+}
+
+model ListBooks {
+  id        BigInt   @id @default(autoincrement()) @db.BigInt
+  book      Book     @relation(fields: [bookId], references: [id])
+  bookId    BigInt
+  list      List     @relation(fields: [listId], references: [id])
+  listId    BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("list_books")
+}
+
+model Favorite {
+  id     BigInt @id @default(autoincrement()) @db.BigInt
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @map("user_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  bookId BigInt @db.BigInt
+
+  @@map("favorites")
+}
+
 model Reservation {
   id     Int    @id @default(autoincrement())
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique @map("user_id")
 
   @@map("reservations")
+}
+
+model StorageSettings {
+  version BigInt  @id @default(autoincrement()) @db.BigInt
+  baseUrl String  @map("base_url")
+  current Boolean @default(false)
+
+  @@map("storage_settings")
 }
 
 enum Role {
