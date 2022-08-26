@@ -23,11 +23,26 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    session: ({ user, session }) => {
+    session: async ({ user, session }) => {
       if (session.user) {
         session.user.id = user.id;
-      }
 
+        if (session.user.image) {
+          // Grab base url for images
+          const results = await prisma.storageSettings.findMany({
+            where: { current: true },
+          });
+
+          if (results.length === 0 || results.length > 1) {
+            // Error with storage base url
+          }
+
+          console.log(results[0].baseUrl);
+
+          session.user.image = `${results[0].baseUrl}${session.user.image}?alt=media`;
+        }
+      }
+      console.log(session);
       return session;
     },
   },
