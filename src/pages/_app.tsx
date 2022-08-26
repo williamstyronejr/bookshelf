@@ -7,9 +7,10 @@ import {
 } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { SessionProvider, useSession } from 'next-auth/react';
+import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Loading from '../components/Loading';
+import Image from 'next/image';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,94 @@ const NoPermissionPage = ({ linkBack }: { linkBack?: string }) => {
     <main className="">
       <Link href={linkBack || '/'}>Go back</Link>
     </main>
+  );
+};
+
+const UserOptions = () => {
+  const { data, status } = useSession();
+  const [menu, setMenu] = useState(false);
+  const [search, setSearch] = useState('');
+  const router = useRouter();
+
+  return (
+    <div className="flex flex-row flex-nowrap mb-8">
+      <div className="flex-grow">
+        <i className="focus-within:text-black absolute top-3.5 left-2 text-slate-400 fas fa-search " />
+
+        <input
+          className="bg-white py-2 pr-4 pl-8 border rounded-lg border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+          name="search"
+          type="text"
+          placeholder="Search by title, author, tags, etc"
+          value={search}
+          onChange={(evt) => setSearch(evt.target.value)}
+          onKeyDown={(evt) => {
+            if (evt.key === 'Enter' && search !== '')
+              router.push(`/library/search?q=${search}`);
+          }}
+        />
+      </div>
+
+      {status !== 'loading' ? (
+        <>
+          <button
+            className=""
+            type="button"
+            onClick={() => {
+              if (status === 'unauthenticated') {
+                return signIn();
+              }
+              setMenu((old) => !old);
+            }}
+          >
+            {status === 'unauthenticated' ? (
+              'Signin'
+            ) : (
+              <div className="flex flex-row flex-nowrap items-center">
+                <div className="relative w-10 h-10 mr-2">
+                  <Image
+                    className="rounded-lg"
+                    priority={true}
+                    layout="fill"
+                    src={data.user.image || ''}
+                    alt="Book covers"
+                  />
+                </div>
+
+                <div>{data.user.name || data.user.email}</div>
+              </div>
+            )}
+          </button>
+
+          <div
+            className={`${
+              menu ? 'block' : 'hidden'
+            } absolute z-20 right-6 top-16 w-60 bg-custom-background py-4 px-2 rounded-lg shadow-md`}
+          >
+            <nav className="">
+              <ul className="">
+                <li>
+                  <Link href="/user/settings">
+                    <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+                      Settings
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
+                    onClick={() => signOut()}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 };
 
@@ -53,6 +142,7 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
 
 const Header = () => {
   const router = useRouter();
+  const { status } = useSession();
   const [menu, setMenu] = useState(true);
 
   useEffect(() => {
@@ -83,14 +173,15 @@ const Header = () => {
         <ul className="">
           <NavLink to="/" label="Home" />
           <NavLink to="/library" label="Library" />
-          <NavLink to="/api/auth/signin" label="Signin" />
-          <NavLink to="/api/auth/signup" label="Signup" />
+          {status === 'authenticated' ? (
+            <>
+              <NavLink to="/user" label="Dashboard" />
+              <NavLink to="/user/lists/favorites" label="Favorites" />
+              <NavLink to="/dashboard/reservations" label="Reservation" />
+            </>
+          ) : null}
         </ul>
       </nav>
-
-      <ul className={`${menu ? '' : 'hidden'}`}>
-        <NavLink to="/user/settings" label="Settings" />
-      </ul>
 
       <button
         className="my-4"
@@ -147,6 +238,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               <Header />
 
               <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+                <UserOptions />
                 <Component {...pageProps} />
               </main>
             </Auth>
@@ -155,6 +247,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           <>
             <Header />
             <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+              <UserOptions />
               <Component {...pageProps} />
             </main>
           </>
