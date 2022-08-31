@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../utils/db';
 
 type Data = {
-  authors: Array<{
+  results: Array<{
     id: number;
     name: string;
     slug: string;
@@ -29,7 +29,7 @@ export default async function handler(
     });
 
     res.status(200).json({
-      authors,
+      results: authors,
     });
   } catch (err) {
     res.status(500).send('');
