@@ -30,13 +30,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       };
     }
 
-    if (authorData.slug !== slug)
+    if (authorData.slug !== slug) {
       return {
         redirect: {
           destination: `/author/${id}/${authorData.slug}`,
           permanent: false,
         },
       };
+    }
 
     return {
       props: {
