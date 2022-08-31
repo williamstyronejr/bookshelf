@@ -114,13 +114,22 @@ export function validateNewPassword({
 export function validateBook({
   title,
   author,
+  pageCount,
+  isbn13,
+  copiesCount,
 }: {
-  title: string;
-  author: string;
+  title?: string;
+  author?: string;
+  pageCount?: string;
+  isbn13?: string;
+  copiesCount?: string;
 }) {
   const errors: {
     title?: string;
     author?: string;
+    pageCount?: string;
+    isbn13?: string;
+    copiesCount?: string;
   } = {};
 
   if (typeof title === 'string') {
@@ -130,9 +139,35 @@ export function validateBook({
   }
 
   if (typeof author === 'string') {
-    if (author === '') errors.author = 'Must provide an author.';
+    const authorId = parseInt(author.toString());
+    if (isNaN(authorId)) errors.author = 'Must provide an author.';
   } else {
     errors.author = 'Must provided an author.';
+  }
+
+  if (typeof pageCount === 'string') {
+    const numOfPages = parseInt(pageCount.toString());
+    if (isNaN(numOfPages) || numOfPages < 0) {
+      errors.pageCount = 'Number of pages must be a postive number.';
+    }
+  } else {
+    errors.pageCount = 'Must provided number of pages';
+  }
+
+  if (typeof isbn13 === 'string') {
+    if (isbn13 === '') errors.isbn13 = 'Invalid isbn13 number';
+  } else {
+    errors.isbn13 = "Must provided the book's isbn13 number.";
+  }
+
+  if (typeof copiesCount === 'string') {
+    const numOfCopies = parseInt(copiesCount);
+
+    if (isNaN(numOfCopies) || numOfCopies < 0) {
+      errors.copiesCount = 'Number of copies must be a positive number.';
+    }
+  } else {
+    errors.copiesCount = 'Must provided number of copies.';
   }
 
   return {
