@@ -41,19 +41,20 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?     @map("email_verified")
-  image         String?       @default("user%2Fdefault.jpeg")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @default(now()) @map("updated_at")
-  role          Role          @default(USER)
-  reservations  Reservation[]
-  accounts      Account[]
-  sessions      Session[]
-  List          List?
-  Favorite      Favorite?
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?        @map("email_verified")
+  image          String?          @default("user%2Fdefault.jpeg")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @default(now()) @map("updated_at")
+  role           Role             @default(USER)
+  reservations   Reservation[]
+  accounts       Account[]
+  sessions       Session[]
+  genreUserCount GenreUserCount[]
+  List           List?
+  Favorite       Favorite?
 
   @@map("users")
 }
@@ -82,30 +83,64 @@ model Author {
   @@map("authors")
 }
 
+model Genre {
+  id             BigInt           @id @default(autoincrement()) @db.BigInt
+  name           String           @unique
+  GenreUserCount GenreUserCount[]
+  BookGenres     BookGenres[]
+
+  @@map("genres")
+}
+
+model GenreUserCount {
+  id      BigInt @id @default(autoincrement()) @db.BigInt
+  count   Int    @default(0)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId  String
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  genreId BigInt @db.BigInt
+
+  @@map("genre_user_count")
+}
+
 model Book {
   id            BigInt       @id @default(autoincrement()) @db.BigInt
   author        Author       @relation(fields: [authorId], references: [id])
-  authorId      Int          @unique @map("author_id")
+  authorId      Int          @map("author_id")
   displayImage  String       @map("display_image")
   title         String
+  slug          String
   pageCount     Int          @map("page_count")
+  copiesCount   Int          @map("copies_count")
   isbn13        String
   language      BookLanguage @relation(fields: [languageId], references: [id])
-  languageId    Int
+  languageId    BigInt       @db.BigInt
   publishedDate DateTime     @map("published_date")
   publisher     Publisher    @relation(fields: [publisherId], references: [id])
-  publisherId   Int          @unique @map("published_id")
+  publisherId   BigInt       @map("published_id") @db.BigInt
 
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @default(now()) @map("updated_at")
-  ListBooks ListBooks[]
-  Favorite  Favorite[]
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @map("updated_at")
+  ListBooks   ListBooks[]
+  Favorite    Favorite[]
+  Reservation Reservation[]
+  BookGenres  BookGenres[]
 
   @@map("books")
 }
 
+model BookGenres {
+  id      BigInt @id @default(autoincrement()) @db.BigInt
+  book    Book   @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookId  BigInt @db.BigInt
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  genreId BigInt @db.BigInt
+
+  @@map("book_genres")
+}
+
 model Publisher {
-  id    Int    @id @default(autoincrement())
+  id    BigInt @id @default(autoincrement()) @db.BigInt
   name  String
   books Book[]
 
@@ -113,10 +148,10 @@ model Publisher {
 }
 
 model BookLanguage {
-  id           Int    @id @default(autoincrement())
-  languageCode String @map("language_code")
-  languageName String @map("language_name")
-  book         Book[]
+  id   BigInt @id @default(autoincrement()) @db.BigInt
+  code String
+  name String
+  book Book[]
 
   @@map("book_languages")
 }
@@ -158,6 +193,13 @@ model Reservation {
   id     Int    @id @default(autoincrement())
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique @map("user_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  bookId BigInt @db.BigInt
+
+  fee       BigInt   @default(0) @db.BigInt
+  dueDate   DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("reservations")
 }
@@ -168,6 +210,13 @@ model StorageSettings {
   current Boolean @default(false)
 
   @@map("storage_settings")
+}
+
+enum Status {
+  PICKUP
+  CUSTOMER
+  RETURN
+  OVERDUE
 }
 
 enum Role {
