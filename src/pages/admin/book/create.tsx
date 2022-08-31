@@ -13,14 +13,10 @@ const CreateBookPage: NextPage = () => {
 
   const { data, mutate, isLoading } = useMutation(
     ['create-book'],
-    async ({ title, author }: { title: string; author: string }) => {
+    async (formData: FormData) => {
       const res = await fetch(`/api/books/create`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          author,
-        }),
+        body: formData,
       });
 
       const body = await res.json();
@@ -30,16 +26,18 @@ const CreateBookPage: NextPage = () => {
 
   const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setFieldErrors({});
 
     const formData = new FormData(evt.currentTarget);
-    const fields: any = Object.fromEntries(formData.entries());
 
+    const fields: any = Object.fromEntries(formData.entries());
     const { valid, errors } = validateBook(fields);
     if (!valid) return setFieldErrors(errors);
-    mutate(fields);
+
+    mutate(formData);
   };
 
-  if (data) router.push(`/book/${data.slug}`);
+  // if (data) router.push(`/book/${data.id}/${data.slug}`);
 
   return (
     <section>
@@ -70,7 +68,32 @@ const CreateBookPage: NextPage = () => {
             name="author"
             placeholder="Author"
             label="Author"
+            url="/api/author/input"
             error={fieldErrors.author}
+          />
+
+          <InputSuggestion
+            name="genre"
+            placeholder="Genre"
+            label="Genre"
+            url="/api/genre/input"
+            error={fieldErrors.genre}
+          />
+
+          <InputSuggestion
+            name="language"
+            placeholder="Language"
+            label="Language"
+            url="/api/language/input"
+            error={fieldErrors.language}
+          />
+
+          <InputSuggestion
+            name="publisher"
+            placeholder="Publisher"
+            label="Publisher"
+            url="/api/publisher/input"
+            error={fieldErrors.language}
           />
 
           <Input
@@ -79,6 +102,14 @@ const CreateBookPage: NextPage = () => {
             placeholder="ISBN"
             label="ISBN-13"
             error={fieldErrors.isbn13s}
+          />
+
+          <Input
+            type="text"
+            name="copiesCount"
+            placeholder="# of Copies"
+            label="# of copies"
+            error={fieldErrors.copiesCount}
           />
 
           <Input
