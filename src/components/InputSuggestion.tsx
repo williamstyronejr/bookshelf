@@ -5,16 +5,20 @@ const InputSuggestion = ({
   name,
   label,
   placeholder,
+  url,
   initialValue,
   initialHiddenValue,
   error,
+  multiEntries = false,
 }: {
   name: string;
   label: string;
+  url: string;
   initialValue?: string;
   initialHiddenValue?: string;
   placeholder?: string;
   error?: string | null;
+  multiEntries?: boolean;
 }) => {
   const [value, setValue] = useState(initialValue || '');
   const [hiddenValue, setHiddenValue] = useState(initialHiddenValue || '');
@@ -24,10 +28,10 @@ const InputSuggestion = ({
   const { data } = useQuery(
     ['suggestion', value],
     async ({ signal }) => {
-      const res = await fetch(`/api/author/input?name=${value}`, { signal });
+      const res = await fetch(`${url}?name=${value}`, { signal });
 
       const body = await res.json();
-      return body.authors;
+      return body.results;
     },
     {
       enabled: !!value && focus,
@@ -36,7 +40,7 @@ const InputSuggestion = ({
 
   return (
     <div className="relative">
-      <label className="block my-5" htmlFor={'author-placeholder'}>
+      <label className="block my-5" htmlFor={`${name}-placeholder`}>
         <span className="block my-1">{label}</span>
 
         <input
@@ -45,8 +49,9 @@ const InputSuggestion = ({
               ? 'border-red-500 focus:shadow-[0_0_0_1px_rgba(244,33,46,1)]'
               : 'border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]'
           }  outline-0`}
-          id="author-placeholder"
-          name="author-placeholder"
+          autoComplete="off"
+          id={`${name}-placeholder`}
+          name={`${name}-placeholder`}
           type="text"
           value={value}
           onChange={(evt) => setValue(evt.target.value)}
