@@ -1,6 +1,8 @@
+import { NextApiRequest } from 'next';
 import admin from 'firebase-admin';
 import crypto from 'crypto';
 import internal from 'stream';
+import formidable from 'formidable';
 
 const {
   FIREBASE_PROJECT_ID,
@@ -47,4 +49,43 @@ export const uploadFirebaseFile = function (
     url: `https://firebasestorage.googleapis.com/v0/b/${storage.name}/o/${newFileName}?alt=media`,
     blob,
   };
+};
+
+export const uploadFile = function (
+  req: NextApiRequest
+): Promise<{ fields: any; publicUrl: string | undefined; files: any }> {
+  return new Promise((res, rej) => {
+    let publicUrl: string | undefined;
+
+    const form = formidable({
+      multiples: true,
+      uploadDir: __dirname,
+      maxFiles: 1,
+      filter: (part) => {
+        return part.originalFilename !== '';
+      },
+      fileWriteStreamHandler: function () {
+        const file = arguments[0] as any; // BUG WITH THEIR TYPING
+        const { blobWriter, url } = uploadFirebaseFile(
+          file.originalFilename,
+          file.mimetype
+        );
+
+        publicUrl = url;
+        return blobWriter;
+      },
+    });
+
+    form.parse(req, (err, fields, files) => {
+      if (err) rej(err);
+
+      res({
+        publicUrl,
+        fields: Object.fromEntries(
+          Object.entries(fields).map((kv) => [kv[0], kv[1].toString()])
+        ),
+        files,
+      });
+    });
+  });
 };
