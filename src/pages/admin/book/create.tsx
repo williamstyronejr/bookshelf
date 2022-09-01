@@ -68,7 +68,7 @@ const CreateBookPage: NextPage = () => {
             name="author"
             placeholder="Author"
             label="Author"
-            url="/api/author/input"
+            url="/api/author"
             error={fieldErrors.author}
           />
 
@@ -76,7 +76,7 @@ const CreateBookPage: NextPage = () => {
             name="genre"
             placeholder="Genre"
             label="Genre"
-            url="/api/genre/input"
+            url="/api/genre"
             error={fieldErrors.genre}
           />
 
@@ -84,7 +84,7 @@ const CreateBookPage: NextPage = () => {
             name="language"
             placeholder="Language"
             label="Language"
-            url="/api/language/input"
+            url="/api/language"
             error={fieldErrors.language}
           />
 
@@ -92,7 +92,7 @@ const CreateBookPage: NextPage = () => {
             name="publisher"
             placeholder="Publisher"
             label="Publisher"
-            url="/api/publisher/input"
+            url="/api/publisher"
             error={fieldErrors.language}
           />
 
