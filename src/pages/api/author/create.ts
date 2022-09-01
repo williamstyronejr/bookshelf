@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import { Prisma } from '@prisma/client';
@@ -66,7 +65,7 @@ export default async function handler(
       data,
     });
 
-    res.status(200).json({ author });
+    res.status(200).json(author);
   } catch (err) {
     console.log(err);
     res.status(500).send('');
