@@ -3,7 +3,7 @@ import { prisma } from '../../../utils/db';
 
 type Data = {
   results: Array<{
-    id: bigint;
+    id: number;
     name: string;
   }>;
 };
