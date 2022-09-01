@@ -30,7 +30,7 @@ const AuthorCreatePage: NextPage = () => {
   };
 
   if (data) {
-    router.push(`/author/${data.author.id}/${data.author.slug}`);
+    router.push(`/author/${data.id}/${data.slug}`);
   }
 
   return (
