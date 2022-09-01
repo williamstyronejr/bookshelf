@@ -3,6 +3,7 @@ import { validateBook } from '../../../utils/validation';
 import { prisma } from '../../../utils/db';
 import { uploadFile } from '../../../utils/upload';
 import { createSlug } from '../../../utils/slug';
+import { getServerAuthSession } from '../../../utils/serverSession';
 
 type Data = {
   id: string;
@@ -19,6 +20,8 @@ export default async function handler(
   res: NextApiResponse<Data | ErrorResponse | String>
 ) {
   const { method } = req;
+  const session = await getServerAuthSession({ req, res });
+  if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
 
   if (method !== 'POST') return res.status(404).send('');
 
@@ -40,16 +43,26 @@ export default async function handler(
     const book = await prisma.book.create({
       data: {
         title: fields.title,
-        authorId: parseInt(fields.author),
         pageCount: parseInt(fields.pageCount),
         isbn13: fields.isbn13,
-        publisherId: fields.publisher,
-        languageId: fields.langauge,
-        genreId: fields.genre,
         slug: createSlug(fields.title),
         copiesCount: parseInt(fields.copiesCount),
         displayImage: publicUrl || '',
         publishedDate: new Date(Date.now()),
+        author: {
+          connect: { id: parseInt(fields.author) },
+        },
+        publisher: {
+          connect: { id: parseInt(fields.publisher) },
+        },
+        language: {
+          connect: { id: parseInt(fields.language) },
+        },
+        BookGenres: {
+          create: {
+            genreId: parseInt(fields.genre),
+          },
+        },
       },
     });
 
