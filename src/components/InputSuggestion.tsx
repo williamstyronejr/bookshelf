@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 const InputSuggestion = ({
   name,
@@ -25,10 +25,10 @@ const InputSuggestion = ({
   const [mouseOnList, setMouseOnList] = useState(false);
   const [focus, setFocus] = useState(false);
 
-  const { data } = useQuery(
+  const { data, isFetching } = useQuery(
     ['suggestion', value],
     async ({ signal }) => {
-      const res = await fetch(`${url}?name=${value}`, { signal });
+      const res = await fetch(`${url}/input?name=${value}`, { signal });
 
       const body = await res.json();
       return body.results;
@@ -37,6 +37,26 @@ const InputSuggestion = ({
       enabled: !!value && focus,
     }
   );
+
+  const {
+    data: MutateData,
+    mutate,
+    isLoading: isMutating,
+  } = useMutation(['create', name], async (inputName: string) => {
+    const res = await fetch(`${url}/create`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ name: inputName }),
+    });
+
+    const body = await res.json();
+
+    setValue(body.name);
+    setHiddenValue(body.id);
+    return body;
+  });
 
   return (
     <div className="relative">
@@ -56,6 +76,7 @@ const InputSuggestion = ({
           value={value}
           onChange={(evt) => setValue(evt.target.value)}
           placeholder={placeholder}
+          disabled={isMutating}
           onFocus={() => setFocus(true)}
           onBlur={() => {
             if (!mouseOnList) setFocus(false);
@@ -101,6 +122,26 @@ const InputSuggestion = ({
                 </li>
               ))
             : null}
+
+          {data &&
+          focus &&
+          !isFetching &&
+          value.trim() !== '' &&
+          data.length === 0 ? (
+            <li>
+              <button
+                className="block w-full px-4 py-2 text-left border-b-2 border-slate-500/50 hover:bg-slate-200"
+                type="button"
+                onClick={() => {
+                  mutate(value.trim());
+                  setMouseOnList(false);
+                  setFocus(false);
+                }}
+              >
+                Create {name} &quot;{value.trim()}&quot;
+              </button>
+            </li>
+          ) : null}
         </ul>
       </div>
     </div>
