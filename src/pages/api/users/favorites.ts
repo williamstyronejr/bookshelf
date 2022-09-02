@@ -27,6 +27,14 @@ export default async function handler(
         where: {
           userId: session.user.id,
         },
+        include: {
+          book: {
+            include: {
+              author: true,
+              publisher: true,
+            },
+          },
+        },
       });
 
       res.status(200).json({
