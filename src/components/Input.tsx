@@ -37,6 +37,9 @@ const Input = ({
         />
       ) : (
         <textarea
+          id={name}
+          name={name}
+          placeholder={placeholder}
           className="w-full bg-white py-2 px-4 border rounded"
           value={value}
           onChange={(evt) => setValue(evt.currentTarget.value)}
