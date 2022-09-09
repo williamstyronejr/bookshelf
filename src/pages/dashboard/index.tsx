@@ -28,26 +28,31 @@ const DashboardPage: NextPage = () => {
         <div className="">
           <ul className="flex flex-row flex-nowrap">
             {data.current.length ? (
-              data.current.map((book) => (
-                <li key={book.id} className="relative h-52 w-32 mr-4">
-                  <Link href={`/books/${book.slug}`}>
+              data.current.map((item) => (
+                <li
+                  key={`current-${item.book.id}`}
+                  className="relative h-52 w-32 mr-4"
+                >
+                  <Link href={`/books/${item.book.slug}`}>
                     <a>
                       <div className="relative h-40 w-32 shadow-md mb-2">
                         <Image
                           className="rounded-lg"
                           priority={true}
                           layout="fill"
-                          src={book.displayImage}
+                          src={item.book.displayImage}
                           alt="Book covers"
                         />
                       </div>
-                      <div className="font-medium">{book.title}</div>
+                      <div className="font-medium">{item.book.title}</div>
                     </a>
                   </Link>
 
-                  <Link href={`/author/${book.author}`}>
+                  <Link href={`/author/${item.book.author.id}`}>
                     <a>
-                      <div className="text-gray-600">{book.author}</div>
+                      <div className="text-gray-600">
+                        {item.book.author.name}
+                      </div>
                     </a>
                   </Link>
                 </li>
@@ -59,6 +64,29 @@ const DashboardPage: NextPage = () => {
         </div>
       </div>
 
+      <div className="bg-custom-background shadow-md rounded p-6 mb-4">
+        <h3 className="font-medium">Favorite Genre</h3>
+
+        <ul className="flex flex-row flex-wrap ">
+          {data.favoriteGenres.map((genreCount) => (
+            <li
+              className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
+              key={`favorite-genre-${genreCount.id}`}
+            >
+              <Link href={`/library/search?genre=${genreCount.id}`}>
+                <a className="">{genreCount.genre.name}</a>
+              </Link>
+            </li>
+          ))}
+
+          {data.favoriteGenres.length === 0 ? (
+            <li className="flex-grow text-center m-8">
+              <div>Start reading today to see favorite genres</div>
+            </li>
+          ) : null}
+        </ul>
+      </div>
+
       <div className="bg-custom-background shadow-md rounded p-6">
         <h3 className="font-medium">Favorite Author</h3>
 
@@ -66,7 +94,7 @@ const DashboardPage: NextPage = () => {
           {data.favoriteAuthor.map((author) => (
             <li
               className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
-              key={author.slug}
+              key={`favorite-author-${author.slug}`}
             >
               <Link href={`/author/${author.slug}`}>
                 <a className="">{author.name}</a>
