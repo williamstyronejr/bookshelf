@@ -37,7 +37,7 @@ const CreateBookPage: NextPage = () => {
     mutate(formData);
   };
 
-  // if (data) router.push(`/book/${data.id}/${data.slug}`);
+  if (data) router.push(`/book/${data.id}/${data.slug}`);
 
   return (
     <section>
@@ -62,6 +62,14 @@ const CreateBookPage: NextPage = () => {
             placeholder="title"
             label="Title"
             error={fieldErrors.title}
+          />
+
+          <Input
+            type="textarea"
+            name="description"
+            placeholder="Description"
+            label="Description"
+            error={fieldErrors.description}
           />
 
           <InputSuggestion
