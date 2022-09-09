@@ -92,7 +92,7 @@ const UserOptions = () => {
             <nav className="">
               <ul className="">
                 <li>
-                  <Link href="/user/settings">
+                  <Link href="/user/settings/account">
                     <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
                       Settings
                     </a>
@@ -175,7 +175,7 @@ const Header = () => {
           <NavLink to="/library" label="Library" />
           {status === 'authenticated' ? (
             <>
-              <NavLink to="/user" label="Dashboard" />
+              <NavLink to="/dashboard" label="Dashboard" />
               <NavLink to="/user/lists/favorites" label="Favorites" />
               <NavLink to="/dashboard/reservations" label="Reservation" />
             </>
