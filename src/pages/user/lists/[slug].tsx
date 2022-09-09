@@ -1,12 +1,17 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const UserListPage: NextPage = () => {
   const { query } = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -38,6 +43,23 @@ const UserListPage: NextPage = () => {
     }
   );
 
+  const { mutate } = useMutation(
+    ['favorite', 'update'],
+    async ({ bookId }: { bookId: string }) => {
+      const res = await fetch(`/api/books/${bookId}/favorite`, {
+        method: 'POST',
+      });
+
+      const body = await res.json();
+      return body;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(['list', query.slug]);
+      },
+    }
+  );
+
   const [sentryRef] = useInfiniteScroll({
     loading: isFetchingNextPage || isFetching,
     hasNextPage: !!hasNextPage,
@@ -54,9 +76,9 @@ const UserListPage: NextPage = () => {
         <ul className="grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4">
           {data && data.pages
             ? data.pages.map((page) =>
-                page.results.map((book) => (
+                page.results.map(({ book }) => (
                   <li key={book.id}>
-                    <Link href={`/book/${book.slug}`}>
+                    <Link href={`/book/${book.id}/${book.slug}`}>
                       <a>
                         <div className="relative w-32 h-40">
                           <Image
@@ -71,9 +93,21 @@ const UserListPage: NextPage = () => {
                       </a>
                     </Link>
 
-                    <Link href={`/author/${book.author}`}>
-                      <a className="text-gray-600">{book.author}</a>
+                    <Link
+                      href={`/author/${book.author.id}/${book.author.slug}`}
+                    >
+                      <a className="text-gray-600">{book.author.name}</a>
                     </Link>
+
+                    <button
+                      className=""
+                      type="button"
+                      onClick={() => {
+                        mutate({ bookId: book.id });
+                      }}
+                    >
+                      Remove
+                    </button>
                   </li>
                 ))
               )
