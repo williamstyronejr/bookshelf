@@ -49,6 +49,7 @@ export default async function handler(
         copiesCount: parseInt(fields.copiesCount),
         displayImage: publicUrl || '',
         publishedDate: new Date(Date.now()),
+        description: fields.description,
         author: {
           connect: { id: parseInt(fields.author) },
         },
