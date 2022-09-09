@@ -117,12 +117,14 @@ export function validateBook({
   pageCount,
   isbn13,
   copiesCount,
+  description,
 }: {
   title?: string;
   author?: string;
   pageCount?: string;
   isbn13?: string;
   copiesCount?: string;
+  description?: string;
 }) {
   const errors: {
     title?: string;
@@ -130,6 +132,7 @@ export function validateBook({
     pageCount?: string;
     isbn13?: string;
     copiesCount?: string;
+    description?: string;
   } = {};
 
   if (typeof title === 'string') {
@@ -170,6 +173,13 @@ export function validateBook({
     errors.copiesCount = 'Must provided number of copies.';
   }
 
+  if (typeof description === 'string') {
+    if (description === '')
+      errors.description = 'Must provide a book description';
+  } else {
+    errors.description = 'Must provide a book description';
+  }
+
   return {
     errors,
     valid: Object.keys(errors).length === 0,
@@ -206,4 +216,14 @@ export function validateAuthor(
     valid: Object.keys(errors).length > 0,
     errors,
   };
+}
+
+/**
+ * Validation checking if page and limit are both numbers greater than 0
+ * @param page
+ * @param limit
+ * @returns Returns a boolean indicating if fields are valid.
+ */
+export function validatePagination(page: number, limit: number): Boolean {
+  return !isNaN(page) || page >= 0 || !isNaN(limit) || limit >= 0;
 }
