@@ -1,9 +1,14 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '../../../../utils/db';
+import { getServerAuthSession } from '../../../../utils/serverSession';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
+
   if (!ctx.params || !ctx.params.slug)
     return {
       notFound: true,
@@ -22,18 +27,51 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         },
       },
       publisher: true,
-      Favorite: true,
       Review: true,
       BookGenres: {
         include: {
           genre: true,
         },
       },
+      Favorite:
+        session && session.user && session.user.id
+          ? {
+              where: {
+                userId: session.user.id,
+              },
+            }
+          : undefined,
     },
   });
 
   book = JSON.parse(JSON.stringify(book));
   if (!book) return { notFound: true };
+
+  if (session && session.user && session.user.id) {
+    // Add genres to user count
+    await prisma.genreUserCount.upsert({
+      where: {
+        userId_genreId: {
+          userId: session.user.id,
+          genreId: book.BookGenres[0].genreId,
+        },
+      },
+      update: {
+        count: {
+          increment: 1,
+        },
+      },
+      create: {
+        count: 1,
+        user: {
+          connect: { id: session.user.id },
+        },
+        genre: {
+          connect: { id: book.BookGenres[0].genreId },
+        },
+      },
+    });
+  }
 
   if (book.slug !== ctx.params.slug)
     return {
@@ -47,10 +85,38 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 export default function BookPage({ book }) {
-  console.log(book);
+  const queryClient = useQueryClient();
+  const { status } = useSession();
+
+  const { data: isFavorited } = useQuery(
+    ['favorite', book.id, 'fetch'],
+    async () => {
+      const res = await fetch(`/api/books/${book.id}/favorite`);
+      const body = await res.json();
+      return body.favorite;
+    }
+  );
+
+  const { mutate } = useMutation(
+    ['favorite', book.id, 'update'],
+    async () => {
+      const res = await fetch(`/api/books/${book.id}/favorite`, {
+        method: 'POST',
+      });
+
+      const body = await res.json();
+      return body.favorite;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData(['favorite', book.id, 'fetch'], data);
+      },
+    }
+  );
+
   return (
     <section className="">
-      <header className="flex flex-row flex-nowrap">
+      <header className="flex flex-col flex-nowrap items-center">
         <div className="relative w-20 h-20">
           <Image
             className="rounded-lg"
@@ -62,7 +128,7 @@ export default function BookPage({ book }) {
           />
         </div>
 
-        <div>
+        <div className="">
           <h3>{book.title}</h3>
 
           <div>
@@ -88,9 +154,28 @@ export default function BookPage({ book }) {
 
           <div>
             <div>{book.copiesCount} Book Left</div>
-            <Link href={`/books/${book.id}/${book.slug}/reserve`}>
-              <a>Reserve Today!</a>
+
+            <Link href={`/book/${book.id}/${book.slug}/reserve`}>
+              <a className="rounded-3xl px-4 py-4 bg-[#21a953] text-white">
+                Reserve Today!
+              </a>
             </Link>
+
+            {status === 'authenticated' ? (
+              <button
+                type="button"
+                className=""
+                onClick={() => {
+                  mutate();
+                }}
+              >
+                {isFavorited ? (
+                  <i className="fas fa-heart" />
+                ) : (
+                  <i className="far fa-heart" />
+                )}
+              </button>
+            ) : null}
           </div>
         </div>
       </header>
