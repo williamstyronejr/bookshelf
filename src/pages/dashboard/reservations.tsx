@@ -19,26 +19,26 @@ const ReservationsPage: NextPage = () => {
 
       <div>
         <ul className="flex flex-col flex-nowrap">
-          {data.current.map((book) => (
-            <li key={book.id} className="flex flex-row flex-nowrap my-4">
+          {data.current.map((item) => (
+            <li key={item.book.id} className="flex flex-row flex-nowrap my-4">
               <div className="relative w-20 h-20 mr-4">
                 <Image
                   className="rounded-lg"
                   priority={true}
                   layout="fill"
                   // objectFit="contain"
-                  src={book.displayImage}
+                  src={item.book.displayImage}
                   alt="Book covers"
                 />
               </div>
 
               <div className="flex-grow">
-                <div className="font-medium">{book.title}</div>
-                <div className="text-gray-600">{book.author}</div>
+                <div className="font-medium">{item.book.title}</div>
+                <div className="text-gray-600">{item.book.author.name}</div>
               </div>
 
               <div className="">
-                <div>{getRemainingTime(book.dueDate)}</div>
+                <div>{getRemainingTime(item.dueDate)}</div>
               </div>
             </li>
           ))}
