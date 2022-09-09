@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { prisma } from '../../../utils/db';
+import Link from 'next/link';
+import { NextPage } from 'next/types';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -49,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 };
 
-export default function AuthorPage({ authorData }: { authorData: any }) {
+const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   const { query } = useRouter();
 
   const {
@@ -63,7 +65,7 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
     ['author'],
     async ({ pageParam = 0 }) => {
       const res = await fetch(
-        `/api/author/${query.name}?page=${pageParam}&limit=10`
+        `/api/author/${query.id}/books?page=${pageParam}&limit=10`
       );
       if (res.statusText !== 'OK') {
         throw new Error('Invalid request');
@@ -73,11 +75,10 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
       return body;
     },
     {
-      getNextPageParam: (lastPage) => {
-        return lastPage.results.length === 10 ? lastPage.nextPage : undefined;
-      },
+      getNextPageParam: (lastPage) =>
+        lastPage.nextPage ? lastPage.nextPage : undefined,
       keepPreviousData: true,
-      enabled: !!query.name,
+      enabled: !!query.id,
     }
   );
 
@@ -103,7 +104,7 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
               priority={true}
               layout="fill"
               src={authorData.profileImage || ''}
-              alt="Book covers"
+              alt="User Profile"
             />
           </div>
 
@@ -111,20 +112,20 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
             <h4 className="font-semibold text-sm py-4">
               About {authorData.name}
             </h4>
-            <p>{authorData.bio}</p>
+            <p>{authorData.bio || 'This author has no biography'}</p>
           </div>
         </aside>
 
         <div className="flex-grow">
-          <ul className="flex flex-row flex-wrap">
+          <ul className="flex flex-col flex-nowrap">
             {data &&
               data.pages.map((page) =>
                 page.results.map((book: any) => (
                   <li
                     key={book.id}
-                    className="flex-grow h-56 w-1/5 mr-6 max-w-[175px]"
+                    className="flex flex-row flex-nowrap flex-grow w-full py-2 my-4 border-b-2"
                   >
-                    <div className="relative w-32 h-40">
+                    <div className="relative w-32 h-40 mr-4">
                       <Image
                         className="rounded-lg"
                         priority={true}
@@ -133,18 +134,36 @@ export default function AuthorPage({ authorData }: { authorData: any }) {
                         alt="Book covers"
                       />
                     </div>
-                    <div className="font-medium">{book.title}</div>
-                    <div className="text-gray-600">{book.author}</div>
+
+                    <div className="flex-grow">
+                      <Link href={`/book/${book.id}/${book.slug}`}>
+                        <a className="font-medium">{book.title}</a>
+                      </Link>
+
+                      <Link
+                        href={`/author/${book.author.id}/${book.author.slug}`}
+                      >
+                        <a className="block text-gray-600">
+                          {book.author.name}
+                        </a>
+                      </Link>
+                    </div>
+
+                    <div className="shrink-0">
+                      <Link href={`/book/${book.id}/${book.slug}/reserve`}>
+                        <a className="">Reserve</a>
+                      </Link>
+                    </div>
                   </li>
                 ))
               )}
 
-            {query.name && hasNextPage ? (
-              <li ref={sentryRef}>Loading</li>
-            ) : null}
+            {query.id && hasNextPage ? <li ref={sentryRef}>Loading</li> : null}
           </ul>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default AuthorPage;
