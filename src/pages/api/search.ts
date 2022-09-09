@@ -1,41 +1,55 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
+import { validatePagination } from '../../utils/validation';
+import { prisma } from '../../utils/db';
 
 type Data = {
   results: Array<any>;
   nextPage: Number;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   const {
-    query: { page },
+    query: { page, limit, q },
+    method,
   } = req;
 
-  if (!page) return;
+  if (method !== 'GET') return res.status(404).end();
+  if (!page) return res.status(200).json({ results: [], nextPage: 0 });
 
-  res.status(200).json({
-    nextPage: parseInt(page.toString()) + 1,
-    results: [
-      {
-        id: crypto.pseudoRandomBytes(10).toString('hex'),
-        title: 'Title',
-        author: 'Author',
-        slug: 'test',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+  try {
+    const numPage = page ? parseInt(page.toString()) : NaN;
+    const take = limit ? parseInt(limit.toString()) : 10;
+
+    if (!validatePagination(numPage, take))
+      return res.status(200).json({ results: [], nextPage: 0 });
+
+    const results = await prisma.book.findMany({
+      take,
+      skip: numPage * take,
+      include: {
+        author: true,
+        BookGenres: true,
       },
-      {
-        id: crypto.pseudoRandomBytes(10).toString('hex'),
-        title: 'Title 2',
-        author: 'Author 3',
-        slug: 'test2',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-      },
-    ],
-  });
+      where: q
+        ? {
+            title: {
+              contains: q.toString(),
+              mode: 'insensitive',
+            },
+          }
+        : {},
+    });
+
+    return res.status(200).json({
+      nextPage: numPage + 1,
+      results: JSON.parse(JSON.stringify(results)),
+    });
+  } catch (err) {
+    return res.status(500).end();
+  }
 }
