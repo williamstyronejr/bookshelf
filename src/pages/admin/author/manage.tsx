@@ -1,35 +1,63 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import Modal from '../../../components/Modal';
 
 const AuthorItem = ({ author }: { author: any }) => {
   const [modal, setModal] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { mutate, data } = useMutation(
+    ['remove-author'],
+    async () => {
+      const res = await fetch(`/api/author/${author.id}`, {
+        method: 'DELETE',
+      });
+
+      const body = await res.json();
+      return body;
+    },
+    {
+      onSuccess: (data) => {
+        setModal(false);
+        if (data.success) {
+          queryClient.invalidateQueries(['author-manage']);
+        }
+      },
+    }
+  );
 
   return (
     <li className="flex flex-row flex-nowrap w-full border-slate-200 border-2 rounded p-2 mb-4">
       {modal ? (
-        <Modal
-          onSuccess={() => console.log('deleteing author')}
-          onClose={() => setModal(false)}
-        >
+        <Modal onSuccess={() => mutate()} onClose={() => setModal(false)}>
           Are you sure you want to delete Author: {author.name}
         </Modal>
       ) : null}
 
-      <div className="shrink-0 relative w-20 h-20 mr-4">
-        <Image
-          className="rounded-lg"
-          priority={true}
-          layout="fill"
-          src={author.profileImage}
-          alt="Book covers"
-        />
-      </div>
+      <div className="mr-4">{author.name}</div>
 
-      <div className="flex-grow">{author.name}</div>
+      <div className="flex-grow">
+        <ul className="h-full">
+          {author.books.map((book) => (
+            <li key={`author-book-${book.id}`} className="relative h-full w-20">
+              <Image
+                className="rounded-lg"
+                priority={true}
+                layout="fill"
+                src={book.displayImage}
+                alt="Book covers"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex flex-col flex-nowrap justify-around shrink-0">
         <Link href={`/admin/author/${author.id}/edit`}>
@@ -62,11 +90,7 @@ const ManageAuthorsPage: NextPage = () => {
         return body;
       },
       {
-        getNextPageParam: (lastPage) => {
-          return lastPage.results.length === limit
-            ? lastPage.nextPage
-            : undefined;
-        },
+        getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
         keepPreviousData: true,
       }
     );
