@@ -1,35 +1,42 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import crypto from 'crypto';
+import { getServerAuthSession } from '../../../utils/serverSession';
+import { prisma } from '../../../utils/db';
 
 type Data = {
   current: Array<any>;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  res.status(200).json({
-    current: [
-      {
-        id: crypto.pseudoRandomBytes(10).toString('hex'),
-        title: 'Title',
-        author: 'Author',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-        status: 'pickup',
-        dueDate: Date.now(),
+  const { method } = req;
+
+  if (method !== 'GET') return res.status(404).end();
+
+  try {
+    const session = await getServerAuthSession({ req, res });
+    if (!session || !session.user || !session.user.id)
+      return res.status(401).end();
+
+    const current = await prisma.reservation.findMany({
+      where: {
+        userId: session.user.id,
       },
-      {
-        id: crypto.pseudoRandomBytes(10).toString('hex'),
-        title: 'Title 2',
-        author: 'Author 3',
-        displayImage:
-          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-        status: 'store',
-        dueDate: new Date().setDate(new Date().getDate() + 20),
+      include: {
+        book: {
+          include: {
+            author: true,
+          },
+        },
       },
-    ],
-  });
+    });
+
+    res.status(200).json({
+      current: JSON.parse(JSON.stringify(current)),
+    });
+  } catch (err) {
+    res.status(500).end();
+  }
 }
