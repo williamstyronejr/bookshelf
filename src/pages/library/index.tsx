@@ -34,16 +34,23 @@ export const getServerSideProps = async () => {
     },
   });
 
+  const trendingGenres = await prisma.genre.findMany({
+    take: 10,
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
   // Hacky way of dealing with Date Object not having a toJSON
   mostRecentBooks = JSON.parse(JSON.stringify(mostRecentBooks));
   topBooks = JSON.parse(JSON.stringify(topBooks));
-
-  console.log(mostRecentBooks);
 
   return {
     props: {
       mostRecentBooks,
       topBooks,
+      trendingGenres: JSON.parse(JSON.stringify(trendingGenres)),
     },
   };
 };
@@ -73,8 +80,11 @@ const BookItem = ({ book }) => (
   </li>
 );
 
-export default function LibraryPage({ topBooks, mostRecentBooks }) {
-  console.log(topBooks);
+export default function LibraryPage({
+  topBooks,
+  mostRecentBooks,
+  trendingGenres,
+}) {
   return (
     <section>
       <header className="">
@@ -94,6 +104,23 @@ export default function LibraryPage({ topBooks, mostRecentBooks }) {
           {mostRecentBooks
             ? mostRecentBooks.map((book) => (
                 <BookItem key={`recent-${book.id}`} book={book} />
+              ))
+            : null}
+        </ul>
+      </div>
+
+      <div className="">
+        <h4>Trending Genres</h4>
+
+        <ul className="grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4 divide">
+          {trendingGenres
+            ? trendingGenres.map((genre) => (
+                <li
+                  key={`trending-genre-${genre.id}`}
+                  className="text-center py-4  rounded-lg"
+                >
+                  {genre.name}
+                </li>
               ))
             : null}
         </ul>
