@@ -5,7 +5,7 @@ import { getServerAuthSession } from '../../../utils/serverSession';
 
 type Data = {
   current: Array<any>;
-  favoriteAuthor: Array<{ name: string; slug: string }>;
+  favoriteAuthor: Array<{ name: string; count: number; id: number }>;
   favoriteGenres: Array<
     GenreUserCount & {
       genre: Genre;
@@ -58,21 +58,24 @@ export default async function handler(
       take: 10,
     });
 
+    const favoriteAuthor: Data['favoriteAuthor'] = await prisma.$queryRaw`
+      SELECT a.name, COUNT(a.name), a.id, a.slug
+      FROM reservations as r 
+      INNER JOIN books as b ON b.id = r.book_id
+      INNER JOIN authors as a ON a.id = b.author_id
+      where r.user_id = ${session.user.id}
+      GROUP BY a.name, a.id, a.slug
+      ORDER BY COUNT(a.name) DESC
+      LIMIT 10
+    `;
+
     res.status(200).json({
       current: JSON.parse(JSON.stringify(currentBooks)),
       favoriteGenres: mostVisitedGenres,
-      favoriteAuthor: [
-        {
-          name: 'Author 1',
-          slug: 'testing',
-        },
-        {
-          name: 'Author 2',
-          slug: 'testing2',
-        },
-      ],
+      favoriteAuthor,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).end();
   }
 }
