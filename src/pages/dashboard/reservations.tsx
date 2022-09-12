@@ -20,7 +20,10 @@ const ReservationsPage: NextPage = () => {
       <div>
         <ul className="flex flex-col flex-nowrap">
           {data.current.map((item) => (
-            <li key={item.book.id} className="flex flex-row flex-nowrap my-4">
+            <li
+              key={`reservation-${item.id}`}
+              className="flex flex-row flex-nowrap my-4"
+            >
               <div className="relative w-20 h-20 mr-4">
                 <Image
                   className="rounded-lg"
