@@ -36,7 +36,7 @@ const UserOptions = () => {
 
   return (
     <div className="flex flex-row flex-nowrap mb-8">
-      <div className="flex-grow">
+      <div className="flex-grow relative">
         <i className="focus-within:text-black absolute top-3.5 left-2 text-slate-400 fas fa-search " />
 
         <input
@@ -74,7 +74,7 @@ const UserOptions = () => {
                     className="rounded-lg"
                     priority={true}
                     layout="fill"
-                    src={data.user.image || ''}
+                    src={''}
                     alt="Book covers"
                   />
                 </div>
