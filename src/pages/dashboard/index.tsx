@@ -30,10 +30,10 @@ const DashboardPage: NextPage = () => {
             {data.current.length ? (
               data.current.map((item) => (
                 <li
-                  key={`current-${item.book.id}`}
+                  key={`current-${item.id}`}
                   className="relative h-52 w-32 mr-4"
                 >
-                  <Link href={`/books/${item.book.slug}`}>
+                  <Link href={`/book/${item.book.id}/${item.book.slug}`}>
                     <a>
                       <div className="relative h-40 w-32 shadow-md mb-2">
                         <Image
@@ -94,9 +94,9 @@ const DashboardPage: NextPage = () => {
           {data.favoriteAuthor.map((author) => (
             <li
               className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
-              key={`favorite-author-${author.slug}`}
+              key={`favorite-author-${author.id}`}
             >
-              <Link href={`/author/${author.slug}`}>
+              <Link href={`/author/${author.id}/${author.slug}`}>
                 <a className="">{author.name}</a>
               </Link>
             </li>
