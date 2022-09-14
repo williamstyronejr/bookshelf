@@ -23,12 +23,12 @@ export default async function handler(
     method,
     query: { id },
   } = req;
-  const session = await getServerAuthSession({ req, res });
-
-  if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
   if (method !== 'POST' || !id) return res.status(404).send('');
 
   try {
+    const session = await getServerAuthSession({ req, res });
+    if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
+
     const { fields, publicUrl } = await uploadFile(req);
 
     const { errors, valid } = validateBook(fields);

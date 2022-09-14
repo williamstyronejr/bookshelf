@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../utils/db';
+import { getServerAuthSession } from '../../../utils/serverSession';
 
 type Data = {
   id: number;
@@ -15,6 +16,9 @@ export default async function handler(
   if (method !== 'POST') return res.status(404);
 
   try {
+    const session = await getServerAuthSession({ req, res });
+    if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
+
     const genre = await prisma.genre.create({
       data: {
         name: body.name,

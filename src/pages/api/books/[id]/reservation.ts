@@ -26,10 +26,7 @@ export default async function handler(
     body: { reserveLength },
     method,
   } = req;
-  const session = await getServerAuthSession({ req, res });
 
-  if (!session || !session.user || !session.user.id)
-    return res.status(401).end();
   if (method !== 'POST') return res.status(404).end();
   if (!reserveLength || !id)
     return res
@@ -37,6 +34,10 @@ export default async function handler(
       .json({ reserveLength: 'Length of reservation is required.' });
 
   try {
+    const session = await getServerAuthSession({ req, res });
+    if (!session || !session.user || !session.user.id)
+      return res.status(401).end();
+
     const holdExists = await redisClient.zscore(
       `reserve-${id}`,
       session.user.id.toString()
