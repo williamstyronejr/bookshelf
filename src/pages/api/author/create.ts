@@ -5,7 +5,7 @@ import { prisma } from '../../../utils/db';
 import { validateAuthor } from '../../../utils/validation';
 import { uploadFirebaseFile } from '../../../utils/upload';
 import { createSlug } from '../../../utils/slug';
-import { getServerAuthSession } from '../../../utils/serverSession';
+import { getUserDataFromSession } from '../../../utils/serverSession';
 
 type Data = {};
 
@@ -19,10 +19,12 @@ export default async function handler(
   if (method !== 'POST') return res.status(404).send('');
 
   try {
-    const session = await getServerAuthSession({ req, res });
-
-    if (!session || !session.user || !session.user.id)
-      return res.status(401).end();
+    const { session, user } = await getUserDataFromSession({ req, res });
+    if (!session || !user) {
+      return res.redirect(401, '/api/auth/signin');
+    } else if (user.role !== 'ADMIN') {
+      return res.status(403).end();
+    }
 
     const { fields } = await new Promise<{ fields: any; files: any }>(
       (resolve, rej) => {

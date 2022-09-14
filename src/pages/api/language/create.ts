@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../utils/db';
-import { getServerAuthSession } from '../../../utils/serverSession';
+import { getUserDataFromSession } from '../../../utils/serverSession';
 
 type Data = {
   id: number;
@@ -16,8 +16,12 @@ export default async function handler(
   if (method !== 'POST') return res.status(404);
 
   try {
-    const session = await getServerAuthSession({ req, res });
-    if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
+    const { session, user } = await getUserDataFromSession({ req, res });
+    if (!session || !user) {
+      return res.redirect(401, '/api/auth/signin');
+    } else if (user.role !== 'ADMIN') {
+      return res.status(403).end();
+    }
 
     const language = await prisma.bookLanguage.create({
       data: {
