@@ -12,38 +12,38 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const { query, method } = req;
-  const session = await getServerAuthSession({ req, res });
-  if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
 
-  switch (method) {
-    case 'GET': {
-      const page = query.page ? parseInt(query.page.toString()) : NaN;
-      const take = query.limit ? parseInt(query.limit.toString()) : 10;
+  if (method !== 'GET') return res.status(404).end();
 
-      if (isNaN(page) || page < 0 || take < 0)
-        return res.status(200).json({ nextPage: 0, results: [] });
+  try {
+    const session = await getServerAuthSession({ req, res });
+    if (!session || !session.user) return res.redirect(401, '/api/auth/signin');
 
-      const results = await prisma.favorite.findMany({
-        where: {
-          userId: session.user.id,
-        },
-        include: {
-          book: {
-            include: {
-              author: true,
-              publisher: true,
-            },
+    const page = query.page ? parseInt(query.page.toString()) : NaN;
+    const take = query.limit ? parseInt(query.limit.toString()) : 10;
+
+    if (isNaN(page) || page < 0 || take < 0)
+      return res.status(200).json({ nextPage: 0, results: [] });
+
+    const results = await prisma.favorite.findMany({
+      where: {
+        userId: session.user.id,
+      },
+      include: {
+        book: {
+          include: {
+            author: true,
+            publisher: true,
           },
         },
-      });
+      },
+    });
 
-      res.status(200).json({
-        nextPage: page + 1,
-        results,
-      });
-      break;
-    }
-    default:
-      return res.status(404);
+    res.status(200).json({
+      nextPage: page + 1,
+      results,
+    });
+  } catch (err) {
+    return res.status(500).end();
   }
 }

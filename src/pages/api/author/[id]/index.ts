@@ -15,7 +15,6 @@ export default async function handler(
     method,
     query: { id },
   } = req;
-  console.log(method);
 
   switch (method) {
     case 'DELETE': {
