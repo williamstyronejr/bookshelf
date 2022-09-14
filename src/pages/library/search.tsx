@@ -75,7 +75,7 @@ export default function SearchPage() {
           className={`${
             viewMode === 'grid'
               ? 'grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4'
-              : 'flex flex-col flex-nowrap'
+              : 'flex flex-col flex-nowrap divide-y'
           }`}
         >
           {data &&
@@ -84,7 +84,7 @@ export default function SearchPage() {
                 <li
                   key={book.id}
                   className={`${
-                    viewMode === 'list' ? 'flex flex-row flex-nowrap my-2' : ''
+                    viewMode === 'grid' ? '' : 'flex flex-row flex-nowrap py-6'
                   }`}
                 >
                   <Link href={`/book/${book.id}/${book.slug}`}>
@@ -99,7 +99,7 @@ export default function SearchPage() {
                           priority={true}
                           layout="fill"
                           src={book.displayImage}
-                          alt="Book covers"
+                          alt="Book cover"
                         />
                       </div>
                     </a>
@@ -107,10 +107,12 @@ export default function SearchPage() {
 
                   <div>
                     <Link href={`/book/${book.id}/${book.slug}`}>
-                      <div className="font-medium">{book.title}</div>
+                      <a className="block font-medium ">{book.title}</a>
                     </Link>
 
-                    <Link href={`/author/${book.author}`}>
+                    <Link
+                      href={`/author/${book.author.id}/${book.author.slug}`}
+                    >
                       <a className="text-gray-600">{book.author.name}</a>
                     </Link>
                   </div>

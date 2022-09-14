@@ -36,11 +36,11 @@ const UserOptions = () => {
 
   return (
     <div className="flex flex-row flex-nowrap mb-8">
-      <div className="flex-grow relative">
-        <i className="focus-within:text-black absolute top-3.5 left-2 text-slate-400 fas fa-search " />
+      <div className="flex-grow relative pr-6">
+        <i className="focus-within:text-black absolute top-3.5 left-2 text-slate-400 fas fa-search" />
 
         <input
-          className="bg-white py-2 pr-4 pl-8 border rounded-lg border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+          className="bg-white py-2 pr-4 pl-8 border w-full max-w-xs rounded-lg border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
           name="search"
           type="text"
           placeholder="Search by title, author, tags, etc"
@@ -79,7 +79,9 @@ const UserOptions = () => {
                   />
                 </div>
 
-                <div>{data.user.name || data.user.email}</div>
+                <div className="hidden md:block">
+                  {data.user.name || data.user.email}
+                </div>
               </div>
             )}
           </button>

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -116,71 +117,94 @@ export default function BookPage({ book }) {
 
   return (
     <section className="">
-      <header className="flex flex-col flex-nowrap items-center">
-        <div className="relative w-20 h-20">
+      <header className="flex flex-col flex-nowrap items-center mb-4 md:flex-row">
+        <div className="relative w-full h-48 md:h-60 mb-10">
           <Image
             className="rounded-lg"
             priority={true}
             layout="fill"
-            // objectFit="contain"
+            objectFit="contain"
             src={book.displayImage}
             alt="Book covers"
           />
         </div>
 
-        <div className="">
-          <h3>{book.title}</h3>
+        <div className="w-full ">
+          <h3 className="text-xl text-center mb-2 md:text-left">
+            {book.title}
+          </h3>
 
-          <div>
+          <div className="mb-6 text-sm text-center md:text-left">
+            <span>by </span>
             <Link href={`/author/${book.author.id}/${book.author.slug}`}>
-              <a>By {book.author.name}</a>
+              <a className="">{book.author.name}</a>
             </Link>
+            <hr />
           </div>
 
-          <div>
-            <h4>Description</h4>
+          <div className="">
+            <div className="">
+              <div>{book.description}</div>
+            </div>
 
-            <div>{book.description}</div>
-          </div>
+            <div className="py-4 text-lg">{book.copiesCount} Book Left </div>
 
-          <div>
-            <h4>Details</h4>
+            <div className="py-2 flex flex-row flex-nowrap justify-center md:block">
+              <Link href={`/book/${book.id}/${book.slug}/reserve`}>
+                <a className="rounded-3xl px-4 py-4 mr-4 bg-[#21a953] text-white">
+                  Reserve Today!
+                </a>
+              </Link>
 
-            <div>{book.publisher.name}</div>
-            <div>{book.isbn13}</div>
-            <div>{book.publishedDate}</div>
-            <div>{book.pageCount} Pages</div>
-          </div>
-
-          <div>
-            <div>{book.copiesCount} Book Left</div>
-
-            <Link href={`/book/${book.id}/${book.slug}/reserve`}>
-              <a className="rounded-3xl px-4 py-4 bg-[#21a953] text-white">
-                Reserve Today!
-              </a>
-            </Link>
-
-            {status === 'authenticated' ? (
-              <button
-                type="button"
-                className=""
-                onClick={() => {
-                  mutate();
-                }}
-              >
-                {isFavorited ? (
-                  <i className="fas fa-heart" />
-                ) : (
-                  <i className="far fa-heart" />
-                )}
-              </button>
-            ) : null}
+              {status === 'authenticated' ? (
+                <button
+                  type="button"
+                  className=" text-2xl"
+                  onClick={() => {
+                    mutate();
+                  }}
+                >
+                  {isFavorited ? (
+                    <i className="fas fa-heart" />
+                  ) : (
+                    <i className="far fa-heart" />
+                  )}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>
 
-      <div>Reviews</div>
+      <hr />
+
+      <div className="md:text-center md:w-80 mx-auto">
+        <h4 className="font-medium text-2xl my-4">Product Details</h4>
+
+        <div>
+          <div className="my-2">
+            <div className="w-3/6 inline-block">Publisher:</div>
+            <div className="w-3/6 inline-block">{book.publisher.name}</div>
+          </div>
+
+          <div className="my-2">
+            <div className="w-3/6 inline-block">ISBN-13:</div>
+            <div className="w-3/6 inline-block">{book.isbn13}</div>
+          </div>
+
+          <div className="my-2">
+            <div className="w-3/6 inline-block">Publish Date:</div>
+            <div className="w-3/6 inline-block">
+              {dayjs(book.publishedDate).format('MM/DD/YYYY')}
+            </div>
+          </div>
+
+          <div className="my-2">
+            <div className="w-3/6 inline-block">Page Count:</div>
+            <div className="w-3/6 inline-block">{book.pageCount} Pages</div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

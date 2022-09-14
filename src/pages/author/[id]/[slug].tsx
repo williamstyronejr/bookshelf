@@ -91,12 +91,12 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   });
 
   return (
-    <section className="">
+    <section className="w-full">
       <header className="w-full py-6">
         <h3>{authorData.name}</h3>
       </header>
 
-      <div className="flex flex-row flex-nowrap">
+      <div className="flex flex-col md:flex-row flex-nowrap ">
         <aside className="w-42 shrink-0 mr-10">
           <div className="relative w-32 h-32">
             <Image
@@ -112,18 +112,22 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
             <h4 className="font-semibold text-sm py-4">
               About {authorData.name}
             </h4>
-            <p>{authorData.bio || 'This author has no biography'}</p>
+            <p className="pt-2 pb-8">
+              {authorData.bio || 'This author has no biography'}
+            </p>
           </div>
         </aside>
 
         <div className="flex-grow">
+          <h4 className="font-medium">All Books</h4>
+
           <ul className="flex flex-col flex-nowrap">
             {data &&
               data.pages.map((page) =>
                 page.results.map((book: any) => (
                   <li
                     key={book.id}
-                    className="flex flex-row flex-nowrap flex-grow w-full py-2 my-4 border-b-2"
+                    className="flex flex-row flex-wrap md:flex-nowrap flex-grow w-full py-2 my-4 border-b-2"
                   >
                     <div className="relative w-32 h-40 mr-4">
                       <Image
@@ -149,9 +153,11 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                       </Link>
                     </div>
 
-                    <div className="shrink-0">
+                    <div className="shrink-0 py-5 md:p-0 flex-grow md:flex-grow-0">
                       <Link href={`/book/${book.id}/${book.slug}/reserve`}>
-                        <a className="">Reserve</a>
+                        <a className="block w-full text-center md:inline py-4 px-2 bg-sky-500 rounded-lg">
+                          Reserve
+                        </a>
                       </Link>
                     </div>
                   </li>

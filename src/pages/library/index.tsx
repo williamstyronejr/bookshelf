@@ -88,7 +88,7 @@ export default function LibraryPage({
   return (
     <section>
       <header className="">
-        <h4 className="py-4 text-xl">Most Popular</h4>
+        <h4 className="my-6 text-xl font-medium text-center">Most Popular</h4>
         <ul className="flex flex-row flex-nowrap w-full">
           {topBooks
             ? topBooks.map((book) => (
@@ -99,7 +99,7 @@ export default function LibraryPage({
       </header>
 
       <div className="block">
-        <h4 className="py-4 text-xl">New Releases</h4>
+        <h4 className="my-6 text-xl font-medium text-center">New Releases</h4>
         <ul>
           {mostRecentBooks
             ? mostRecentBooks.map((book) => (
@@ -110,7 +110,9 @@ export default function LibraryPage({
       </div>
 
       <div className="">
-        <h4>Trending Genres</h4>
+        <h4 className="my-6 text-xl font-medium text-center">
+          Trending Genres
+        </h4>
 
         <ul className="grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4 divide">
           {trendingGenres

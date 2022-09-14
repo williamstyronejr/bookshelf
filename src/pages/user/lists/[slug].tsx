@@ -70,17 +70,22 @@ const UserListPage: NextPage = () => {
 
   return (
     <section>
-      <header></header>
+      <header>
+        <h4 className="font-semibold text-xl">Favorites</h4>
+      </header>
 
-      <div>
-        <ul className="grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4">
+      <div className="">
+        <ul className="flex flex-col flex-nowrap">
           {data && data.pages
             ? data.pages.map((page) =>
                 page.results.map(({ book }) => (
-                  <li key={book.id}>
+                  <li
+                    key={book.id}
+                    className="flex flex-col items-center md:flex-row flex-nowrap my-4 border py-2 px-2 rounded-lg"
+                  >
                     <Link href={`/book/${book.id}/${book.slug}`}>
                       <a>
-                        <div className="relative w-32 h-40">
+                        <div className="relative w-32 h-40 md:mr-6">
                           <Image
                             className="rounded-lg"
                             priority={true}
@@ -89,19 +94,25 @@ const UserListPage: NextPage = () => {
                             alt="Book covers"
                           />
                         </div>
-                        <div className="font-medium">{book.title}</div>
                       </a>
                     </Link>
 
-                    <Link
-                      href={`/author/${book.author.id}/${book.author.slug}`}
-                    >
-                      <a className="text-gray-600">{book.author.name}</a>
-                    </Link>
+                    <div className="md:flex-grow">
+                      <Link href={`/book/${book.id}/${book.slug}`}>
+                        <a>
+                          <div className="font-medium">{book.title}</div>
+                        </a>
+                      </Link>
+                      <Link
+                        href={`/author/${book.author.id}/${book.author.slug}`}
+                      >
+                        <a className="text-gray-600">{book.author.name}</a>
+                      </Link>
+                    </div>
 
                     <button
-                      className=""
                       type="button"
+                      className="text-lg md:mr-6 rounded-lg py-3 px-3 bg-sky-500"
                       onClick={() => {
                         mutate({ bookId: book.id });
                       }}
