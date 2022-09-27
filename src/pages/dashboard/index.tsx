@@ -16,12 +16,14 @@ const DashboardPage: NextPage = () => {
   return (
     <section className="">
       <h2 className="font-medium my-4">Dashboard</h2>
-      <div className="bg-custom-background shadow-md rounded p-6 mb-4">
+      <div className="shadow-md rounded p-6 mb-4 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <div className="flex mb-3">
           <h3 className="flex-grow font-medium">Currently Books</h3>
 
           <Link href="/dashboard/reservations">
-            <a className="text-gray-400 hover:text-gray-600">See more</a>
+            <a className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark">
+              See more
+            </a>
           </Link>
         </div>
 
@@ -31,11 +33,11 @@ const DashboardPage: NextPage = () => {
               data.current.map((item) => (
                 <li
                   key={`current-${item.id}`}
-                  className="relative h-52 w-32 mr-4"
+                  className="relative h-56 w-32 mr-4"
                 >
                   <Link href={`/book/${item.book.id}/${item.book.slug}`}>
                     <a>
-                      <div className="relative h-40 w-32 shadow-md mb-2">
+                      <div className="relative h-44 w-32 shadow-md mb-2">
                         <Image
                           className="rounded-lg"
                           priority={true}
@@ -44,7 +46,9 @@ const DashboardPage: NextPage = () => {
                           alt="Book covers"
                         />
                       </div>
-                      <div className="font-medium">{item.book.title}</div>
+                      <div className="font-medium whitespace-nowrap text-ellipsis overflow-hidden">
+                        {item.book.title}
+                      </div>
                     </a>
                   </Link>
 
@@ -64,7 +68,7 @@ const DashboardPage: NextPage = () => {
         </div>
       </div>
 
-      <div className="bg-custom-background shadow-md rounded p-6 mb-4">
+      <div className="shadow-md rounded p-6 mb-4 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <h3 className="font-medium">Favorite Genre</h3>
 
         <ul className="flex flex-row flex-wrap ">
@@ -87,7 +91,7 @@ const DashboardPage: NextPage = () => {
         </ul>
       </div>
 
-      <div className="bg-custom-background shadow-md rounded p-6">
+      <div className="shadow-md rounded p-6 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <h3 className="font-medium">Favorite Author</h3>
 
         <ul className="flex flex-row flex-wrap ">
