@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 
@@ -88,6 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 export default function BookPage({ book }) {
   const queryClient = useQueryClient();
   const { status } = useSession();
+  const [infoExpand, setInfoExpand] = useState(false);
 
   const { data: isFavorited } = useQuery(
     ['favorite', book.id, 'fetch'],
@@ -117,8 +119,8 @@ export default function BookPage({ book }) {
 
   return (
     <section className="">
-      <header className="flex flex-col flex-nowrap items-center mb-4 md:flex-row">
-        <div className="relative w-full h-48 md:h-60 mb-10">
+      <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
+        <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0">
           <Image
             className="rounded-lg"
             priority={true}
@@ -129,7 +131,7 @@ export default function BookPage({ book }) {
           />
         </div>
 
-        <div className="w-full ">
+        <div className="w-full">
           <h3 className="text-xl text-center mb-2 md:text-left">
             {book.title}
           </h3>
@@ -143,9 +145,20 @@ export default function BookPage({ book }) {
           </div>
 
           <div className="">
-            <div className="">
-              <div>{book.description}</div>
+            <div
+              className={`relative ${
+                infoExpand ? 'h-auto' : 'h-20 overflow-y-hidden'
+              }`}
+            >
+              <div className="">{book.description}</div>
             </div>
+
+            <button
+              className="text-blue-700 hover:underline"
+              onClick={() => setInfoExpand((old) => !old)}
+            >
+              {infoExpand ? 'Read Less' : 'Read More'}
+            </button>
 
             <div className="py-4 text-lg">{book.copiesCount} Book Left </div>
 
