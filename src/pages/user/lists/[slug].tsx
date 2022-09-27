@@ -36,7 +36,7 @@ const UserListPage: NextPage = () => {
     },
     {
       getNextPageParam: (lastPage) => {
-        return lastPage.results.length === 10 ? lastPage.nextPage : undefined;
+        return lastPage.nextPage === null ? lastPage.nextPage : undefined;
       },
       keepPreviousData: true,
       enabled: !!query.slug,
@@ -112,7 +112,7 @@ const UserListPage: NextPage = () => {
 
                     <button
                       type="button"
-                      className="text-lg md:mr-6 rounded-lg py-3 px-3 bg-sky-500"
+                      className="text-lg md:mr-6 rounded-lg py-3 px-3 text-white bg-red-600"
                       onClick={() => {
                         mutate({ bookId: book.id });
                       }}
