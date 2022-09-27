@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../utils/db';
-import { getServerAuthSession } from '../../../utils/serverSession';
 import { validatePagination } from '../../../utils/validation';
 
 type Data = {
@@ -13,7 +12,6 @@ export default async function handler(
   res: NextApiResponse<Data | string>
 ) {
   const { query, method } = req;
-  const session = await getServerAuthSession({ req, res });
 
   if (method !== 'GET') return res.status(404).send('');
   if (!query.page) return res.status(200).json({ results: [], nextPage: 0 });
