@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 export default function SearchPage() {
-  const { query } = useRouter();
+  const { query, isReady } = useRouter();
   const [viewMode, setViewMode] = useState('grid');
 
   const {
@@ -20,7 +20,9 @@ export default function SearchPage() {
     ['search'],
     async ({ pageParam = 0 }) => {
       const res = await fetch(
-        `/api/search?q=${query.q}&page=${pageParam}&limit=10`
+        `/api/search?q=${query.q || ''}&genre=${
+          query.genre || ''
+        }&page=${pageParam}&limit=10`
       );
 
       if (res.statusText !== 'OK') {
@@ -35,7 +37,7 @@ export default function SearchPage() {
         return lastPage.results.length === 10 ? lastPage.nextPage : undefined;
       },
       keepPreviousData: true,
-      enabled: !!query.q,
+      enabled: isReady,
     }
   );
 
@@ -49,7 +51,8 @@ export default function SearchPage() {
 
   return (
     <section className="flex flex-col flex-nowrap">
-      <header className="h-20 shrink-0">
+      <header className="flex flex-row flex-nowrap h-20 mb-4 justify-center items-center shrink-0">
+        <h3 className="flex-grow">Results</h3>
         <button
           className="disabled:text-gray-500 mr-4"
           disabled={viewMode === 'grid'}
@@ -74,7 +77,7 @@ export default function SearchPage() {
         <ul
           className={`${
             viewMode === 'grid'
-              ? 'grid grid-cols-[repeat(auto-fit,_minmax(8rem,_1fr))] gap-4'
+              ? 'grid grid-cols-[repeat(auto-fit,_8rem)] gap-6'
               : 'flex flex-col flex-nowrap divide-y'
           }`}
         >
@@ -83,6 +86,7 @@ export default function SearchPage() {
               page.results.map((book) => (
                 <li
                   key={book.id}
+                  title={book.title}
                   className={`${
                     viewMode === 'grid' ? '' : 'flex flex-row flex-nowrap py-6'
                   }`}
@@ -90,7 +94,7 @@ export default function SearchPage() {
                   <Link href={`/book/${book.id}/${book.slug}`}>
                     <a>
                       <div
-                        className={`relative w-32 h-40 ${
+                        className={`relative w-32 h-44 ${
                           viewMode === 'list' ? 'mr-4' : ''
                         }`}
                       >
@@ -107,7 +111,9 @@ export default function SearchPage() {
 
                   <div>
                     <Link href={`/book/${book.id}/${book.slug}`}>
-                      <a className="block font-medium ">{book.title}</a>
+                      <a className="block font-medium whitespace-nowrap text-ellipsis overflow-hidden">
+                        {book.title}
+                      </a>
                     </Link>
 
                     <Link
