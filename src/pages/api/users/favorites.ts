@@ -1,10 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerAuthSession } from '../../../utils/serverSession';
 import { prisma } from '../../../utils/db';
+import { validatePagination } from '../../../utils/validation';
 
 type Data = {
   results: Array<any>;
-  nextPage: Number;
+  nextPage: Number | null;
 };
 
 export default async function handler(
@@ -22,8 +23,8 @@ export default async function handler(
     const page = query.page ? parseInt(query.page.toString()) : NaN;
     const take = query.limit ? parseInt(query.limit.toString()) : 10;
 
-    if (isNaN(page) || page < 0 || take < 0)
-      return res.status(200).json({ nextPage: 0, results: [] });
+    if (!validatePagination(page, take))
+      return res.status(200).json({ results: [], nextPage: 0 });
 
     const results = await prisma.favorite.findMany({
       where: {
@@ -40,7 +41,7 @@ export default async function handler(
     });
 
     res.status(200).json({
-      nextPage: page + 1,
+      nextPage: results.length === take ? page + 1 : null,
       results,
     });
   } catch (err) {
