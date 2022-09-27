@@ -5,12 +5,13 @@ import {
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
+import useMenuToggle from '../components/useMenuToggle';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,27 +21,20 @@ const queryClient = new QueryClient({
   },
 });
 
-const NoPermissionPage = ({ linkBack }: { linkBack?: string }) => {
-  return (
-    <main className="">
-      <Link href={linkBack || '/'}>Go back</Link>
-    </main>
-  );
-};
-
 const UserOptions = () => {
-  const { data, status } = useSession();
-  const [menu, setMenu] = useState(false);
-  const [search, setSearch] = useState('');
   const router = useRouter();
+  const { data, status } = useSession();
+  const ref = useRef<HTMLDivElement>(null);
+  const [search, setSearch] = useState('');
+  const [menu, setMenu] = useMenuToggle(ref, false);
 
   return (
-    <div className="flex flex-row flex-nowrap mb-8">
+    <div className="flex flex-row flex-nowrap mb-8 relative">
       <div className="flex-grow relative pr-6">
-        <i className="focus-within:text-black absolute top-3.5 left-2 text-slate-400 fas fa-search" />
+        <i className="focus-within:text-black absolute top-4 left-2 text-slate-400 fas fa-search" />
 
         <input
-          className="bg-white py-2 pr-4 pl-8 border w-full max-w-xs rounded-lg border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+          className="py-3 pl-8 bg-transparent border w-full max-w-xs rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
           name="search"
           type="text"
           placeholder="Search by title, author, tags, etc"
@@ -54,7 +48,7 @@ const UserOptions = () => {
       </div>
 
       {status !== 'loading' ? (
-        <>
+        <div ref={ref}>
           <button
             className=""
             type="button"
@@ -62,7 +56,7 @@ const UserOptions = () => {
               if (status === 'unauthenticated') {
                 return signIn();
               }
-              setMenu((old) => !old);
+              setMenu(!menu);
             }}
           >
             {status === 'unauthenticated' ? (
@@ -74,13 +68,13 @@ const UserOptions = () => {
                     className="rounded-lg"
                     priority={true}
                     layout="fill"
-                    src={''}
+                    src={data ? data?.user?.image || '' : ''}
                     alt="Book covers"
                   />
                 </div>
 
                 <div className="hidden md:block">
-                  {data.user.name || data.user.email}
+                  {data?.user?.name || data?.user?.email}
                 </div>
               </div>
             )}
@@ -89,7 +83,7 @@ const UserOptions = () => {
           <div
             className={`${
               menu ? 'block' : 'hidden'
-            } absolute z-20 right-6 top-16 w-60 bg-custom-background py-4 px-2 rounded-lg shadow-md`}
+            } absolute z-20 right-6 top-16 w-60 bg-custom-bg-light dark:bg-custom-bg-off-dark  py-4 px-2 rounded-lg shadow-md`}
           >
             <nav className="">
               <ul className="">
@@ -112,7 +106,7 @@ const UserOptions = () => {
               </ul>
             </nav>
           </div>
-        </>
+        </div>
       ) : null}
     </div>
   );
@@ -130,9 +124,11 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
     >
       <Link href={to}>
         <a
-          className={`text-center text-lg py-2 w-full block ${
-            isMatch ? 'text-black' : 'text-gray-600'
-          } hover:text-black`}
+          className={`block w-full text-center text-lg py-2 ${
+            isMatch
+              ? 'text-custom-text-light dark:text-custom-text-dark'
+              : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
+          }`}
           aria-current={isMatch ? 'page' : 'false'}
         >
           {label}
@@ -143,29 +139,24 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
 };
 
 const Header = () => {
-  const router = useRouter();
   const { status } = useSession();
   const [menu, setMenu] = useState(true);
 
-  useEffect(() => {
-    // setMenu(false);
-  }, [router.pathname]);
-
   return (
     <header
-      className={`flex flex-col flex-nowrap relative bg-custom-background text-black shrink-0 transition-width shadow-lg ${
+      className={`flex flex-col flex-nowrap relative bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark shrink-0 transition-width ${
         menu ? 'w-64' : 'w-14'
       }`}
     >
       <div className="mb-4 mt-4 flex items-center justify-center">
         <button type="button" className="" onClick={() => setMenu(!menu)}>
-          <i className="text-3xl dark:text-white fas fa-bars" />
+          <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
         </button>
 
         <h3
           className={`${
             menu ? '' : 'hidden'
-          } ml-4 mr-10 text-center text-black dark:text-white`}
+          } ml-4 mr-10 text-center text-custom-text-light dark:text-custom-text-dark`}
         >
           Readly
         </h3>
@@ -225,7 +216,10 @@ const Auth: React.FC<{
     return <Loading text="Checking auth" />;
   }
 
-  if (auth.admin && userData.user.role !== 'ADMIN') return <NoPermissionPage />;
+  if (auth.admin && userData.user.role !== 'ADMIN') {
+    router.push('/permissions');
+    return null;
+  }
 
   return <>{children}</>;
 };
@@ -239,7 +233,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <Auth auth={(Component as any).auth}>
               <Header />
 
-              <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+              <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
                 <UserOptions />
                 <Component {...pageProps} />
               </main>
@@ -248,7 +242,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         ) : (
           <>
             <Header />
-            <main className="flex-grow bg-custom-bg-off-light dark:bg-custom-bg-off-dark p-3 overflow-y-auto">
+            <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
               <UserOptions />
               <Component {...pageProps} />
             </main>
