@@ -1,6 +1,4 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import crypto from 'crypto';
 import { validatePagination } from '../../utils/validation';
 import { prisma } from '../../utils/db';
 
@@ -14,7 +12,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const {
-    query: { page, limit, q },
+    query: { page, limit, q, genre },
     method,
   } = req;
 
@@ -28,6 +26,24 @@ export default async function handler(
     if (!validatePagination(numPage, take))
       return res.status(200).json({ results: [], nextPage: 0 });
 
+    const where: any = {};
+    if (q) {
+      where.q = {
+        title: {
+          contains: q.toString(),
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (genre) {
+      where.BookGenres = {
+        some: {
+          genreId: parseInt(genre?.toString()),
+        },
+      };
+    }
+
     const results = await prisma.book.findMany({
       take,
       skip: numPage * take,
@@ -35,14 +51,7 @@ export default async function handler(
         author: true,
         BookGenres: true,
       },
-      where: q
-        ? {
-            title: {
-              contains: q.toString(),
-              mode: 'insensitive',
-            },
-          }
-        : {},
+      where,
     });
 
     return res.status(200).json({
