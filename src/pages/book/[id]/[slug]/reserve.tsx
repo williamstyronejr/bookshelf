@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -17,6 +17,15 @@ const NotAvailable = () => (
     Not avail
   </section>
 );
+
+const Timedout = ({ reload }: { reload: Function }) => {
+  return (
+    <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
+      <div>Your reservation for this book has timed out.</div>
+      <button onClick={() => reload()}>Click to reload page</button>
+    </section>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -79,6 +88,8 @@ export default function ReservationPage({ book, available }) {
   const { query, push, reload } = useRouter();
   const [reserveLength, setReserveLength] = useState('7');
   const [menu, setMenu] = useState(false);
+  const [fieldError, setFieldError] = useState<{ reserveLength?: string }>({});
+  const [timer, setTimer] = useState(900);
 
   const {
     data: mutatedData,
@@ -89,7 +100,7 @@ export default function ReservationPage({ book, available }) {
     async ({ reserveLength }: { reserveLength: string }) => {
       const res = await fetch(`/api/books/${query.id}/reservation`, {
         method: 'POST',
-        body: JSON.stringify({ reserveLength }),
+        // body: JSON.stringify({ reserveLength }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -101,10 +112,10 @@ export default function ReservationPage({ book, available }) {
 
       const body = await res.json();
       if (res.status === 400) {
-        if (body.timeout) {
-          // Reload page to reset timer and get book availblity
-          reload();
-        }
+        // Reload page to reset timer and get book availblity
+        if (body.timeout) reload();
+        if (body.reserveLength)
+          setFieldError({ reserveLength: body.reserveLength });
 
         return false;
       } else if (res.status === 401) {
@@ -115,8 +126,18 @@ export default function ReservationPage({ book, available }) {
     }
   );
 
-  if (!book) return <div>Loading...</div>;
+  useEffect(() => {
+    let interval: any = null;
+
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((old) => old - 1), 1000);
+    }
+
+    return () => (interval ? clearInterval(interval) : undefined);
+  }, [timer]);
+
   if (!available) return <NotAvailable />;
+  if (timer === 0) return <Timedout reload={reload} />;
 
   return (
     <section className="relative max-w-2xl md:mx-auto">
@@ -135,8 +156,18 @@ export default function ReservationPage({ book, available }) {
         </Link>
       </div>
 
-      <header>
-        <h3 className="">Reservation</h3>
+      <header className="flex flex-row flex-nowrap py-4">
+        <h3 className="flex-grow">Reservation</h3>
+
+        <div className="bg-blue-600 p-2 rounded-md text-white">
+          <div className="text-sm">Time Remaining</div>
+          <div className="text-center text-2xl py-1">
+            {`${('0' + Math.floor(timer / 60)).slice(-2)}:${(
+              '00' +
+              (timer % 60)
+            ).slice(-2)}`}
+          </div>
+        </div>
       </header>
 
       <div className="flex flex-col md:flex-row flex-nowrap px-4 text-center md:text-left">
@@ -173,7 +204,7 @@ export default function ReservationPage({ book, available }) {
           />
 
           <button
-            className="w-full px-4 py-2 rounded-md mb-2 mx-auto bg-custom-bg-off-light dark:bg-custom-bg-off-dark"
+            className="w-full px-4 py-2 rounded-md mb-2 mx-auto bg-custom-bg-off-light dark:bg-custom-bg-off-dark border border-red-500"
             aria-label="menu"
             type="button"
             onClick={() => setMenu((old) => !old)}
