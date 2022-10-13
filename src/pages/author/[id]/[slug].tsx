@@ -6,6 +6,7 @@ import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { prisma } from '../../../utils/db';
 import Link from 'next/link';
 import { NextPage } from 'next/types';
+import RefetchError from '../../../components/RefetchError';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -61,6 +62,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteQuery(
     ['author'],
     async ({ pageParam = 0 }) => {
@@ -71,8 +73,8 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
         throw new Error('Invalid request');
       }
 
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      throw new Error('An unexpected error occurred, please try again.');
     },
     {
       getNextPageParam: (lastPage) =>
@@ -166,6 +168,12 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
 
             {query.id && hasNextPage ? <li ref={sentryRef}>Loading</li> : null}
           </ul>
+
+          {error ? (
+            <div className="">
+              <RefetchError refetch={refetch} />
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

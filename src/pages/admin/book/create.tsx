@@ -11,7 +11,7 @@ const CreateBookPage: NextPage = () => {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
 
-  const { data, mutate, isLoading } = useMutation(
+  const { data, mutate, isLoading, error } = useMutation(
     ['create-book'],
     async (formData: FormData) => {
       const res = await fetch(`/api/books/create`, {
@@ -19,8 +19,15 @@ const CreateBookPage: NextPage = () => {
         body: formData,
       });
 
-      const body = await res.json();
-      return res.status === 400 ? setFieldErrors(body) : body;
+      if (res.ok) return await res.json();
+      if (res.status === 403) return router.push('/');
+      if (res.status === 401) return router.push('/api/auth/signin');
+      if (res.status === 400) {
+        const errors = await res.json();
+        return setFieldErrors(errors);
+      }
+
+      throw new Error('An unexpected error occurred, please try again.');
     }
   );
 
@@ -49,6 +56,14 @@ const CreateBookPage: NextPage = () => {
         className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
         onSubmit={handleSubmit}
       >
+        <header>
+          {error ? (
+            <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white">
+              {(error as any).message}
+            </div>
+          ) : null}
+        </header>
+
         <fieldset className="">
           <FileInput
             name="displayImage"

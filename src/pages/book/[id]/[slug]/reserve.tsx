@@ -95,34 +95,31 @@ export default function ReservationPage({ book, available }) {
     data: mutatedData,
     mutate,
     isLoading: isMutating,
+    error,
   } = useMutation(
     ['reservation'],
     async ({ reserveLength }: { reserveLength: string }) => {
       const res = await fetch(`/api/books/${query.id}/reservation`, {
         method: 'POST',
-        // body: JSON.stringify({ reserveLength }),
+        body: JSON.stringify({ reserveLength }),
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (res.status !== 200 && res.status !== 400 && res.status !== 401) {
-        throw new Error('');
-      }
-
-      const body = await res.json();
+      if (res.ok) return await res.json();
+      if (res.status === 401) return signIn();
       if (res.status === 400) {
+        const body = await res.json();
         // Reload page to reset timer and get book availblity
         if (body.timeout) reload();
         if (body.reserveLength)
           setFieldError({ reserveLength: body.reserveLength });
 
         return false;
-      } else if (res.status === 401) {
-        signIn();
       }
 
-      return true;
+      throw new Error('An unexpected error occurred, please try again.');
     }
   );
 
@@ -195,6 +192,12 @@ export default function ReservationPage({ book, available }) {
         </aside>
 
         <div className="text-center w-full md:w-auto md:text-left shrink-0">
+          {error ? (
+            <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white mb-4">
+              {(error as any).message}
+            </div>
+          ) : null}
+
           <input
             id="length"
             name="length"

@@ -2,16 +2,21 @@ import type { NextPage } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
+import RefetchError from '../../components/RefetchError';
 
 const DashboardPage: NextPage = () => {
-  const { data, isLoading } = useQuery(['dashboard'], async () => {
-    const res = await fetch('/api/users/dashboard');
+  const { data, isLoading, error, refetch } = useQuery(
+    ['dashboard'],
+    async () => {
+      const res = await fetch('/api/users/dashboard');
 
-    const body = await res.json();
-    return body;
-  });
+      if (res.ok) return await res.json();
+      throw new Error('An unexpected error occurred, please try again.');
+    }
+  );
 
   if (isLoading) return <div>loading</div>;
+  if (error) return <RefetchError refetch={refetch} />;
 
   return (
     <section className="">

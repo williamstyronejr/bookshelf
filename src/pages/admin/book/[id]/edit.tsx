@@ -6,6 +6,7 @@ import FileInput from '../../../../components/FileInput';
 import { prisma } from '../../../../utils/db';
 import { validateBook } from '../../../../utils/validation';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx;
@@ -49,8 +50,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const EditBookPage: NextPage = ({ book }) => {
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
+  const router = useRouter();
 
-  const { mutate, isLoading } = useMutation(
+  const { mutate, isLoading, error } = useMutation(
     ['edit-book', book.id],
     async (formData: FormData) => {
       const res = await fetch(`/api/books/${book.id}/edit`, {
@@ -58,8 +60,15 @@ const EditBookPage: NextPage = ({ book }) => {
         body: formData,
       });
 
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      if (res.status === 403) return router.push('/');
+      if (res.status === 401) return router.push('/api/auth/signin');
+      if (res.status === 400) {
+        const errors = await res.json();
+        return setFieldErrors(errors);
+      }
+
+      throw new Error('An unexpected error occurred, please try again.');
     }
   );
 
@@ -72,12 +81,20 @@ const EditBookPage: NextPage = ({ book }) => {
     const { valid, errors } = validateBook(fields);
     if (!valid) return setFieldErrors(errors);
     console.log(fields);
-    // mutate(formData)
+    // mutate(formData);
   };
 
   return (
     <section>
       <form className="" onSubmit={handleSubmit}>
+        <header>
+          {error ? (
+            <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white">
+              {(error as any).message}
+            </div>
+          ) : null}
+        </header>
+
         <fieldset>
           <FileInput
             name="displayImage"

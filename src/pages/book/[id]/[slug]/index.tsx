@@ -95,8 +95,11 @@ export default function BookPage({ book }) {
     ['favorite', book.id, 'fetch'],
     async () => {
       const res = await fetch(`/api/books/${book.id}/favorite`);
-      const body = await res.json();
-      return body.favorite;
+
+      if (res.ok) {
+        const body = await res.json();
+        return body.favorite;
+      }
     }
   );
 
@@ -107,8 +110,10 @@ export default function BookPage({ book }) {
         method: 'POST',
       });
 
-      const body = await res.json();
-      return body.favorite;
+      if (res.ok) {
+        const body = await res.json();
+        return body.favorite;
+      }
     },
     {
       onSuccess: (data) => {

@@ -1,15 +1,13 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import Modal from '../../../components/Modal';
+import { useRouter } from 'next/router';
+import RefetchError from '../../../components/RefetchError';
 
-const AuthorItem = ({ author }: { author: any }) => {
+const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
 
@@ -17,11 +15,14 @@ const AuthorItem = ({ author }: { author: any }) => {
     ['remove-author'],
     async () => {
       const res = await fetch(`/api/author/${author.id}`, {
-        method: 'DELETE',
+        method: 'POST',
       });
 
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      if (res.status === 403) return push('/');
+      if (res.status === 401) return push('/api/auth/signin');
+
+      throw new Error('An unexpected error occurred, please try again.');
     },
     {
       onSuccess: (data) => {
@@ -29,6 +30,9 @@ const AuthorItem = ({ author }: { author: any }) => {
         if (data.success) {
           queryClient.invalidateQueries(['author-manage']);
         }
+      },
+      onError: (error) => {
+        setModal(false);
       },
     }
   );
@@ -44,9 +48,13 @@ const AuthorItem = ({ author }: { author: any }) => {
       <div className="mr-4">{author.name}</div>
 
       <div className="flex-grow">
-        <ul className="h-full">
+        <ul className="hidden md:flex flex-row flex-nowrap h-full">
           {author.books.map((book) => (
-            <li key={`author-book-${book.id}`} className="relative h-full w-20">
+            <li
+              key={`author-book-${book.id}`}
+              className="relative h-full w-20"
+              title={book.title}
+            >
               <Image
                 className="rounded-lg"
                 priority={true}
@@ -79,49 +87,70 @@ const AuthorItem = ({ author }: { author: any }) => {
 };
 
 const ManageAuthorsPage: NextPage = () => {
-  const limit = 10;
-  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ['author-manage'],
-      async ({ pageParam = 0 }) => {
-        const res = await fetch(`/api/author?page=${pageParam}&limit=${limit}`);
+  const router = useRouter();
+  const [page, setPage] = useState(0);
 
-        const body = await res.json();
-        return body;
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
-        keepPreviousData: true,
-      }
-    );
+  const { data, isFetching, isLoading, error, refetch } = useQuery(
+    ['author-manage', page],
+    async () => {
+      const res = await fetch(`/api/author?page=${page}&limit=10`);
+
+      if (res.ok) return await res.json();
+      throw new Error('An unexpected error occurred, please try again.');
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
 
   return (
     <section className="">
       <header></header>
 
       <div>
+        {error ? <RefetchError refetch={refetch} /> : null}
+        {isLoading ? (
+          <div className="text-center text-4xl mb-10">
+            <i className="fas fa-spinner animate-spin" />
+          </div>
+        ) : null}
+
         <ul className="flex flex-col flex-nowrap">
-          {data &&
-            data.pages.map((page) =>
-              page.results.map((author) => (
-                <AuthorItem author={author} key={`author-${author.id}`} />
+          {data
+            ? data.results.map((author) => (
+                <AuthorItem
+                  push={router.push}
+                  author={author}
+                  key={`author-${author.id}`}
+                />
               ))
-            )}
+            : null}
         </ul>
 
-        <div>
-          <button className="" type="button">
-            Prev
-          </button>
+        <div className="w-full">
+          <div className="flex justify-center">
+            <button
+              className="bg-sky-500 text-white text-xl px-4 py-2 rounded-lg mr-6"
+              type="button"
+              onClick={() => {
+                if (page !== 0) setPage((old) => old - 1);
+              }}
+              disabled={isFetching || isLoading || page === 0}
+            >
+              Prev
+            </button>
 
-          <button
-            className=""
-            type="button"
-            onClick={() => fetchNextPage()}
-            disabled={hasNextPage || isFetchingNextPage}
-          >
-            Next
-          </button>
+            <button
+              className="bg-sky-500 text-white text-xl px-4 py-2 rounded-lg"
+              type="button"
+              onClick={() => {
+                if (!data || data.nextPage) setPage((old) => old + 1);
+              }}
+              disabled={isFetching || isLoading || data?.nextPage === null}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </section>

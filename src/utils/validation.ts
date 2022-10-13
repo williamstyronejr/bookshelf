@@ -202,8 +202,10 @@ export function validateAuthor(
     bio?: string;
   } = {};
 
+  console.log({ name, bio });
+
   if (typeof name === 'string') {
-    if (name === '') "Must provide the author's name";
+    if (name === '') errors.name = "Must provide the author's name";
   } else if (!optional) {
     errors.name = "Must provide the author's name";
   }

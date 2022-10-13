@@ -13,7 +13,7 @@ export default async function handler(
 ) {
   const { query, method } = req;
 
-  if (method !== 'GET') return res.status(404).send('');
+  if (method !== 'GET') return res.status(404).end();
   if (!query.page) return res.status(200).json({ results: [], nextPage: 0 });
 
   try {

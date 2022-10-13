@@ -41,7 +41,7 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState<any>({});
 
-  const { mutate, data, isLoading } = useMutation(
+  const { mutate, data, isLoading, error } = useMutation(
     ['author-edit'],
     async (formData: FormData) => {
       const res = await fetch(`/api/author/${authorData.slug}/edit`, {
@@ -49,8 +49,15 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
         body: formData,
       });
 
-      const body = await res.json();
-      return res.status === 400 ? setFieldErrors(body) : body;
+      if (res.ok) return await res.json();
+      if (res.status === 403) return router.push('/');
+      if (res.status === 401) return router.push('/api/auth/signin');
+      if (res.status === 400) {
+        const errors = await res.json();
+        return setFieldErrors(errors);
+      }
+
+      throw new Error('An unexpected error occurred, please try again.');
     }
   );
 
@@ -78,6 +85,14 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
         className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
         onSubmit={submitHandler}
       >
+        <header>
+          {error ? (
+            <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white">
+              {(error as any).message}
+            </div>
+          ) : null}
+        </header>
+
         <fieldset>
           <FileInput
             name="profileImage"
@@ -102,7 +117,6 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
             error={fieldErrors.bio}
           />
         </fieldset>
-
         <button className="btn-submit" type="submit" disabled={isLoading}>
           Update Author
         </button>
