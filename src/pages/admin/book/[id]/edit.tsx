@@ -52,7 +52,7 @@ const EditBookPage: NextPage = ({ book }) => {
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
   const router = useRouter();
 
-  const { mutate, isLoading, error } = useMutation(
+  const { data, mutate, isLoading, error } = useMutation(
     ['edit-book', book.id],
     async (formData: FormData) => {
       const res = await fetch(`/api/books/${book.id}/edit`, {
@@ -74,15 +74,17 @@ const EditBookPage: NextPage = ({ book }) => {
 
   const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setFieldErrors({});
 
     const formData = new FormData(evt.currentTarget);
     const fields: any = Object.fromEntries(formData.entries());
 
     const { valid, errors } = validateBook(fields);
     if (!valid) return setFieldErrors(errors);
-    console.log(fields);
-    // mutate(formData);
+    mutate(formData);
   };
+
+  if (data) router.push(`/book/${data.id}/${data.slug}`);
 
   return (
     <section>
@@ -171,7 +173,7 @@ const EditBookPage: NextPage = ({ book }) => {
             placeholder="ISBN"
             label="ISBN-13"
             initialValue={book.isbn13}
-            error={fieldErrors.isbn13s}
+            error={fieldErrors.isbn13}
           />
 
           <Input
@@ -193,13 +195,11 @@ const EditBookPage: NextPage = ({ book }) => {
           />
         </fieldset>
 
-        <button
-          className="bg-custom-btn-submit text-white"
-          type="submit"
-          disabled={isLoading}
-        >
-          Update Book
-        </button>
+        <div className="text-center">
+          <button className="btn-submit" type="submit" disabled={isLoading}>
+            Update Book
+          </button>
+        </div>
       </form>
     </section>
   );
