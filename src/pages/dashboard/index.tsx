@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import RefetchError from '../../components/RefetchError';
+import LoadingWheel from '../../components/LoadingWheel';
 
 const DashboardPage: NextPage = () => {
   const { data, isLoading, error, refetch } = useQuery(
@@ -15,7 +16,7 @@ const DashboardPage: NextPage = () => {
     }
   );
 
-  if (isLoading) return <div>loading</div>;
+  if (isLoading) return <LoadingWheel />;
   if (error) return <RefetchError refetch={refetch} />;
 
   return (

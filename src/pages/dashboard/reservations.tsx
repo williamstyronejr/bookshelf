@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { NextPage } from 'next';
 import Image from 'next/image';
+import LoadingWheel from '../../components/LoadingWheel';
 import { getRemainingTime } from '../../utils/date';
 
 const ReservationsPage: NextPage = () => {
@@ -22,11 +23,7 @@ const ReservationsPage: NextPage = () => {
 
       <div>
         <ul className="flex flex-col flex-nowrap">
-          {isLoading ? (
-            <li className="text-center text-4xl h-full">
-              <i className="fas fa-spinner animate-spin" />
-            </li>
-          ) : null}
+          {isLoading ? <LoadingWheel /> : null}
 
           {data
             ? data.current.map((item) => (

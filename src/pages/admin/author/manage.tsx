@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Modal from '../../../components/Modal';
 import { useRouter } from 'next/router';
 import RefetchError from '../../../components/RefetchError';
+import LoadingWheel from '../../../components/LoadingWheel';
 
 const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   const [modal, setModal] = useState(false);
@@ -109,11 +110,7 @@ const ManageAuthorsPage: NextPage = () => {
 
       <div>
         {error ? <RefetchError refetch={refetch} /> : null}
-        {isLoading ? (
-          <div className="text-center text-4xl mb-10">
-            <i className="fas fa-spinner animate-spin" />
-          </div>
-        ) : null}
+        {isLoading ? <LoadingWheel /> : null}
 
         <ul className="flex flex-col flex-nowrap">
           {data
@@ -130,7 +127,7 @@ const ManageAuthorsPage: NextPage = () => {
         <div className="w-full">
           <div className="flex justify-center">
             <button
-              className="bg-sky-500 text-white text-xl px-4 py-2 rounded-lg mr-6"
+              className="btn-submit mr-6"
               type="button"
               onClick={() => {
                 if (page !== 0) setPage((old) => old - 1);
@@ -141,7 +138,7 @@ const ManageAuthorsPage: NextPage = () => {
             </button>
 
             <button
-              className="bg-sky-500 text-white text-xl px-4 py-2 rounded-lg"
+              className="btn-submit"
               type="button"
               onClick={() => {
                 if (!data || data.nextPage) setPage((old) => old + 1);
