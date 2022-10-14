@@ -1,9 +1,27 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState, SyntheticEvent } from 'react';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Input from '../../../components/Input';
 import { validateNewPassword, validateUser } from '../../../utils/validation';
+import { getServerAuthSession } from '../../../utils/serverSession';
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
+  if (!session || !session.user) {
+    return {
+      props: {},
+      redirect: '/',
+    };
+  }
+
+  return {
+    props: {
+      user: session.user,
+    },
+  };
+};
 
 const PasswordForm = () => {
   const [fieldErrors, setFieldErrors] = useState<{
@@ -28,7 +46,7 @@ const PasswordForm = () => {
           name="oldPassword"
           type="password"
           label="Old Password"
-          placeholder=""
+          placeholder="Old Password ..."
           error={fieldErrors.oldPassword}
         />
 
@@ -36,7 +54,7 @@ const PasswordForm = () => {
           name="newPassword"
           type="password"
           label="New Password"
-          placeholder=""
+          placeholder="New Password ..."
           error={fieldErrors.newPassword}
         />
 
@@ -44,7 +62,7 @@ const PasswordForm = () => {
           name="confirmPassword"
           type="password"
           label="Confirm Password"
-          placeholder=""
+          placeholder="Confirm New Password ..."
           error={fieldErrors.confirmPassword}
         />
       </fieldset>
@@ -59,7 +77,13 @@ const PasswordForm = () => {
   );
 };
 
-const AccountForm = () => {
+const AccountForm = ({
+  initUsername,
+  initEmail,
+}: {
+  initUsername: string;
+  initEmail: string;
+}) => {
   const [fieldErrors, setFieldErrors] = useState<{
     username?: string;
     email?: string;
@@ -87,6 +111,7 @@ const AccountForm = () => {
           type="text"
           label="Username"
           placeholder="Username"
+          initialValue={initUsername}
           error={fieldErrors.username}
         />
 
@@ -95,6 +120,7 @@ const AccountForm = () => {
           type="text"
           label="Email"
           placeholder="Email"
+          initialValue={initEmail}
           error={fieldErrors.email}
         />
       </fieldset>
@@ -109,7 +135,7 @@ const AccountForm = () => {
   );
 };
 
-const SettingsPage: NextPage = () => {
+const SettingsPage: NextPage = ({ user }) => {
   const { query } = useRouter();
 
   return (
@@ -150,7 +176,9 @@ const SettingsPage: NextPage = () => {
         </aside>
 
         <div className="flex-grow mx-auto py-4 px-12">
-          {query.type === 'account' ? <AccountForm /> : null}
+          {query.type === 'account' ? (
+            <AccountForm initUsername={user.username} initEmail={user.email} />
+          ) : null}
           {query.type === 'password' ? <PasswordForm /> : null}
         </div>
       </div>
