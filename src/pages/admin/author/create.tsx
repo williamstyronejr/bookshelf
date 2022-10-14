@@ -80,9 +80,11 @@ const AuthorCreatePage: NextPage = () => {
           />
         </fieldset>
 
-        <button className="btn-submit" type="submit" disabled={isLoading}>
-          Create Author
-        </button>
+        <div className="text-center">
+          <button className="btn-submit" type="submit" disabled={isLoading}>
+            Create Author
+          </button>
+        </div>
       </form>
     </section>
   );
