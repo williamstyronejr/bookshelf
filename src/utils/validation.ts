@@ -111,6 +111,12 @@ export function validateNewPassword({
   };
 }
 
+/**
+ * Validate rules for book creation and update excluding images.
+ * @param param Object containing fields to be validated
+ * @returns Returns a object containing a valid flag and an object containing
+ *  any errors with their fieldname as a key.
+ */
 export function validateBook({
   title,
   author,
@@ -194,15 +200,16 @@ export function validateBook({
  * @returns Return a valid flag and error list.
  */
 export function validateAuthor(
-  { name, bio }: { name: string; bio: string },
+  {
+    name,
+    bio,
+  }: { name: string | null | undefined; bio: string | null | undefined },
   optional = false
 ) {
   const errors: {
     name?: string;
     bio?: string;
   } = {};
-
-  console.log({ name, bio });
 
   if (typeof name === 'string') {
     if (name === '') errors.name = "Must provide the author's name";
@@ -215,7 +222,7 @@ export function validateAuthor(
   }
 
   return {
-    valid: Object.keys(errors).length > 0,
+    valid: Object.keys(errors).length === 0,
     errors,
   };
 }
