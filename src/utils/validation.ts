@@ -158,9 +158,9 @@ export function validateBook({
   }
 
   if (typeof isbn13 === 'string') {
-    if (isbn13 === '') errors.isbn13 = 'Invalid isbn13 number';
+    if (isbn13 === '') errors.isbn13 = 'Invalid ISBN-13 number';
   } else {
-    errors.isbn13 = "Must provided the book's isbn13 number.";
+    errors.isbn13 = "Must provided the book's ISBN-13 number.";
   }
 
   if (typeof copiesCount === 'string') {
