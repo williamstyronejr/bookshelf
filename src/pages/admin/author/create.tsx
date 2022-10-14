@@ -4,6 +4,7 @@ import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import { validateAuthor } from '../../../utils/validation';
 
 const AuthorCreatePage: NextPage = () => {
   const router = useRouter();
@@ -32,7 +33,14 @@ const AuthorCreatePage: NextPage = () => {
   const submitHandler = (evt: SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setFieldErrors({});
+
     const formData = new FormData(evt.currentTarget);
+    const { valid, errors } = validateAuthor({
+      name: formData.get('name') as string,
+      bio: formData.get('bio') as string,
+    });
+
+    if (!valid) return setFieldErrors(errors);
     mutate(formData);
   };
 

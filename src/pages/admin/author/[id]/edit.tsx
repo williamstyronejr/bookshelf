@@ -6,6 +6,7 @@ import Input from '../../../../components/Input';
 import FileInput from '../../../../components/FileInput';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import { validateAuthor } from '../../../../utils/validation';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const {
@@ -70,6 +71,11 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
     if ((formData.get('profileImage') as File).name === '')
       formData.delete('profileImage');
 
+    const { valid, errors } = validateAuthor({
+      name: formData.get('name') as string,
+      bio: formData.get('bio') as string,
+    });
+    if (!valid) return setFieldErrors(errors);
     mutate(formData);
   };
 
@@ -82,7 +88,7 @@ const AuthorEditPage: NextPage = ({ authorData }) => {
       </header>
 
       <form
-        className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
+        className="max-w-2xl mx-auto px-10 py-4 mt-2"
         onSubmit={submitHandler}
       >
         <header>
