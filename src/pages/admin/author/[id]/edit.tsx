@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-const AuthorEditPage: NextPage = ({ authorData }) => {
+const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState<any>({});
 
