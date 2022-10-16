@@ -1,9 +1,12 @@
 import { RefObject, useEffect, useState } from 'react';
 
+// eslint-disable-next-line no-unused-vars
+type Data = [boolean, (value: boolean) => void];
+
 const useMenuToggle = (
   ref: RefObject<HTMLElement>,
   initState = false
-): [boolean, (val: boolean) => void] => {
+): Data => {
   const [menuActive, setMenuActive] = useState(initState);
 
   const toggleMenu = (val: boolean) => setMenuActive(val);

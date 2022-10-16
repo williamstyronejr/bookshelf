@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 export default function ReservationPage({ book, available }) {
-  const { query, push, reload } = useRouter();
+  const { query, reload } = useRouter();
   const [reserveLength, setReserveLength] = useState('7');
   const [menu, setMenu] = useState(false);
   const [fieldError, setFieldError] = useState<{ reserveLength?: string }>({});
@@ -207,7 +207,9 @@ export default function ReservationPage({ book, available }) {
           />
 
           <button
-            className="w-full px-4 py-2 rounded-md mb-2 mx-auto bg-custom-bg-off-light dark:bg-custom-bg-off-dark border border-red-500"
+            className={`w-full px-4 py-2 rounded-md mb-2 mx-auto bg-custom-bg-off-light dark:bg-custom-bg-off-dark border ${
+              fieldError.reserveLength ? 'border-red-500' : ''
+            }`}
             aria-label="menu"
             type="button"
             onClick={() => setMenu((old) => !old)}

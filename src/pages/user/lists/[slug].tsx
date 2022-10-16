@@ -54,7 +54,7 @@ const UserListPage: NextPage = () => {
       return body;
     },
     {
-      onSuccess: (data) => {
+      onSuccess: () => {
         queryClient.invalidateQueries(['list', query.slug]);
       },
     }

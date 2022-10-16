@@ -9,7 +9,6 @@ const InputSuggestion = ({
   initialValue,
   initialHiddenValue,
   error,
-  multiEntries = false,
 }: {
   name: string;
   label: string;
@@ -18,7 +17,6 @@ const InputSuggestion = ({
   initialHiddenValue?: string;
   placeholder?: string;
   error?: string | null;
-  multiEntries?: boolean;
 }) => {
   const [value, setValue] = useState(initialValue || '');
   const [hiddenValue, setHiddenValue] = useState(initialHiddenValue || '');
@@ -38,25 +36,24 @@ const InputSuggestion = ({
     }
   );
 
-  const {
-    data: MutateData,
-    mutate,
-    isLoading: isMutating,
-  } = useMutation(['create', name], async (inputName: string) => {
-    const res = await fetch(`${url}/create`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ name: inputName }),
-    });
+  const { mutate, isLoading: isMutating } = useMutation(
+    ['create', name],
+    async (inputName: string) => {
+      const res = await fetch(`${url}/create`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ name: inputName }),
+      });
 
-    const body = await res.json();
+      const body = await res.json();
 
-    setValue(body.name);
-    setHiddenValue(body.id);
-    return body;
-  });
+      setValue(body.name);
+      setHiddenValue(body.id);
+      return body;
+    }
+  );
 
   return (
     <div className="relative">

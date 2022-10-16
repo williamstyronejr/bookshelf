@@ -12,7 +12,7 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
 
-  const { mutate, data } = useMutation(
+  const { mutate } = useMutation(
     ['remove-author'],
     async () => {
       const res = await fetch(`/api/author/${author.id}`, {
@@ -32,7 +32,7 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
           queryClient.invalidateQueries(['author-manage']);
         }
       },
-      onError: (error) => {
+      onError: () => {
         setModal(false);
       },
     }
