@@ -165,7 +165,6 @@ const Header = () => {
       <nav className={`flex-grow ${menu ? '' : 'hidden'}`}>
         <ul className="">
           <NavLink to="/" label="Home" />
-          <NavLink to="/library" label="Library" />
           {status === 'authenticated' ? (
             <>
               <NavLink to="/dashboard" label="Dashboard" />
