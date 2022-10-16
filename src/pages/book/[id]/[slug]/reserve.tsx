@@ -1,3 +1,4 @@
+import type { NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
@@ -84,7 +85,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default function ReservationPage({ book, available }) {
+const ReservationPage: NextPage<{ book: any; available: any }> = ({
+  book,
+  available,
+}) => {
   const { query, reload } = useRouter();
   const [reserveLength, setReserveLength] = useState('7');
   const [menu, setMenu] = useState(false);
@@ -250,4 +254,10 @@ export default function ReservationPage({ book, available }) {
       </div>
     </section>
   );
-}
+};
+
+ReservationPage.auth = {
+  admin: false,
+};
+
+export default ReservationPage;

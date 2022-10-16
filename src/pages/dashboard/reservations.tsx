@@ -26,7 +26,7 @@ const ReservationsPage: NextPage = () => {
           {isLoading ? <LoadingWheel /> : null}
 
           {data
-            ? data.current.map((item) => (
+            ? data.current.map((item: any) => (
                 <li
                   key={`reservation-${item.id}`}
                   className="flex flex-col items-center md:flex-row flex-nowrap my-4 border py-2 px-2 rounded-lg"

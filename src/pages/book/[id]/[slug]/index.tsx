@@ -1,3 +1,4 @@
+import type { NextPage } from 'next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { GetServerSideProps } from 'next';
@@ -86,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default function BookPage({ book }) {
+const BookPage: NextPage<{ book: any }> = ({ book }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -225,4 +226,6 @@ export default function BookPage({ book }) {
       </div>
     </section>
   );
-}
+};
+
+export default BookPage;

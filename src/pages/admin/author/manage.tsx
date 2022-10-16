@@ -50,7 +50,7 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
 
       <div className="flex-grow">
         <ul className="hidden md:flex flex-row flex-nowrap h-full">
-          {author.books.map((book) => (
+          {author.books.map((book: any) => (
             <li
               key={`author-book-${book.id}`}
               className="relative h-full w-20"
@@ -114,7 +114,7 @@ const ManageAuthorsPage: NextPage = () => {
 
         <ul className="flex flex-col flex-nowrap">
           {data
-            ? data.results.map((author) => (
+            ? data.results.map((author: any) => (
                 <AuthorItem
                   push={router.push}
                   author={author}

@@ -78,7 +78,7 @@ const UserListPage: NextPage = () => {
         <ul className="flex flex-col flex-nowrap">
           {data && data.pages
             ? data.pages.map((page) =>
-                page.results.map(({ book }) => (
+                page.results.map(({ book }: { book: any }) => (
                   <li
                     key={book.id}
                     className="flex flex-col items-center md:flex-row flex-nowrap my-4 border py-2 px-2 rounded-lg"

@@ -83,7 +83,7 @@ export default function SearchPage() {
         >
           {data &&
             data.pages.map((page) =>
-              page.results.map((book) => (
+              page.results.map((book: any) => (
                 <li
                   key={book.id}
                   title={book.title}

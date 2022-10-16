@@ -135,7 +135,7 @@ const AccountForm = ({
   );
 };
 
-const SettingsPage: NextPage = ({ user }) => {
+const SettingsPage: NextPage<{ user: any }> = ({ user }) => {
   const { query } = useRouter();
 
   return (

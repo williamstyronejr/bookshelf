@@ -36,7 +36,7 @@ const DashboardPage: NextPage = () => {
         <div className="">
           <ul className="flex flex-row flex-nowrap">
             {data.current.length ? (
-              data.current.map((item) => (
+              data.current.map((item: any) => (
                 <li
                   key={`current-${item.id}`}
                   className="relative h-56 w-32 mr-4"
@@ -78,7 +78,7 @@ const DashboardPage: NextPage = () => {
         <h3 className="font-medium">Favorite Genre</h3>
 
         <ul className="flex flex-row flex-wrap ">
-          {data.favoriteGenres.map((genreCount) => (
+          {data.favoriteGenres.map((genreCount: any) => (
             <li
               className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
               key={`favorite-genre-${genreCount.id}`}
@@ -101,7 +101,7 @@ const DashboardPage: NextPage = () => {
         <h3 className="font-medium">Favorite Author</h3>
 
         <ul className="flex flex-row flex-wrap ">
-          {data.favoriteAuthor.map((author) => (
+          {data.favoriteAuthor.map((author: any) => (
             <li
               className="bg-custom-bg-off-light dark:bg-custom-bg-off-dark py-2 px-4 mr-4 rounded-md"
               key={`favorite-author-${author.id}`}

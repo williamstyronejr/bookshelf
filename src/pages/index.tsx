@@ -60,7 +60,7 @@ export const getServerSideProps = async () => {
   };
 };
 
-const BookItem = ({ book }) => (
+const BookItem = ({ book }: { book: any }) => (
   <div className="relative shrink-0 w-32 mr-6 max-w-[175px]">
     <Link href={`/book/${book.id}/${book.slug}`}>
       <a>
@@ -91,6 +91,10 @@ export default function LibraryPage({
   topBooks,
   mostRecentBooks,
   trendingGenres,
+}: {
+  topBooks: any;
+  mostRecentBooks: any;
+  trendingGenres: any;
 }) {
   return (
     <section className="max-w-7xl mx-auto">
@@ -98,7 +102,7 @@ export default function LibraryPage({
         <h4 className="my-6 text-xl font-medium text-center">Most Popular</h4>
         <Carousel>
           {topBooks
-            ? topBooks.map((book) => (
+            ? topBooks.map((book: any) => (
                 <BookItem key={`popular-book-${book.id}`} book={book} />
               ))
             : null}
@@ -109,7 +113,7 @@ export default function LibraryPage({
         <h4 className="my-6 text-xl font-medium text-center">New Releases</h4>
         <Carousel>
           {mostRecentBooks
-            ? mostRecentBooks.map((book) => (
+            ? mostRecentBooks.map((book: any) => (
                 <BookItem key={`recent-book-${book.id}`} book={book} />
               ))
             : null}
@@ -123,7 +127,7 @@ export default function LibraryPage({
 
         <ul className="grid grid-cols-[repeat(auto-fit,_minmax(min(100%/3,_max(8rem,_100%/5)),_1fr))] gap-4 max-w-2xl mx-auto divide">
           {trendingGenres
-            ? trendingGenres.map((data) => (
+            ? trendingGenres.map((data: any) => (
                 <li
                   key={`trending-genre-${data.genre.id}`}
                   className="w-32 text-center py-4"

@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 };
 
-const EditBookPage: NextPage = ({ book }) => {
+const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
   const router = useRouter();
 
