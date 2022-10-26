@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 /**
  * Validate check for password field. Empty strings will return error message
  *  even for optional check.
@@ -124,6 +127,7 @@ export function validateBook({
   isbn13,
   copiesCount,
   description,
+  publishedDate,
 }: {
   title?: string;
   author?: string;
@@ -131,6 +135,7 @@ export function validateBook({
   isbn13?: string;
   copiesCount?: string;
   description?: string;
+  publishedDate?: string;
 }) {
   const errors: {
     title?: string;
@@ -139,6 +144,7 @@ export function validateBook({
     isbn13?: string;
     copiesCount?: string;
     description?: string;
+    publishDate?: string;
   } = {};
 
   if (typeof title === 'string') {
@@ -161,6 +167,15 @@ export function validateBook({
     }
   } else {
     errors.pageCount = 'Must provided number of pages';
+  }
+
+  if (typeof publishedDate === 'string') {
+    if (!dayjs(publishedDate, 'MM/DD/YYYY').isValid()) {
+      errors.publishedDate =
+        'Must provided valid date in format of MM/DD/YYYY.';
+    }
+  } else {
+    errors.publishedDate = 'Must provided date work was published.';
   }
 
   if (typeof isbn13 === 'string') {

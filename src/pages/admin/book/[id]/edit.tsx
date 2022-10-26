@@ -1,5 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import * as React from 'react';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Input from '../../../../components/Input';
 import InputSuggestion from '../../../../components/InputSuggestion';
 import FileInput from '../../../../components/FileInput';
@@ -7,6 +9,7 @@ import { prisma } from '../../../../utils/db';
 import { validateBook } from '../../../../utils/validation';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+dayjs.extend(customParseFormat);
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx;
@@ -80,7 +83,9 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
     const fields: any = Object.fromEntries(formData.entries());
 
     const { valid, errors } = validateBook(fields);
+    console.log(errors);
     if (!valid) return setFieldErrors(errors);
+
     mutate(formData);
   };
 
@@ -165,6 +170,15 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
             initialHiddenValue={book.publisher.id}
             initialValue={book.publisher.name}
             error={fieldErrors.language}
+          />
+
+          <Input
+            type="text"
+            name="publishedDate"
+            placeholder="Publication Date (MM/DD/YYYY)"
+            label="Publication Date (MM/DD/YYYY)"
+            initialValue={dayjs(book.publishedDate).format('MM/DD/YYYY')}
+            error={fieldErrors.publishedDate}
           />
 
           <Input

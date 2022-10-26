@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { validateBook } from '../../../../utils/validation';
 import { prisma } from '../../../../utils/db';
 import { uploadFile } from '../../../../utils/upload';
 import { createSlug } from '../../../../utils/slug';
 import { getUserDataFromSession } from '../../../../utils/serverSession';
+dayjs.extend(customParseFormat);
 
 type Data = {
   id: string;
@@ -64,7 +67,7 @@ export default async function handler(
         slug: createSlug(fields.title),
         copiesCount: parseInt(fields.copiesCount),
         displayImage: publicUrl || '',
-        publishedDate: new Date(Date.now()),
+        publishedDate: dayjs(fields.publishedDate, 'MM/DD/YYYY').toDate(),
         author: {
           connect: { id: parseInt(fields.author) },
         },

@@ -121,6 +121,14 @@ const CreateBookPage: NextPage = () => {
 
           <Input
             type="text"
+            name="publishedDate"
+            placeholder="Publication Date (MM/DD/YYYY)"
+            label="Publication Date (MM/DD/YYYY)"
+            error={fieldErrors.publishedDate}
+          />
+
+          <Input
+            type="text"
             name="isbn13"
             placeholder="ISBN"
             label="ISBN-13"

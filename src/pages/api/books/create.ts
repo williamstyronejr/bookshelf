@@ -4,6 +4,9 @@ import { prisma } from '../../../utils/db';
 import { uploadFile } from '../../../utils/upload';
 import { createSlug } from '../../../utils/slug';
 import { getUserDataFromSession } from '../../../utils/serverSession';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 type Data = {
   id: string;
@@ -53,7 +56,7 @@ export default async function handler(
         slug: createSlug(fields.title),
         copiesCount: parseInt(fields.copiesCount),
         displayImage: publicUrl || '',
-        publishedDate: new Date(Date.now()),
+        publishedDate: dayjs(fields.publishedDate, 'MM/DD/YYYY').toDate(),
         description: fields.description,
         author: {
           connect: { id: parseInt(fields.author) },
