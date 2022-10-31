@@ -147,7 +147,7 @@ export default function LibraryPage({
                   </div>
 
                   <div>
-                    <Link href={`/search?genre=${data.genre.id}`}>
+                    <Link href={`/library/search?genre=${data.genre.id}`}>
                       <a className="hover:underline hover:text-custom-text-highlight-light dark:hover:text-custom-text-highlight-dark">
                         {data.genre.name}
                       </a>
