@@ -212,9 +212,9 @@ const BookPage: NextPage<{ book: any }> = ({ book }) => {
           </div>
 
           <div className="my-2">
-            <div className="w-3/6 inline-block">Publish Date:</div>
+            <div className="w-3/6 inline-block">Publication Date:</div>
             <div className="w-3/6 inline-block">
-              {dayjs(book.publishedDate).format('MM/DD/YYYY')}
+              {dayjs(book.publishedDate).format('MMMM DD, YYYY')}
             </div>
           </div>
 

@@ -121,7 +121,8 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
         </aside>
 
         <div className="flex-grow">
-          <h4 className="font-medium">All Books</h4>
+          <h4 className="font-medium mb-2">Titles by {authorData.name}</h4>
+          <hr />
 
           <ul className="flex flex-col flex-nowrap">
             {data &&
@@ -129,9 +130,9 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                 page.results.map((book: any) => (
                   <li
                     key={book.id}
-                    className="flex flex-row flex-wrap md:flex-nowrap flex-grow w-full py-2 my-4 border-b-2"
+                    className="flex flex-col flex-nowrap md:flex-row flex-grow w-full py-2 my-4 border-b-2"
                   >
-                    <div className="relative w-32 h-40 mr-4">
+                    <div className="shrink-0 relative w-40 h-52 mx-auto">
                       <Image
                         className="rounded-lg"
                         priority={true}
@@ -141,7 +142,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                       />
                     </div>
 
-                    <div className="flex-grow">
+                    <div className="flex-grow md:ml-4">
                       <Link href={`/book/${book.id}/${book.slug}`}>
                         <a className="font-medium">{book.title}</a>
                       </Link>
@@ -155,7 +156,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                       </Link>
                     </div>
 
-                    <div className="shrink-0 py-5 md:p-0 flex-grow md:flex-grow-0">
+                    <div className="shrink-0 py-5 md:p-0 flex-grow">
                       <Link href={`/book/${book.id}/${book.slug}/reserve`}>
                         <a className="block w-full text-center md:inline py-4 px-2 bg-sky-500 rounded-lg">
                           Reserve
