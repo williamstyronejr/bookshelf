@@ -8,6 +8,8 @@ import {
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Link from 'next/link';
 import Image from 'next/image';
+import LoadingWheel from '../../../components/LoadingWheel';
+import RefetchError from '../../../components/RefetchError';
 
 const UserListPage: NextPage = () => {
   const { query } = useRouter();
@@ -17,6 +19,7 @@ const UserListPage: NextPage = () => {
     data,
     error,
     isFetching,
+    refetch,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
@@ -27,12 +30,8 @@ const UserListPage: NextPage = () => {
         `/api/users/favorites?page=${pageParam}&limit=10`
       );
 
-      if (res.statusText !== 'OK') {
-        throw new Error('Invalid request');
-      }
-
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      throw new Error('Invalid request');
     },
     {
       getNextPageParam: (lastPage) => {
@@ -43,15 +42,15 @@ const UserListPage: NextPage = () => {
     }
   );
 
-  const { mutate } = useMutation(
+  const { mutate, isLoading: isUpdating } = useMutation(
     ['favorite', 'update'],
     async ({ bookId }: { bookId: string }) => {
       const res = await fetch(`/api/books/${bookId}/favorite`, {
         method: 'POST',
       });
 
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      throw new Error('Invalid request');
     },
     {
       onSuccess: () => {
@@ -113,6 +112,7 @@ const UserListPage: NextPage = () => {
                     <button
                       type="button"
                       className="text-lg md:mr-6 rounded-lg py-3 px-3 text-white bg-red-600"
+                      disabled={isUpdating}
                       onClick={() => {
                         mutate({ bookId: book.id });
                       }}
@@ -131,7 +131,12 @@ const UserListPage: NextPage = () => {
             <li>List is empty</li>
           ) : null}
 
-          {hasNextPage ? <div ref={sentryRef}>Loading</div> : null}
+          {error ? <RefetchError refetch={refetch} /> : null}
+          {isFetching || hasNextPage ? (
+            <div ref={sentryRef}>
+              <LoadingWheel />
+            </div>
+          ) : null}
         </ul>
       </div>
     </section>

@@ -83,7 +83,6 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
     const fields: any = Object.fromEntries(formData.entries());
 
     const { valid, errors } = validateBook(fields);
-    console.log(errors);
     if (!valid) return setFieldErrors(errors);
 
     mutate(formData);

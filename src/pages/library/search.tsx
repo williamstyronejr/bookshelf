@@ -4,6 +4,8 @@ import Image from 'next/image';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Link from 'next/link';
 import { useState } from 'react';
+import RefetchError from '../../components/RefetchError';
+import LoadingWheel from '../../components/LoadingWheel';
 
 export default function SearchPage() {
   const { query, isReady } = useRouter();
@@ -12,10 +14,12 @@ export default function SearchPage() {
   const {
     data,
     error,
+    isLoading,
     isFetching,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteQuery(
     ['search'],
     async ({ pageParam = 0 }) => {
@@ -74,6 +78,14 @@ export default function SearchPage() {
       </header>
 
       <div className="flex-grow h-1 max-w-[800px]">
+        {error ? <RefetchError refetch={refetch} /> : null}
+
+        {isLoading ? (
+          <div className="w-full" ref={sentryRef}>
+            <LoadingWheel />
+          </div>
+        ) : null}
+
         <ul
           className={`${
             viewMode === 'grid'
@@ -127,8 +139,8 @@ export default function SearchPage() {
             )}
 
           {query.q && hasNextPage ? (
-            <li className="h-40" ref={sentryRef}>
-              <i className="fas fa-spinner" />
+            <li className="h-40 flex-grow" ref={sentryRef}>
+              <LoadingWheel />
             </li>
           ) : null}
         </ul>

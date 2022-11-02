@@ -197,12 +197,16 @@ const Auth: React.FC<{
   const router = useRouter();
   const { data, status } = useSession({ required: true });
 
-  const { data: userData, isFetching } = useQuery(
+  const {
+    data: userData,
+    isFetching,
+    error,
+  } = useQuery(
     ['me'],
     async () => {
       const res = await fetch('/api/users/me');
-      const body = res.json();
-      return body;
+      if (res.ok) return await res.json();
+      throw new Error('Server error occurred during request.');
     },
     { enabled: status !== 'loading' && auth.admin }
   );
@@ -210,7 +214,7 @@ const Auth: React.FC<{
   if (status === 'loading' || isFetching)
     return <Loading text="Checking Auth" />;
 
-  if (!data) {
+  if (!data || error) {
     router.replace('/api/auth/signin');
     return <Loading text="Checking auth" />;
   }

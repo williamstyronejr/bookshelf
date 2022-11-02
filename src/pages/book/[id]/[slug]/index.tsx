@@ -96,11 +96,12 @@ const BookPage: NextPage<{ book: any }> = ({ book }) => {
     ['favorite', book.id, 'fetch'],
     async () => {
       const res = await fetch(`/api/books/${book.id}/favorite`);
-
-      if (res.ok) {
-        const body = await res.json();
-        return body.favorite;
-      }
+      if (res.ok) return (await res.json()).favorite;
+      return false;
+    },
+    {
+      enabled: status === 'authenticated',
+      placeholderData: false,
     }
   );
 
@@ -111,10 +112,8 @@ const BookPage: NextPage<{ book: any }> = ({ book }) => {
         method: 'POST',
       });
 
-      if (res.ok) {
-        const body = await res.json();
-        return body.favorite;
-      }
+      if (res.ok) return (await res.json()).favorite;
+      return false;
     },
     {
       onSuccess: (data) => {

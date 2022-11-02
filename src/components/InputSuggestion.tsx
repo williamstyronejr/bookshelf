@@ -22,17 +22,25 @@ const InputSuggestion = ({
   const [hiddenValue, setHiddenValue] = useState(initialHiddenValue || '');
   const [mouseOnList, setMouseOnList] = useState(false);
   const [focus, setFocus] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const { data, isFetching } = useQuery(
     ['suggestion', value],
     async ({ signal }) => {
       const res = await fetch(`${url}/input?name=${value}`, { signal });
 
-      const body = await res.json();
-      return body.results;
+      if (res.ok) return (await res.json()).results;
+      throw new Error('Error occurred during request, please try again.');
     },
     {
       enabled: !!value && focus,
+      retry: false,
+      onSuccess: () => {
+        setRequestError(null);
+      },
+      onError: () => {
+        setRequestError('Error occurred during request, please try again.');
+      },
     }
   );
 
@@ -47,11 +55,27 @@ const InputSuggestion = ({
         body: JSON.stringify({ name: inputName }),
       });
 
-      const body = await res.json();
+      if (res.ok) {
+        const body = await res.json();
 
-      setValue(body.name);
-      setHiddenValue(body.id);
-      return body;
+        setValue(body.name);
+        setHiddenValue(body.id);
+        return body;
+      }
+
+      throw new Error(
+        `Unexpected error occurred while creating ${name}, please try again.`
+      );
+    },
+    {
+      onSuccess: () => {
+        setRequestError(null);
+      },
+      onError: () => {
+        setRequestError(
+          `Unexpected error occurred while creating ${name}, please try again.`
+        );
+      },
     }
   );
 
@@ -62,7 +86,7 @@ const InputSuggestion = ({
 
         <input
           className={`w-full bg-white text-black py-2 px-4 border rounded ${
-            error
+            error || requestError
               ? 'border-red-500 focus:shadow-[0_0_0_1px_rgba(244,33,46,1)]'
               : 'border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]'
           }  outline-0`}
@@ -91,6 +115,10 @@ const InputSuggestion = ({
 
         {error ? (
           <span className="block text-red-500 text-sm">{error}</span>
+        ) : null}
+
+        {requestError ? (
+          <span className="block text-red-500 text-sm">{requestError}</span>
         ) : null}
       </label>
 
