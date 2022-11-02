@@ -28,11 +28,9 @@ export default async function handler(
 
     const where: any = {};
     if (q) {
-      where.q = {
-        title: {
-          contains: q.toString(),
-          mode: 'insensitive',
-        },
+      where.title = {
+        contains: q.toString(),
+        mode: 'insensitive',
       };
     }
 
@@ -59,6 +57,7 @@ export default async function handler(
       results: JSON.parse(JSON.stringify(results)),
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).end();
   }
 }
