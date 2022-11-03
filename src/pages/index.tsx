@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Head from 'next/head';
 import { prisma } from '../utils/db';
 import Carousel from '../components/Carousel';
 
@@ -98,6 +99,9 @@ export default function LibraryPage({
 }) {
   return (
     <section className="max-w-7xl mx-auto">
+      <Head>
+        <title>Home</title>
+      </Head>
       <header className="">
         <h4 className="my-6 text-xl font-medium text-center">Most Popular</h4>
         <Carousel>

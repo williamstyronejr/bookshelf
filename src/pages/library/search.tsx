@@ -1,9 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
-import useInfiniteScroll from 'react-infinite-scroll-hook';
-import Link from 'next/link';
 import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Head from 'next/head';
+import useInfiniteScroll from 'react-infinite-scroll-hook';
 import RefetchError from '../../components/RefetchError';
 import LoadingWheel from '../../components/LoadingWheel';
 
@@ -55,6 +56,10 @@ export default function SearchPage() {
 
   return (
     <section className="flex flex-col flex-nowrap">
+      <Head>
+        <title>{query ? query.q : ''} - Search</title>
+      </Head>
+
       <header className="flex flex-row flex-nowrap h-20 mb-4 justify-center items-center shrink-0">
         <h3 className="flex-grow">Results</h3>
         <button

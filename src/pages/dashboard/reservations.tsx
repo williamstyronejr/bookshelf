@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 import Image from 'next/image';
 import LoadingWheel from '../../components/LoadingWheel';
 import RefetchError from '../../components/RefetchError';
@@ -18,6 +19,10 @@ const ReservationsPage: NextPage = () => {
 
   return (
     <section>
+      <Head>
+        <title>Reservations</title>
+      </Head>
+
       <header className="my-4">
         <h2 className="font-semibold text-xl">Your Books</h2>
       </header>

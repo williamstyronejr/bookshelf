@@ -6,6 +6,7 @@ import Input from '../../../components/Input';
 import InputSuggestion from '../../../components/InputSuggestion';
 import FileInput from '../../../components/FileInput';
 import { validateBook } from '../../../utils/validation';
+import Head from 'next/head';
 
 const CreateBookPage: NextPage = () => {
   const router = useRouter();
@@ -48,6 +49,9 @@ const CreateBookPage: NextPage = () => {
 
   return (
     <section>
+      <Head>
+        <title>Create Book</title>
+      </Head>
       <header className="my-4">
         <h3 className="">Create Book</h3>
       </header>

@@ -7,6 +7,7 @@ import FileInput from '../../../../components/FileInput';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { validateAuthor } from '../../../../utils/validation';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const {
@@ -83,6 +84,10 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
 
   return (
     <section>
+      <Head>
+        <title>{authorData.name} - Edit</title>
+      </Head>
+
       <header className="my-4">
         <h3>Edit Author</h3>
       </header>

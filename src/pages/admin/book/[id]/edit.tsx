@@ -9,6 +9,7 @@ import { prisma } from '../../../../utils/db';
 import { validateBook } from '../../../../utils/validation';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 dayjs.extend(customParseFormat);
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -92,6 +93,9 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
 
   return (
     <section>
+      <Head>
+        <title>{book.title} - Edit</title>
+      </Head>
       <form className="" onSubmit={handleSubmit}>
         <header>
           {error ? (

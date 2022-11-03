@@ -7,6 +7,7 @@ import Modal from '../../../components/Modal';
 import { useRouter } from 'next/router';
 import RefetchError from '../../../components/RefetchError';
 import LoadingWheel from '../../../components/LoadingWheel';
+import Head from 'next/head';
 
 const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   const [modal, setModal] = useState(false);
@@ -106,6 +107,10 @@ const ManageAuthorsPage: NextPage = () => {
 
   return (
     <section className="">
+      <Head>
+        <title>Manage Authors</title>
+      </Head>
+
       <header></header>
 
       <div>

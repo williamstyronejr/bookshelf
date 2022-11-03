@@ -1,9 +1,10 @@
 import type { NextPage } from 'next';
 import { useState, SyntheticEvent } from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useMutation } from '@tanstack/react-query';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 import { validateAuthor } from '../../../utils/validation';
 
 const AuthorCreatePage: NextPage = () => {
@@ -50,6 +51,9 @@ const AuthorCreatePage: NextPage = () => {
 
   return (
     <section>
+      <Head>
+        <title>Create Author</title>
+      </Head>
       <header className="my-4">
         <h3>Create Author</h3>
       </header>

@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { signIn } from 'next-auth/react';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
+import Head from 'next/head';
 
 const redisClient = new Redis(process.env.REDIS_URL?.toString() || '');
 
@@ -142,6 +143,9 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
 
   return (
     <section className="relative max-w-2xl md:mx-auto">
+      <Head>
+        <title>Reservation</title>
+      </Head>
       <div
         className={`flex-col flex-nowrap w-full h-full absolute z-10 bg-custom-background items-center justify-center ${
           mutatedData ? 'flex' : 'hidden'

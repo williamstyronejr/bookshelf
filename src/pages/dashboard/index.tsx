@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
 import { useQuery } from '@tanstack/react-query';
 import RefetchError from '../../components/RefetchError';
 import LoadingWheel from '../../components/LoadingWheel';
@@ -21,6 +22,9 @@ const DashboardPage: NextPage = () => {
 
   return (
     <section className="">
+      <Head>
+        <title>Dashboard</title>
+      </Head>
       <h2 className="font-medium my-4">Dashboard</h2>
       <div className="shadow-md rounded p-6 mb-4 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <div className="flex mb-3">

@@ -8,6 +8,7 @@ import {
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
 import LoadingWheel from '../../../components/LoadingWheel';
 import RefetchError from '../../../components/RefetchError';
 
@@ -69,6 +70,9 @@ const UserListPage: NextPage = () => {
 
   return (
     <section>
+      <Head>
+        <title>Favorites</title>
+      </Head>
       <header>
         <h4 className="font-semibold text-xl">Favorites</h4>
       </header>

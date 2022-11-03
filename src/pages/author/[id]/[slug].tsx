@@ -7,6 +7,7 @@ import { prisma } from '../../../utils/db';
 import Link from 'next/link';
 import { NextPage } from 'next/types';
 import RefetchError from '../../../components/RefetchError';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -94,6 +95,9 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
 
   return (
     <section className="w-full">
+      <Head>
+        <title>{authorData.name}</title>
+      </Head>
       <header className="w-full py-6">
         <h3>{authorData.name}</h3>
       </header>

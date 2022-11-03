@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -124,6 +125,9 @@ const BookPage: NextPage<{ book: any }> = ({ book }) => {
 
   return (
     <section className="">
+      <Head>
+        <title>{book.title}</title>
+      </Head>
       <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
         <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0">
           <Image

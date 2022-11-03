@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Input from '../../../components/Input';
 import { validateNewPassword, validateUser } from '../../../utils/validation';
 import { getServerAuthSession } from '../../../utils/serverSession';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -41,6 +42,9 @@ const PasswordForm = () => {
 
   return (
     <form className="" onSubmit={handleSubmit}>
+      <Head>
+        <title>Settings - Password</title>
+      </Head>
       <fieldset>
         <Input
           name="oldPassword"
@@ -105,6 +109,10 @@ const AccountForm = ({
 
   return (
     <form className="" onSubmit={handleSubmit}>
+      <Head>
+        <title>Settings - Account</title>
+      </Head>
+
       <fieldset className="">
         <Input
           name="username"
@@ -140,6 +148,10 @@ const SettingsPage: NextPage<{ user: any }> = ({ user }) => {
 
   return (
     <section className="max-w-2xl mx-auto">
+      <Head>
+        <title>Settings</title>
+      </Head>
+
       <header className="mb-4">
         <h4 className="font-medium">Settings</h4>
       </header>
