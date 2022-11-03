@@ -22,7 +22,7 @@ export default function SearchPage() {
     isFetchingNextPage,
     refetch,
   } = useInfiniteQuery(
-    ['search'],
+    ['search', query.q],
     async ({ pageParam = 0 }) => {
       const res = await fetch(
         `/api/search?q=${query.q || ''}&genre=${
