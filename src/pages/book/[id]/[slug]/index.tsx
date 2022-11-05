@@ -1,14 +1,15 @@
 import type { NextPage } from 'next';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
 import { GetServerSideProps } from 'next';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
+import Image from 'next/image';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import dayjs from 'dayjs';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
-import Head from 'next/head';
+import { getTakenBookCount } from '../../../../utils/reservations';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -51,6 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   book = JSON.parse(JSON.stringify(book));
   if (!book) return { notFound: true };
 
+  // Stats logging for users visits
   if (session && session.user && session.user.id) {
     // Add genres to user count
     await prisma.genreUserCount.upsert({
@@ -77,18 +79,29 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
   }
 
+  const onHoldCount = await getTakenBookCount(book.id);
+
   if (book.slug !== ctx.params.slug)
     return {
       redirect: { destination: `/book/${book.id}/${book.slug}` },
-      props: { book },
+      props: {
+        book,
+        availableCount: Math.max(0, book.copiesCount - onHoldCount),
+      },
     };
 
   return {
-    props: { book },
+    props: {
+      book,
+      availableCount: Math.max(0, book.copiesCount - onHoldCount),
+    },
   };
 };
 
-const BookPage: NextPage<{ book: any }> = ({ book }) => {
+const BookPage: NextPage<{ book: any; availableCount: number }> = ({
+  book,
+  availableCount,
+}) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -169,7 +182,7 @@ const BookPage: NextPage<{ book: any }> = ({ book }) => {
               {infoExpand ? 'Read Less' : 'Read More'}
             </button>
 
-            <div className="py-4 text-lg">{book.copiesCount} Book Left </div>
+            <div className="py-4 text-lg">{availableCount} Books Left </div>
 
             <div className="py-2 flex flex-row flex-nowrap justify-center md:block">
               <Link href={`/book/${book.id}/${book.slug}/reserve`}>
