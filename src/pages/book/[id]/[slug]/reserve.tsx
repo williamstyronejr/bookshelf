@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -14,9 +14,15 @@ import Head from 'next/head';
 
 const redisClient = new Redis(process.env.REDIS_URL?.toString() || '');
 
-const NotAvailable = () => (
+const NotAvailable: FC<{ title: string }> = ({ title }) => (
   <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
-    Not avail
+    <i className="text-6xl mb-4 fas fa-exclamation" />
+    {title} is not longer available
+    <Link href="/library">
+      <a className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light hover:dark:text-custom-text-link-hover-dark">
+        Go back to Library
+      </a>
+    </Link>
   </section>
 );
 
@@ -138,7 +144,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
     return () => (interval ? clearInterval(interval) : undefined);
   }, [timer]);
 
-  if (!available) return <NotAvailable />;
+  if (!available) return <NotAvailable title={book.title} />;
   if (timer === 0) return <Timedout reload={reload} />;
 
   return (
