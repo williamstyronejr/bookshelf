@@ -29,11 +29,38 @@ const NotAvailable: FC<{ title: string }> = ({ title }) => (
 const Timedout = ({ reload }: { reload: Function }) => {
   return (
     <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
-      <div>Your reservation for this book has timed out.</div>
-      <button onClick={() => reload()}>Click to reload page</button>
+      <i className="text-6xl text-blue-600 my-8 fas fa-hourglass-end " />
+      <div className="font-semibold text-xl text-center mb-4">
+        Your reservation for this book has timed out.
+      </div>
+
+      <button
+        className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light dark:hover:text-custom-text-link-hover-dark"
+        onClick={() => reload()}
+      >
+        Click to reload page
+      </button>
     </section>
   );
 };
+
+const Completed = () => (
+  <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
+    <i className="text-8xl text-blue-600 my-8 far fa-check-circle" />
+
+    <h3 className="font-semibold text-2xl text-center">
+      Reservation Completed!
+    </h3>
+
+    <p className="mb-4">Come pickup your book at the library.</p>
+
+    <Link href="/dashboard">
+      <a className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light dark:hover:text-custom-text-link-hover-dark">
+        Go back to Dashboard
+      </a>
+    </Link>
+  </section>
+);
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -146,26 +173,13 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
 
   if (!available) return <NotAvailable title={book.title} />;
   if (timer === 0) return <Timedout reload={reload} />;
+  if (mutatedData) return <Completed />;
 
   return (
     <section className="relative max-w-2xl md:mx-auto">
       <Head>
         <title>Reservation</title>
       </Head>
-      <div
-        className={`flex-col flex-nowrap w-full h-full absolute z-10 bg-custom-background items-center justify-center ${
-          mutatedData ? 'flex' : 'hidden'
-        }`}
-      >
-        <span className="text-8xl">
-          <i className="far fa-check-circle" />
-        </span>
-        <h3 className="text-2xl my-4">Reservation Completed!</h3>
-        <p>Come pickup your book at the library.</p>
-        <Link href="/dashboard">
-          <a className="">Go back to Dashboard</a>
-        </Link>
-      </div>
 
       <header className="flex flex-row flex-nowrap py-4">
         <h3 className="flex-grow">Reservation</h3>
@@ -205,7 +219,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
           </Link>
         </aside>
 
-        <div className="text-center w-full md:w-auto md:text-left shrink-0">
+        <div className="text-center w-64 md:text-left shrink-0">
           {error ? (
             <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white mb-4">
               {(error as any).message}
@@ -239,10 +253,10 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
           <div
             className={`${
               menu ? 'block' : 'hidden'
-            } bg-custom-bg-off-light dark:bg-custom-bg-off-dark px-1 py-1 mb-2 rounded-md`}
+            } divide-y bg-custom-bg-off-light dark:bg-custom-bg-off-dark px-1 py-1 mb-2 rounded-md`}
           >
             <button
-              className="w-full py-1"
+              className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
               type="button"
               onClick={() => {
                 setReserveLength('7');
@@ -251,10 +265,32 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             >
               7 Days
             </button>
+
+            <button
+              className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
+              type="button"
+              onClick={() => {
+                setReserveLength('14');
+                setMenu(false);
+              }}
+            >
+              14 Days
+            </button>
+
+            <button
+              className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
+              type="button"
+              onClick={() => {
+                setReserveLength('30');
+                setMenu(false);
+              }}
+            >
+              30 Days
+            </button>
           </div>
 
           <button
-            className="text-white bg-custom-btn-submit py-2 px-4 mt-4 rounded-md"
+            className="text-white w-full py-2 px-4 mt-4 rounded-md bg-custom-btn-submit"
             onClick={() => mutate({ reserveLength })}
             disabled={isMutating}
           >

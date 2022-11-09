@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import Modal from '../../../components/Modal';
 import { useRouter } from 'next/router';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Head from 'next/head';
 import RefetchError from '../../../components/RefetchError';
 import LoadingWheel from '../../../components/LoadingWheel';
-import Head from 'next/head';
+import Modal from '../../../components/Modal';
 
 const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   const [modal, setModal] = useState(false);
@@ -40,33 +40,36 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
   );
 
   return (
-    <li className="flex flex-row flex-nowrap w-full border-slate-200 border-2 rounded p-2 mb-4">
+    <li className="flex flex-row flex-nowrap w-full p-2 py-6 rounded">
       {modal ? (
         <Modal onSuccess={() => mutate()} onClose={() => setModal(false)}>
           Are you sure you want to delete Author: {author.name}
         </Modal>
       ) : null}
 
-      <div className="mr-4">{author.name}</div>
-
-      <div className="flex-grow">
-        <ul className="hidden md:flex flex-row flex-nowrap h-full">
-          {author.books.map((book: any) => (
-            <li
-              key={`author-book-${book.id}`}
-              className="relative h-full w-20"
-              title={book.title}
-            >
-              <Image
-                className="rounded-lg"
-                priority={true}
-                layout="fill"
-                src={book.displayImage}
-                alt="Book covers"
-              />
-            </li>
-          ))}
-        </ul>
+      <div className="flex flex-col flex-nowrap flex-grow mr-4">
+        <div className="mb-2">{author.name}</div>
+        {author.books.length === 0 ? (
+          <div className="hidden md:block text-center">Author Has no books</div>
+        ) : (
+          <ul className="hidden md:flex flex-row flex-nowrap h-32">
+            {author.books.map((book: any) => (
+              <li
+                key={`author-book-${book.id}`}
+                className="relative h-full w-20 mr-4"
+                title={book.title}
+              >
+                <Image
+                  className="rounded-lg"
+                  priority={true}
+                  layout="fill"
+                  src={book.displayImage}
+                  alt="Book covers"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="flex flex-col flex-nowrap justify-around shrink-0">
@@ -95,7 +98,7 @@ const ManageAuthorsPage: NextPage = () => {
   const { data, isFetching, isLoading, error, refetch } = useQuery(
     ['author-manage', page],
     async () => {
-      const res = await fetch(`/api/author?page=${page}&limit=10`);
+      const res = await fetch(`/api/author?page=${10}&limit=1`);
 
       if (res.ok) return await res.json();
       throw new Error('An unexpected error occurred, please try again.');
@@ -106,53 +109,56 @@ const ManageAuthorsPage: NextPage = () => {
   );
 
   return (
-    <section className="">
+    <section className="max-w-3xl mx-auto">
       <Head>
         <title>Manage Authors</title>
       </Head>
 
-      <header></header>
+      <header>
+        <h3 className="my-4 font-semibold text-xl">Manage Authors</h3>
+      </header>
 
-      <div>
-        {error ? <RefetchError refetch={refetch} /> : null}
-        {isLoading ? <LoadingWheel /> : null}
+      {error ? <RefetchError refetch={refetch} /> : null}
 
-        <ul className="flex flex-col flex-nowrap">
-          {data
-            ? data.results.map((author: any) => (
-                <AuthorItem
-                  push={router.push}
-                  author={author}
-                  key={`author-${author.id}`}
-                />
-              ))
-            : null}
-        </ul>
+      <ul className="flex flex-col flex-nowrap divide-y-2">
+        {data
+          ? data.results.map((author: any) => (
+              <AuthorItem
+                push={router.push}
+                author={author}
+                key={`author-${author.id}`}
+              />
+            ))
+          : null}
+      </ul>
 
-        <div className="w-full">
-          <div className="flex justify-center">
-            <button
-              className="btn-submit mr-6"
-              type="button"
-              onClick={() => {
-                if (page !== 0) setPage((old) => old - 1);
-              }}
-              disabled={isFetching || isLoading || page === 0}
-            >
-              Prev
-            </button>
+      {isLoading || isFetching ? <LoadingWheel /> : null}
+      {data && data.results.length === 0 ? (
+        <div className="text-center py-10">No authors found</div>
+      ) : null}
+      <div className="w-full">
+        <div className="flex justify-center">
+          <button
+            className="btn-submit mr-6"
+            type="button"
+            onClick={() => {
+              if (page !== 0) setPage((old) => old - 1);
+            }}
+            disabled={isFetching || isLoading || page === 0}
+          >
+            Prev
+          </button>
 
-            <button
-              className="btn-submit"
-              type="button"
-              onClick={() => {
-                if (!data || data.nextPage) setPage((old) => old + 1);
-              }}
-              disabled={isFetching || isLoading || data?.nextPage === null}
-            >
-              Next
-            </button>
-          </div>
+          <button
+            className="btn-submit"
+            type="button"
+            onClick={() => {
+              if (!data || data.nextPage) setPage((old) => old + 1);
+            }}
+            disabled={isFetching || isLoading || data?.nextPage === null}
+          >
+            Next
+          </button>
         </div>
       </div>
     </section>
