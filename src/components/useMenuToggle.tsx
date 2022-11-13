@@ -18,10 +18,7 @@ const useMenuToggle = (
       }
     };
 
-    if (menuActive) {
-      console.log('settings event listener');
-      window.addEventListener('click', clickHandler);
-    }
+    if (menuActive) window.addEventListener('click', clickHandler);
 
     return () => {
       window.removeEventListener('click', clickHandler);
