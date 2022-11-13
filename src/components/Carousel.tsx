@@ -1,4 +1,6 @@
 import { FC, ReactNode, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const Carousel: FC<{ children: ReactNode }> = ({ children }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -38,5 +40,32 @@ const Carousel: FC<{ children: ReactNode }> = ({ children }) => {
     </div>
   );
 };
+
+export const BookItem = ({ book }: { book: any }) => (
+  <div className="relative shrink-0 w-32 mr-6 max-w-[175px]">
+    <Link href={`/book/${book.id}/${book.slug}`}>
+      <a>
+        <div className="relative h-56 shadow-md mb-2">
+          <Image
+            className="rounded-lg"
+            priority={true}
+            layout="fill"
+            src={book.displayImage}
+            alt="Book covers"
+          />
+        </div>
+        <div className="font-medium whitespace-nowrap text-ellipsis overflow-hidden">
+          {book.title}
+        </div>
+      </a>
+    </Link>
+
+    <Link href={`/author/${book.author.id}/${book.author.slug}`}>
+      <a>
+        <div className="text-gray-600">{book.author.name}</div>
+      </a>
+    </Link>
+  </div>
+);
 
 export default Carousel;
