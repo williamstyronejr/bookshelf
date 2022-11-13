@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
 import { prisma } from '../utils/db';
-import Carousel from '../components/Carousel';
+import Carousel, { BookItem } from '../components/Carousel';
 
 export const getServerSideProps = async () => {
   let mostRecentBooks = await prisma.book.findMany({
@@ -60,33 +60,6 @@ export const getServerSideProps = async () => {
     },
   };
 };
-
-const BookItem = ({ book }: { book: any }) => (
-  <div className="relative shrink-0 w-32 mr-6 max-w-[175px]">
-    <Link href={`/book/${book.id}/${book.slug}`}>
-      <a>
-        <div className="relative h-56 shadow-md mb-2">
-          <Image
-            className="rounded-lg"
-            priority={true}
-            layout="fill"
-            src={book.displayImage}
-            alt="Book covers"
-          />
-        </div>
-        <div className="font-medium whitespace-nowrap text-ellipsis overflow-hidden">
-          {book.title}
-        </div>
-      </a>
-    </Link>
-
-    <Link href={`/author/${book.author.id}/${book.author.slug}`}>
-      <a>
-        <div className="text-gray-600">{book.author.name}</div>
-      </a>
-    </Link>
-  </div>
-);
 
 export default function LibraryPage({
   topBooks,
