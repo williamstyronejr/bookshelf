@@ -46,7 +46,7 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   const { mutate, data, isLoading, error } = useMutation(
     ['author-edit'],
     async (formData: FormData) => {
-      const res = await fetch(`/api/author/${authorData.slug}/edit`, {
+      const res = await fetch(`/api/author/${authorData.id}/edit`, {
         method: 'POST',
         body: formData,
       });
@@ -66,9 +66,8 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   const submitHandler = (evt: SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setFieldErrors({});
+
     const formData = new FormData(evt.currentTarget);
-    if (formData.get('name') === authorData.name) formData.delete('name');
-    if (formData.get('bio') === authorData.bio) formData.delete('bio');
     if ((formData.get('profileImage') as File).name === '')
       formData.delete('profileImage');
 
@@ -76,11 +75,12 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       name: formData.get('name') as string,
       bio: formData.get('bio') as string,
     });
+
     if (!valid) return setFieldErrors(errors);
     mutate(formData);
   };
 
-  if (data) router.push(`/author/${data.author.slug}`);
+  if (data) router.push(`/author/${data.author.id}/${data.author.slug}`);
 
   return (
     <section>
@@ -128,6 +128,7 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
             error={fieldErrors.bio}
           />
         </fieldset>
+
         <button className="btn-submit" type="submit" disabled={isLoading}>
           Update Author
         </button>
