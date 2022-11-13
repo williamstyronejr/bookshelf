@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import formidable from 'formidable';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../../../utils/db';
 import { validateAuthor } from '../../../../utils/validation';
-import { uploadFirebaseFile } from '../../../../utils/upload';
+import { uploadFile } from '../../../../utils/upload';
 import { createSlug } from '../../../../utils/slug';
 import { getUserDataFromSession } from '../../../../utils/serverSession';
 
@@ -14,7 +13,6 @@ export default async function handler(
   res: NextApiResponse<Data | string>
 ) {
   const { method, query } = req;
-  let publicUrl;
 
   if (method !== 'POST' || !query.id || query.id === '')
     return res.status(404).send('');
@@ -27,41 +25,10 @@ export default async function handler(
       return res.status(403).end();
     }
 
-    const { fields } = await new Promise<{ fields: any; files: any }>(
-      (resolve, rej) => {
-        const form = formidable({
-          multiples: true,
-          uploadDir: __dirname,
-          maxFiles: 1,
-          filter: (part) => {
-            return part.originalFilename !== '';
-          },
-          fileWriteStreamHandler: function () {
-            const file = arguments[0] as any; // BUG WITH THEIR TYPING
-            const { blobWriter, url } = uploadFirebaseFile(
-              file.originalFilename,
-              file.mimetype
-            );
-            publicUrl = url;
-            return blobWriter;
-          },
-        });
-
-        form.parse(req, (err, fields, files) => {
-          if (err) rej(err);
-
-          resolve({
-            fields: Object.fromEntries(
-              Object.entries(fields).map((kv) => [kv[0], kv[1].toString()])
-            ),
-            files,
-          });
-        });
-      }
-    );
+    const { fields, publicUrl } = await uploadFile(req);
 
     const { errors, valid } = validateAuthor(fields, true);
-    if (valid) return res.status(400).json(errors);
+    if (!valid) return res.status(400).json(errors);
 
     const data: Prisma.AuthorUpdateInput = {};
     if (publicUrl) data.profileImage = publicUrl;
