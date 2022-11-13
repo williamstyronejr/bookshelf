@@ -5,13 +5,22 @@ import {
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, FC, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
 import useMenuToggle from '../components/useMenuToggle';
+
+const isBrowserDefaultDark = () =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+const getDefaultTheme = (): string => {
+  const localStorageTheme = localStorage.getItem('theme');
+  const browserDefault = isBrowserDefaultDark() ? 'dark' : 'light';
+  return localStorageTheme || browserDefault;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,12 +30,35 @@ const queryClient = new QueryClient({
   },
 });
 
+const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
+  return (
+    <button
+      className="my-4"
+      onClick={() => {
+        setTheme((curr: string) => (curr === 'light' ? 'dark' : 'light'));
+      }}
+    >
+      <i className="text-3xl dark:text-white fas fa-moon" />
+    </button>
+  );
+};
+
 const UserOptions = () => {
   const router = useRouter();
   const { data, status } = useSession();
   const ref = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
   const [menu, setMenu] = useMenuToggle(ref, false);
+
+  const { data: userData } = useQuery(
+    ['me'],
+    async () => {
+      const res = await fetch('/api/users/me');
+      if (res.ok) return await res.json();
+      throw new Error('Server error occurred during request.');
+    },
+    { enabled: status === 'authenticate' }
+  );
 
   return (
     <div className="flex flex-row flex-nowrap mb-8 relative">
@@ -94,6 +126,7 @@ const UserOptions = () => {
                     </a>
                   </Link>
                 </li>
+
                 <li>
                   <button
                     type="button"
@@ -103,6 +136,36 @@ const UserOptions = () => {
                     Logout
                   </button>
                 </li>
+
+                <hr />
+
+                {userData && userData.user && userData.user.role === 'ADMIN' ? (
+                  <>
+                    <li>
+                      <Link href="/admin/book/create">
+                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+                          Create Book
+                        </a>
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link href="/admin/author/create">
+                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+                          Create Author
+                        </a>
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link href="/admin/author/manage">
+                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+                          Manage Author
+                        </a>
+                      </Link>
+                    </li>
+                  </>
+                ) : null}
               </ul>
             </nav>
           </div>
@@ -138,7 +201,7 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
   );
 };
 
-const Header = () => {
+const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
   const { status } = useSession();
   const [menu, setMenu] = useState(true);
 
@@ -175,17 +238,7 @@ const Header = () => {
         </ul>
       </nav>
 
-      <button
-        className="my-4"
-        onClick={() => {
-          const html = document.querySelector('html');
-          if (html) {
-            html.className = html.className === 'dark' ? '' : 'dark';
-          }
-        }}
-      >
-        <i className="text-3xl dark:text-white fas fa-moon" />
-      </button>
+      <ThemeToggle setTheme={setTheme} />
     </header>
   );
 };
@@ -228,13 +281,27 @@ const Auth: React.FC<{
 };
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+  const [theme, setTheme] = useState<string>('');
+
+  useEffect(() => {
+    if (theme !== '') {
+      localStorage.setItem('theme', theme === 'light' ? 'light' : 'dark');
+      const html = document.querySelector('html');
+      if (html) html.className = theme;
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    setTheme(getDefaultTheme());
+  }, []);
+
   return (
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
         {(Component as any).auth ? (
           <>
             <Auth auth={(Component as any).auth}>
-              <Header />
+              <Header setTheme={setTheme} />
 
               <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
                 <UserOptions />
@@ -244,7 +311,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           </>
         ) : (
           <>
-            <Header />
+            <Header setTheme={setTheme} />
             <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
               <UserOptions />
               <Component {...pageProps} />
