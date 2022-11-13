@@ -98,7 +98,7 @@ const ManageAuthorsPage: NextPage = () => {
   const { data, isFetching, isLoading, error, refetch } = useQuery(
     ['author-manage', page],
     async () => {
-      const res = await fetch(`/api/author?page=${10}&limit=1`);
+      const res = await fetch(`/api/author?page=${page}&limit=10`);
 
       if (res.ok) return await res.json();
       throw new Error('An unexpected error occurred, please try again.');
@@ -134,7 +134,7 @@ const ManageAuthorsPage: NextPage = () => {
 
       {isLoading || isFetching ? <LoadingWheel /> : null}
       {data && data.results.length === 0 ? (
-        <div className="text-center py-10">No authors found</div>
+        <div className="text-center py-20 font-medium">No authors found</div>
       ) : null}
       <div className="w-full">
         <div className="flex justify-center">
