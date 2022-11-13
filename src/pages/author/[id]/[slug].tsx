@@ -1,13 +1,14 @@
 import { GetServerSideProps } from 'next';
+import { NextPage } from 'next/types';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import useInfiniteScroll from 'react-infinite-scroll-hook';
-import { prisma } from '../../../utils/db';
 import Link from 'next/link';
-import { NextPage } from 'next/types';
-import RefetchError from '../../../components/RefetchError';
 import Head from 'next/head';
+import useInfiniteScroll from 'react-infinite-scroll-hook';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import AdminMenu from '../../../components/AdminMenu';
+import { prisma } from '../../../utils/db';
+import RefetchError from '../../../components/RefetchError';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -98,8 +99,18 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       <Head>
         <title>{authorData.name}</title>
       </Head>
-      <header className="w-full py-6">
+
+      <header className="flex flex-row flex-nowrap w-full pt-4 pb-8 justify-between">
         <h3>{authorData.name}</h3>
+
+        <AdminMenu
+          links={[
+            {
+              title: 'Edit Author',
+              href: `/admin/author/${authorData.id}/edit`,
+            },
+          ]}
+        />
       </header>
 
       <div className="flex flex-col md:flex-row flex-nowrap ">

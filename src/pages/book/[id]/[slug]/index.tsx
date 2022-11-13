@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
+import AdminMenu from '../../../../components/AdminMenu';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
@@ -141,6 +142,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
       <Head>
         <title>{book.title}</title>
       </Head>
+
       <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
         <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0">
           <Image
@@ -154,6 +156,17 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
         </div>
 
         <div className="w-full">
+          <div className="text-right">
+            <AdminMenu
+              links={[
+                {
+                  title: 'Edit Book',
+                  href: `/admin/book/${book.id}/edit`,
+                },
+              ]}
+            />
+          </div>
+
           <h3 className="text-xl text-center mb-2 md:text-left">
             {book.title}
           </h3>
