@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import Head from 'next/head';
 import { useQuery } from '@tanstack/react-query';
+import Carousel, { BookItem } from '../../components/Carousel';
 import RefetchError from '../../components/RefetchError';
 import LoadingWheel from '../../components/LoadingWheel';
 
@@ -38,43 +38,16 @@ const DashboardPage: NextPage = () => {
         </div>
 
         <div className="">
-          <ul className="flex flex-row flex-nowrap">
-            {data.current.length ? (
-              data.current.map((item: any) => (
-                <li
-                  key={`current-${item.id}`}
-                  className="relative h-56 w-32 mr-4"
-                >
-                  <Link href={`/book/${item.book.id}/${item.book.slug}`}>
-                    <a>
-                      <div className="relative h-44 w-32 shadow-md mb-2">
-                        <Image
-                          className="rounded-lg"
-                          priority={true}
-                          layout="fill"
-                          src={item.book.displayImage}
-                          alt="Book covers"
-                        />
-                      </div>
-                      <div className="font-medium whitespace-nowrap text-ellipsis overflow-hidden">
-                        {item.book.title}
-                      </div>
-                    </a>
-                  </Link>
-
-                  <Link href={`/author/${item.book.author.id}`}>
-                    <a>
-                      <div className="text-gray-600">
-                        {item.book.author.name}
-                      </div>
-                    </a>
-                  </Link>
-                </li>
-              ))
-            ) : (
-              <li className=" ">You have no current book</li>
-            )}
-          </ul>
+          <Carousel>
+            {data.current
+              ? data.current.map((reservation: any) => (
+                  <BookItem
+                    key={`recent-book-${reservation.book.id}`}
+                    book={reservation.book}
+                  />
+                ))
+              : null}
+          </Carousel>
         </div>
       </div>
 
