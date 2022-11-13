@@ -1,6 +1,6 @@
 const Loading = ({ text }: { text?: string }) => {
   return (
-    <div className="flex flex-col flex-nowrap w-full h-full items-center justify-center">
+    <div className="flex flex-col flex-nowrap w-full h-full items-center justify-center bg-custom-bg-light dark:bg-custom-bg-dark">
       <div className="relative h-40 [transform-style:preserve-3d]">
         <div className="w-32 h-full absolute top-0 left-0 rounded-r-lg [transform-style:preserve-3d] animate-book-back motion-reduce:animation-none origin-[left_center] bg-sky-500" />
         <div className="w-32 h-full absolute top-0 left-0 rounded-r-lg [transform-style:preserve-3d] animate-book-page-6 motion-reduce:animation-none origin-[left_center] bg-[#fdfdfd]" />
@@ -13,7 +13,9 @@ const Loading = ({ text }: { text?: string }) => {
       </div>
 
       <div className="block">
-        {text ? <div className="mt-8 text-center">{text}</div> : null}
+        {text ? (
+          <div className="mt-8 text-center dark:text-white">{text}</div>
+        ) : null}
       </div>
     </div>
   );
