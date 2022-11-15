@@ -5,16 +5,23 @@ const FileInput = ({
   name,
   label,
   error,
-  initalValue,
+  initialValue,
+  removable = false,
+  defaultUrl = '',
 }: {
   name: string;
   label: string;
   error?: string | null;
-  initalValue?: string | null;
+  initialValue?: string | null;
+  removable?: boolean;
+  defaultUrl?: string;
 }) => {
-  const [value, setValue] = useState<File | undefined>();
-  const [fileUrl, setFileUrl] = useState<string | undefined>(initalValue || '');
   const ref = createRef<HTMLInputElement>();
+  const [remove, setRemove] = useState(false);
+  const [value, setValue] = useState<File | undefined>();
+  const [fileUrl, setFileUrl] = useState<string | undefined>(
+    initialValue || ''
+  );
 
   useEffect(() => {
     if (value) {
@@ -25,6 +32,7 @@ const FileInput = ({
       };
 
       reader.readAsDataURL(value);
+      setRemove(false);
     }
   }, [value]);
 
@@ -70,6 +78,32 @@ const FileInput = ({
 
       {error ? (
         <span className="block text-red-500 text-sm">{error}</span>
+      ) : null}
+
+      {removable ? (
+        <>
+          <input
+            id={`${name}_remove`}
+            name={`${name}_remove`}
+            type="hidden"
+            value={remove ? 'true' : 'false'}
+            onChange={() => {}}
+          />
+
+          <button
+            className="block w-full text-center disabled:text-gray-500"
+            type="button"
+            disabled={remove || initialValue === defaultUrl}
+            onClick={() => {
+              setRemove(true);
+              setFileUrl(defaultUrl);
+              setValue(undefined);
+              if (ref.current) ref.current.value = '';
+            }}
+          >
+            Remove Image
+          </button>
+        </>
       ) : null}
     </label>
   );
