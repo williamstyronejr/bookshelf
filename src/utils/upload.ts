@@ -24,6 +24,11 @@ if (admin.apps.length === 0) {
 
 const storage = admin.storage().bucket(FIREBASE_STORAGE_BUCKET);
 
+export async function deleteFirebaseFile(url: string) {
+  const internalUrl = url.split('/o/').slice(1).join('/o/').split('?')[0];
+  return await storage.file(internalUrl).delete();
+}
+
 export const uploadFirebaseFile = function (
   fileName: string,
   contentType: string
