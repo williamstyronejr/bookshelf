@@ -109,7 +109,8 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
             name="profileImage"
             label="Author Image"
             error={fieldErrors.profileImage}
-            initalValue={authorData.profileImage}
+            initialValue={authorData.profileImage}
+            removable={true}
           />
 
           <Input

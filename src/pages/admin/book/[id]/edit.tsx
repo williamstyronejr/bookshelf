@@ -1,15 +1,16 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import * as React from 'react';
 import dayjs from 'dayjs';
+import Head from 'next/head';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Input from '../../../../components/Input';
 import InputSuggestion from '../../../../components/InputSuggestion';
 import FileInput from '../../../../components/FileInput';
 import { prisma } from '../../../../utils/db';
 import { validateBook } from '../../../../utils/validation';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
+import { defaultBookImage } from '../../../../utils/default';
 dayjs.extend(customParseFormat);
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -96,6 +97,7 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
       <Head>
         <title>{book.title} - Edit</title>
       </Head>
+
       <form className="" onSubmit={handleSubmit}>
         <header>
           {error ? (
@@ -110,7 +112,9 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
             name="displayImage"
             label="Click to Change Book Cover"
             error={fieldErrors.displayImage}
-            initalValue={book.displayImage}
+            initialValue={book.displayImage}
+            removable={true}
+            defaultUrl={defaultBookImage}
           />
 
           <Input
