@@ -22,6 +22,54 @@ function validatePassword(password: string | undefined, optional = false) {
   return null;
 }
 
+function validateUsername(username: string | undefined, optional = false) {
+  if (optional && typeof username !== 'string') return null;
+
+  if (typeof username === 'string') {
+    if (username.length > 16 || username.length < 4)
+      return 'Username must be between 4 and 16 characters';
+  } else {
+    return 'Must provide a username.';
+  }
+
+  return null;
+}
+
+function validateEmail(email: string | undefined, optional = false) {
+  if (optional && typeof email !== 'string') return null;
+
+  if (typeof email === 'string') {
+    if (!email.includes('@')) {
+      return 'Provide a valid email';
+    }
+  } else {
+    return 'Must provide an email';
+  }
+
+  return null;
+}
+
+export function validateAccount(
+  { username, email }: { username: string; email: string },
+  optional = false
+) {
+  const errors: {
+    username?: string;
+    email?: string;
+  } = {};
+
+  const usernameError = validateUsername(username, optional);
+  if (usernameError) errors.username = usernameError;
+
+  const emailError = validateEmail(email, optional);
+  if (emailError) errors.email = emailError;
+
+  return {
+    errors,
+    valid: Object.keys(errors).length === 0,
+  };
+}
+
 export function validateUser({
   username,
   password,
