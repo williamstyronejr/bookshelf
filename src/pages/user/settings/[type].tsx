@@ -1,30 +1,19 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState, SyntheticEvent } from 'react';
-import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Head from 'next/head';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
-import { validateNewPassword, validateUser } from '../../../utils/validation';
-import { getServerAuthSession } from '../../../utils/serverSession';
+import {
+  validateNewPassword,
+  validateAccount,
+} from '../../../utils/validation';
 import { defaultProfileImage } from '../../../utils/default';
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
-  if (!session || !session.user) {
-    return {
-      props: {},
-      redirect: '/',
-    };
-  }
-
-  return {
-    props: {
-      user: session.user,
-    },
-  };
-};
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { signIn } from 'next-auth/react';
+import LoadingWheel from '../../../components/LoadingWheel';
+import RefetchError from '../../../components/RefetchError';
 
 const PasswordForm = () => {
   const [fieldErrors, setFieldErrors] = useState<{
@@ -84,6 +73,7 @@ const PasswordForm = () => {
 };
 
 const AccountForm = ({
+  initProfile,
   initUsername,
   initEmail,
 }: {
@@ -94,20 +84,39 @@ const AccountForm = ({
   const [fieldErrors, setFieldErrors] = useState<{
     username?: string;
     email?: string;
+    profileImage?: string;
   }>({});
+
+  const {
+    data: success,
+    mutate,
+    error,
+    isLoading,
+  } = useMutation(['account', 'settings'], async (formData: FormData) => {
+    const res = await fetch('/api/users/settings/account', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (res.ok) return (await res.json()).success;
+    if (res.status === 401) return signIn();
+    if (res.status === 400) {
+      const errors = await res.json();
+      return setFieldErrors(errors);
+    }
+    throw new Error('Unexpected error occurred, please try again.');
+  });
 
   const handleSubmit = (evt: SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setFieldErrors({});
 
     const formData = new FormData(evt.currentTarget);
     const fields: any = Object.fromEntries(formData.entries());
-    const inputs: any = {};
-    if (fields.username !== '') inputs.username = fields.username;
-    if (fields.email !== '') inputs.email = fields.email;
-    const { valid, errors } = validateUser(fields);
+    const { valid, errors } = validateAccount(fields);
     if (!valid) return setFieldErrors(errors);
 
-    if (Object.keys(inputs).length === 0) return;
+    mutate(formData);
   };
 
   return (
@@ -116,7 +125,30 @@ const AccountForm = ({
         <title>Settings - Account</title>
       </Head>
 
-      <fieldset className="">
+      <header>
+        {success ? (
+          <div className="py-4 px-2 text-center rounded-md bg-green-500 text-white">
+            Account has successfully been updated.
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="py-4 px-2 text-center rounded-md bg-red-500 text-white">
+            Unexpected error occurred, please try again.
+          </div>
+        ) : null}
+      </header>
+
+      <fieldset>
+        <FileInput
+          name="profileImage"
+          label="Profile Image"
+          initialValue={initProfile}
+          error={fieldErrors.profileImage}
+          removable={true}
+          defaultUrl={defaultProfileImage}
+        />
+
         <Input
           name="username"
           type="text"
@@ -136,18 +168,25 @@ const AccountForm = ({
         />
       </fieldset>
 
-      <button
-        className="block bg-custom-btn-submit py-2 px-4 mx-auto rounded text-white"
-        type="submit"
-      >
+      <button className="btn-submit" type="submit" disabled={isLoading}>
         Update Account
       </button>
     </form>
   );
 };
 
-const SettingsPage: NextPage<{ user: any }> = ({ user }) => {
+const SettingsPage: NextPage<{}> = () => {
   const { query } = useRouter();
+
+  const { data, isLoading, error, refetch } = useQuery(
+    ['settings'],
+    async () => {
+      const res = await fetch('/api/users/settings');
+      if (res.ok) return await res.json();
+      if (res.status === 401) return signIn();
+      throw new Error('Unexpected error occurred, please try again.');
+    }
+  );
 
   return (
     <section className="max-w-2xl mx-auto">
@@ -191,10 +230,22 @@ const SettingsPage: NextPage<{ user: any }> = ({ user }) => {
         </aside>
 
         <div className="flex-grow mx-auto py-4 px-12">
-          {query.type === 'account' ? (
-            <AccountForm initUsername={user.username} initEmail={user.email} />
+          {isLoading ? <LoadingWheel /> : null}
+          {error ? <RefetchError refetch={refetch} /> : null}
+
+          {data ? (
+            <>
+              {query.type === 'account' ? (
+                <AccountForm
+                  initProfile={data.user.image}
+                  initUsername={data.user.name}
+                  initEmail={data.user.email}
+                />
+              ) : null}
+
+              {query.type === 'password' ? <PasswordForm /> : null}
+            </>
           ) : null}
-          {query.type === 'password' ? <PasswordForm /> : null}
         </div>
       </div>
     </section>
