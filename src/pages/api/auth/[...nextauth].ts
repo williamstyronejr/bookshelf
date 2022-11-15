@@ -24,22 +24,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     session: async ({ user, session }) => {
-      if (session.user) {
-        session.user.id = user.id;
-
-        if (session.user.image) {
-          // Grab base url for images
-          const results = await prisma.storageSettings.findMany({
-            where: { current: true },
-          });
-
-          if (results.length === 0 || results.length > 1) {
-            // Error with storage base url
-          } else {
-            session.user.image = `${results[0].baseUrl}${session.user.image}?alt=media`;
-          }
-        }
-      }
+      if (session.user) session.user.id = user.id;
       return session;
     },
   },
