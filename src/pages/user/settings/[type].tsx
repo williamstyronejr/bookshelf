@@ -3,10 +3,12 @@ import { useRouter } from 'next/router';
 import { useState, SyntheticEvent } from 'react';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
+import Head from 'next/head';
 import Input from '../../../components/Input';
+import FileInput from '../../../components/FileInput';
 import { validateNewPassword, validateUser } from '../../../utils/validation';
 import { getServerAuthSession } from '../../../utils/serverSession';
-import Head from 'next/head';
+import { defaultProfileImage } from '../../../utils/default';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -85,6 +87,7 @@ const AccountForm = ({
   initUsername,
   initEmail,
 }: {
+  initProfile: string;
   initUsername: string;
   initEmail: string;
 }) => {
