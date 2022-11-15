@@ -1,11 +1,11 @@
 import '../../styles/globals.css';
 import type { AppProps } from 'next/app';
+import { useRef, useState, FC, useEffect, ReactNode } from 'react';
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import React, { useRef, useState, FC, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
 import Link from 'next/link';
@@ -243,9 +243,9 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
   );
 };
 
-const Auth: React.FC<{
+const Auth: FC<{
   auth: { admin?: boolean };
-  children: React.ReactNode;
+  children: ReactNode;
 }> = ({ auth, children }) => {
   const router = useRouter();
   const { data, status } = useSession({ required: true });
