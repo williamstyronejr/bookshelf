@@ -3,74 +3,14 @@ import { useRouter } from 'next/router';
 import { useState, SyntheticEvent } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { signIn } from 'next-auth/react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
-import {
-  validateNewPassword,
-  validateAccount,
-} from '../../../utils/validation';
-import { defaultProfileImage } from '../../../utils/default';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { signIn } from 'next-auth/react';
 import LoadingWheel from '../../../components/LoadingWheel';
 import RefetchError from '../../../components/RefetchError';
-
-const PasswordForm = () => {
-  const [fieldErrors, setFieldErrors] = useState<{
-    oldPassword?: string;
-    newPassword?: string;
-    confirmPassword?: string;
-  }>({});
-  const handleSubmit = (evt: SyntheticEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-
-    const formData = new FormData(evt.currentTarget);
-    const fields: any = Object.fromEntries(formData.entries());
-
-    const { valid, errors } = validateNewPassword(fields);
-    if (!valid) return setFieldErrors(errors);
-  };
-
-  return (
-    <form className="" onSubmit={handleSubmit}>
-      <Head>
-        <title>Settings - Password</title>
-      </Head>
-      <fieldset>
-        <Input
-          name="oldPassword"
-          type="password"
-          label="Old Password"
-          placeholder="Old Password ..."
-          error={fieldErrors.oldPassword}
-        />
-
-        <Input
-          name="newPassword"
-          type="password"
-          label="New Password"
-          placeholder="New Password ..."
-          error={fieldErrors.newPassword}
-        />
-
-        <Input
-          name="confirmPassword"
-          type="password"
-          label="Confirm Password"
-          placeholder="Confirm New Password ..."
-          error={fieldErrors.confirmPassword}
-        />
-      </fieldset>
-
-      <button
-        className="block bg-custom-btn-submit py-2 px-4 mx-auto rounded text-white"
-        type="submit"
-      >
-        Update Password
-      </button>
-    </form>
-  );
-};
+import { validateAccount } from '../../../utils/validation';
+import { defaultProfileImage } from '../../../utils/default';
 
 const AccountForm = ({
   initProfile,
@@ -213,19 +153,6 @@ const SettingsPage: NextPage<{}> = () => {
                 <a className="block w-full py-3 md:py-4">Account</a>
               </Link>
             </li>
-
-            <li
-              className={`inline-block md:block w-3/6 md:w-full 
-            md:border-l-2 ${
-              query.type === 'password'
-                ? 'md:border-black dark:md:border-white bg-custom-bg-off-light dark:bg-custom-bg-off-dark font-semibold'
-                : 'md:border-transparent md:hover:border-gray-200 hover:bg-custom-bg-off-light hover:dark:bg-custom-bg-off-dark'
-            }`}
-            >
-              <Link href="/user/settings/password">
-                <a className="block w-full py-3 md:py-4">Password</a>
-              </Link>
-            </li>
           </ul>
         </aside>
 
@@ -242,8 +169,6 @@ const SettingsPage: NextPage<{}> = () => {
                   initEmail={data.user.email}
                 />
               ) : null}
-
-              {query.type === 'password' ? <PasswordForm /> : null}
             </>
           ) : null}
         </div>
