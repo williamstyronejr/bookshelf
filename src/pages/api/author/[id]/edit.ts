@@ -2,9 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../../../utils/db';
 import { validateAuthor } from '../../../../utils/validation';
-import { uploadFile } from '../../../../utils/upload';
+import { deleteFirebaseFile, uploadFile } from '../../../../utils/upload';
 import { createSlug } from '../../../../utils/slug';
 import { getUserDataFromSession } from '../../../../utils/serverSession';
+import { defaultProfileImage } from '../../../../utils/default';
 
 type Data = {};
 
@@ -26,16 +27,28 @@ export default async function handler(
     }
 
     const { fields, publicUrl } = await uploadFile(req);
-
     const { errors, valid } = validateAuthor(fields, true);
     if (!valid) return res.status(400).json(errors);
 
     const data: Prisma.AuthorUpdateInput = {};
-    if (publicUrl) data.profileImage = publicUrl;
     if (fields.bio) data.bio = fields.bio;
     if (fields.name) {
       data.name = fields.name;
       data.slug = createSlug(fields.name);
+    }
+    if (publicUrl || fields.profileImage_remove === 'true') {
+      const oldAuthor = await prisma.author.findUnique({
+        where: { id: parseInt(query.id.toString()) },
+      });
+
+      if (
+        oldAuthor &&
+        oldAuthor.profileImage &&
+        oldAuthor.profileImage !== defaultProfileImage
+      ) {
+        await deleteFirebaseFile(oldAuthor.profileImage);
+      }
+      data.profileImage = publicUrl || defaultProfileImage;
     }
 
     const author = await prisma.author.update({

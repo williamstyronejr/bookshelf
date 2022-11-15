@@ -3,9 +3,10 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { validateBook } from '../../../../utils/validation';
 import { prisma } from '../../../../utils/db';
-import { uploadFile } from '../../../../utils/upload';
+import { uploadFile, deleteFirebaseFile } from '../../../../utils/upload';
 import { createSlug } from '../../../../utils/slug';
 import { getUserDataFromSession } from '../../../../utils/serverSession';
+import { defaultBookImage } from '../../../../utils/default';
 dayjs.extend(customParseFormat);
 
 type Data = {
@@ -37,9 +38,24 @@ export default async function handler(
     }
 
     const { fields, publicUrl } = await uploadFile(req);
-
     const { errors, valid } = validateBook(fields);
     if (!valid) return res.status(400).json(errors);
+
+    let displayImage = undefined;
+    if (fields.displayImage_remove === 'true' || publicUrl) {
+      const oldBook = await prisma.book.findUnique({
+        where: { id: parseInt(id.toString()) },
+      });
+
+      if (
+        oldBook &&
+        oldBook.displayImage &&
+        oldBook.displayImage !== defaultBookImage
+      ) {
+        await deleteFirebaseFile(oldBook.displayImage);
+      }
+      displayImage = publicUrl || defaultBookImage;
+    }
 
     const author = await prisma.author.findUnique({
       where: {
@@ -66,7 +82,7 @@ export default async function handler(
         isbn13: fields.isbn13,
         slug: createSlug(fields.title),
         copiesCount: parseInt(fields.copiesCount),
-        displayImage: publicUrl || '',
+        displayImage: displayImage,
         publishedDate: dayjs(fields.publishedDate, 'MM/DD/YYYY').toDate(),
         author: {
           connect: { id: parseInt(fields.author) },
