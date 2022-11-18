@@ -1,16 +1,17 @@
 import type { NextPage } from 'next';
-import * as React from 'react';
+import { useState, SyntheticEvent } from 'react';
+import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import Input from '../../../components/Input';
-import InputSuggestion from '../../../components/InputSuggestion';
 import FileInput from '../../../components/FileInput';
+import InputSuggestion from '../../../components/InputSuggestion';
 import { validateBook } from '../../../utils/validation';
-import Head from 'next/head';
+import { defaultBookImage } from '../../../utils/default';
 
 const CreateBookPage: NextPage = () => {
   const router = useRouter();
-  const [fieldErrors, setFieldErrors] = React.useState<any>({});
+  const [fieldErrors, setFieldErrors] = useState<any>({});
 
   const { data, mutate, isLoading, error } = useMutation(
     ['create-book'],
@@ -32,7 +33,7 @@ const CreateBookPage: NextPage = () => {
     }
   );
 
-  const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = (evt: SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setFieldErrors({});
 
@@ -57,7 +58,7 @@ const CreateBookPage: NextPage = () => {
       </header>
 
       <form
-        className="max-w-2xl bg-custom-background mx-auto px-10 py-4 mt-2"
+        className="max-w-2xl mx-auto px-10 py-4 mt-2"
         onSubmit={handleSubmit}
       >
         <header>
@@ -73,6 +74,9 @@ const CreateBookPage: NextPage = () => {
             name="displayImage"
             label="Click to Change Book Cover"
             error={fieldErrors.displayImage}
+            removable={true}
+            initialValue={defaultBookImage}
+            defaultUrl={defaultBookImage}
           />
 
           <Input

@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
 import { validateAuthor } from '../../../utils/validation';
+import { defaultProfileImage } from '../../../utils/default';
 
 const AuthorCreatePage: NextPage = () => {
   const router = useRouter();
@@ -75,6 +76,9 @@ const AuthorCreatePage: NextPage = () => {
             name="profileImage"
             label="Author Image"
             error={fieldErrors.profileImage}
+            removable={true}
+            initialValue={defaultProfileImage}
+            defaultUrl={defaultProfileImage}
           />
 
           <Input
