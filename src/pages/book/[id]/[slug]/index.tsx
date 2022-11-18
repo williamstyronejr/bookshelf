@@ -144,7 +144,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
       </Head>
 
       <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
-        <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0">
+        <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0 md:mr-4">
           <Image
             className="rounded-lg"
             priority={true}

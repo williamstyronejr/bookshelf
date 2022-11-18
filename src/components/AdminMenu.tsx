@@ -1,4 +1,4 @@
-import { FC, useState, useRef } from 'react';
+import { FC, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -30,11 +30,7 @@ const AdminMenu: FC<{
 
   return (
     <div ref={ref} className="relative">
-      <button
-        className="text-2xl"
-        type="button"
-        onClick={() => setMenu((old) => !old)}
-      >
+      <button className="text-2xl" type="button" onClick={() => setMenu(!menu)}>
         <i className="fas fa-cog" />
       </button>
 
@@ -45,7 +41,7 @@ const AdminMenu: FC<{
       >
         {links.map((item, index) => (
           <Link key={`${item.title}-${index}`} href={item.href}>
-            <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+            <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30">
               {item.title}
             </a>
           </Link>
