@@ -57,7 +57,7 @@ const UserOptions = () => {
       if (res.ok) return await res.json();
       throw new Error('Server error occurred during request.');
     },
-    { enabled: status === 'authenticate' }
+    { enabled: status === 'authenticated', refetchOnMount: false }
   );
 
   return (
@@ -115,13 +115,13 @@ const UserOptions = () => {
           <div
             className={`${
               menu ? 'block' : 'hidden'
-            } absolute z-20 right-6 top-16 w-60 bg-custom-bg-light dark:bg-custom-bg-off-dark  py-4 px-2 rounded-lg shadow-md`}
+            } absolute z-20 right-6 top-16 w-60 bg-custom-bg-light dark:bg-custom-bg-dark py-4 px-2 rounded-lg shadow-md dark:shadow-white/20`}
           >
             <nav className="">
               <ul className="">
                 <li>
                   <Link href="/user/settings/account">
-                    <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
+                    <a className="block w-full text-left p-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30 transition-colors">
                       Settings
                     </a>
                   </Link>
@@ -130,7 +130,7 @@ const UserOptions = () => {
                 <li>
                   <button
                     type="button"
-                    className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
+                    className="block w-full text-left p-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30 transition-colors"
                     onClick={() => signOut()}
                   >
                     Logout
