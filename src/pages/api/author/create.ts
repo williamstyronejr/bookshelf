@@ -6,6 +6,7 @@ import { validateAuthor } from '../../../utils/validation';
 import { uploadFirebaseFile } from '../../../utils/upload';
 import { createSlug } from '../../../utils/slug';
 import { getUserDataFromSession } from '../../../utils/serverSession';
+import { defaultProfileImage } from '../../../utils/default';
 
 type Data = {};
 
@@ -60,13 +61,13 @@ export default async function handler(
     );
 
     const { errors, valid } = validateAuthor(fields);
-    if (valid) return res.status(400).json(errors);
+    if (!valid) return res.status(400).json(errors);
 
     const data: Prisma.AuthorCreateInput = {
       slug: createSlug(fields.name),
       name: fields.name,
     };
-    if (publicUrl) data.profileImage = publicUrl;
+    data.profileImage = publicUrl || defaultProfileImage;
     if (fields.bio) data.bio = fields.bio;
 
     const author = await prisma.author.create({

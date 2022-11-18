@@ -6,6 +6,7 @@ import { createSlug } from '../../../utils/slug';
 import { getUserDataFromSession } from '../../../utils/serverSession';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { defaultBookImage } from '../../../utils/default';
 dayjs.extend(customParseFormat);
 
 type Data = {
@@ -55,7 +56,7 @@ export default async function handler(
         isbn13: fields.isbn13,
         slug: createSlug(fields.title),
         copiesCount: parseInt(fields.copiesCount),
-        displayImage: publicUrl || '',
+        displayImage: publicUrl || defaultBookImage,
         publishedDate: dayjs(fields.publishedDate, 'MM/DD/YYYY').toDate(),
         description: fields.description,
         author: {
