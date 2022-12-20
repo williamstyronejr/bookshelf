@@ -94,6 +94,9 @@ module.exports = {
           'text-dark-subtle': '#9f9f9f',
         },
       },
+      maxWidth: {
+        1920: '1920px',
+      },
     },
   },
   plugins: [],
