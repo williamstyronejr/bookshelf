@@ -87,29 +87,30 @@ const UserListPage: NextPage = () => {
                     className="flex flex-col items-center md:flex-row flex-nowrap my-4 border py-2 px-2 rounded-lg"
                   >
                     <Link href={`/book/${book.id}/${book.slug}`}>
-                      <a>
-                        <div className="relative w-32 h-40 md:mr-6">
-                          <Image
-                            className="rounded-lg"
-                            priority={true}
-                            layout="fill"
-                            src={book.displayImage}
-                            alt="Book covers"
-                          />
-                        </div>
-                      </a>
+                      <div className="relative w-32 h-40 md:mr-6">
+                        <Image
+                          className="rounded-lg"
+                          priority={true}
+                          fill={true}
+                          src={book.displayImage}
+                          alt="Book covers"
+                        />
+                      </div>
                     </Link>
 
                     <div className="md:flex-grow">
-                      <Link href={`/book/${book.id}/${book.slug}`}>
-                        <a>
-                          <div className="font-medium">{book.title}</div>
-                        </a>
-                      </Link>
                       <Link
+                        className="font-medium"
+                        href={`/book/${book.id}/${book.slug}`}
+                      >
+                        <div className="">{book.title}</div>
+                      </Link>
+
+                      <Link
+                        className="text-gray-600"
                         href={`/author/${book.author.id}/${book.author.slug}`}
                       >
-                        <a className="text-gray-600">{book.author.name}</a>
+                        {book.author.name}
                       </Link>
                     </div>
 

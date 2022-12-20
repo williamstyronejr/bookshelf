@@ -44,12 +44,12 @@ const Carousel: FC<{ children: ReactNode }> = ({ children }) => {
 export const BookItem = ({ book }: { book: any }) => (
   <div className="relative shrink-0 w-32 mr-6 max-w-[175px]">
     <Link href={`/book/${book.id}/${book.slug}`}>
-      <a>
+      <>
         <div className="relative h-56 shadow-md mb-2">
           <Image
             className="rounded-lg"
             priority={true}
-            layout="fill"
+            fill={true}
             src={book.displayImage}
             alt="Book covers"
           />
@@ -57,13 +57,14 @@ export const BookItem = ({ book }: { book: any }) => (
         <div className="font-medium whitespace-nowrap text-ellipsis overflow-hidden">
           {book.title}
         </div>
-      </a>
+      </>
     </Link>
 
-    <Link href={`/author/${book.author.id}/${book.author.slug}`}>
-      <a>
-        <div className="text-gray-600">{book.author.name}</div>
-      </a>
+    <Link
+      className="block text-gray-600"
+      href={`/author/${book.author.id}/${book.author.slug}`}
+    >
+      {book.author.name}
     </Link>
   </div>
 );

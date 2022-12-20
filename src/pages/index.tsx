@@ -111,23 +111,22 @@ export default function LibraryPage({
                 >
                   <div className="relative w-32 h-52 mx-auto mb-4 border-2 border-transparent hover:border-black rounded-lg">
                     <Link href={`/book/${data.book.id}/${data.book.slug}`}>
-                      <a>
-                        <Image
-                          className="rounded-lg"
-                          priority={true}
-                          layout="fill"
-                          src={data.book.displayImage}
-                          alt="Book cover"
-                        />
-                      </a>
+                      <Image
+                        className="rounded-lg"
+                        priority={true}
+                        fill={true}
+                        src={data.book.displayImage}
+                        alt="Book cover"
+                      />
                     </Link>
                   </div>
 
                   <div>
-                    <Link href={`/library/search?genre=${data.genre.id}`}>
-                      <a className="hover:underline hover:text-custom-text-highlight-light dark:hover:text-custom-text-highlight-dark">
-                        {data.genre.name}
-                      </a>
+                    <Link
+                      className="hover:underline hover:text-custom-text-highlight-light dark:hover:text-custom-text-highlight-dark"
+                      href={`/library/search?genre=${data.genre.id}`}
+                    >
+                      {data.genre.name}
                     </Link>
                   </div>
                 </li>

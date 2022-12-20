@@ -146,10 +146,9 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
       <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
         <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0 md:mr-4">
           <Image
-            className="rounded-lg"
+            className="rounded-lg object-contain"
             priority={true}
-            layout="fill"
-            objectFit="contain"
+            fill={true}
             src={book.displayImage}
             alt="Book covers"
           />
@@ -174,7 +173,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
           <div className="mb-6 text-sm text-center md:text-left">
             <span>by </span>
             <Link href={`/author/${book.author.id}/${book.author.slug}`}>
-              <a className="">{book.author.name}</a>
+              {book.author.name}
             </Link>
             <hr />
           </div>
@@ -198,10 +197,11 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             <div className="py-4 text-lg">{availableCount} Books Left </div>
 
             <div className="py-2 flex flex-row flex-nowrap justify-center md:block">
-              <Link href={`/book/${book.id}/${book.slug}/reserve`}>
-                <a className="rounded-3xl px-4 py-4 mr-4 bg-[#21a953] text-white">
-                  Reserve Today!
-                </a>
+              <Link
+                className="rounded-3xl px-4 py-4 mr-4 bg-[#21a953] text-white"
+                href={`/book/${book.id}/${book.slug}/reserve`}
+              >
+                Reserve Today!
               </Link>
 
               {status === 'authenticated' ? (

@@ -98,7 +98,14 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
         <title>{book.title} - Edit</title>
       </Head>
 
-      <form className="" onSubmit={handleSubmit}>
+      <header className="my-4">
+        <h3 className="">Edit Book</h3>
+      </header>
+
+      <form
+        className="max-w-2xl mx-auto px-10 py-4 mt-2"
+        onSubmit={handleSubmit}
+      >
         <header>
           {error ? (
             <div className="w-full bg-red-500 py-6 px-4 rounded-md text-white">

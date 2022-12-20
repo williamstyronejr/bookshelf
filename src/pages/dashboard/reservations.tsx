@@ -39,10 +39,9 @@ const ReservationsPage: NextPage = () => {
                 >
                   <div className="relative w-full h-32 md:w-20 md:h-20 mr-4">
                     <Image
-                      className="rounded-lg"
+                      className="rounded-lg object-contain"
                       priority={true}
-                      layout="fill"
-                      objectFit="contain"
+                      fill={true}
                       src={item.book.displayImage}
                       alt="Book cover"
                     />

@@ -62,7 +62,7 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
                 <Image
                   className="rounded-lg"
                   priority={true}
-                  layout="fill"
+                  fill={true}
                   src={book.displayImage}
                   alt="Book covers"
                 />
@@ -73,10 +73,11 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
       </div>
 
       <div className="flex flex-col flex-nowrap justify-around shrink-0">
-        <Link href={`/admin/author/${author.id}/edit`}>
-          <a className="block bg-custom-btn-submit text-center text-white px-4 py-2 rounded-lg">
-            Edit
-          </a>
+        <Link
+          className="block bg-custom-btn-submit text-center text-white px-4 py-2 rounded-lg"
+          href={`/admin/author/${author.id}/edit`}
+        >
+          Edit
         </Link>
 
         <button

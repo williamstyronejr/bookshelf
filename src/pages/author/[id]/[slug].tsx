@@ -119,7 +119,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
             <Image
               className="rounded-full"
               priority={true}
-              layout="fill"
+              fill={true}
               src={authorData.profileImage || ''}
               alt="User Profile"
             />
@@ -151,31 +151,34 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                       <Image
                         className="rounded-lg"
                         priority={true}
-                        layout="fill"
+                        fill={true}
                         src={book.displayImage}
                         alt="Book covers"
                       />
                     </div>
 
                     <div className="flex-grow md:ml-4">
-                      <Link href={`/book/${book.id}/${book.slug}`}>
-                        <a className="font-medium">{book.title}</a>
+                      <Link
+                        className="font-medium"
+                        href={`/book/${book.id}/${book.slug}`}
+                      >
+                        {book.title}
                       </Link>
 
                       <Link
+                        className="block text-gray-600"
                         href={`/author/${book.author.id}/${book.author.slug}`}
                       >
-                        <a className="block text-gray-600">
-                          {book.author.name}
-                        </a>
+                        {book.author.name}
                       </Link>
                     </div>
 
                     <div className="shrink-0 py-5 md:p-0 flex-grow">
-                      <Link href={`/book/${book.id}/${book.slug}/reserve`}>
-                        <a className="block w-full text-center md:inline py-4 px-2 bg-sky-500 rounded-lg">
-                          Reserve
-                        </a>
+                      <Link
+                        className="block w-full text-center md:inline py-4 px-2 bg-sky-500 rounded-lg"
+                        href={`/book/${book.id}/${book.slug}/reserve`}
+                      >
+                        Reserve
                       </Link>
                     </div>
                   </li>

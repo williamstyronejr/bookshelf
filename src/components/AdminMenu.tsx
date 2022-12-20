@@ -40,10 +40,12 @@ const AdminMenu: FC<{
         }`}
       >
         {links.map((item, index) => (
-          <Link key={`${item.title}-${index}`} href={item.href}>
-            <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30">
-              {item.title}
-            </a>
+          <Link
+            className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+            key={`${item.title}-${index}`}
+            href={item.href}
+          >
+            {item.title}
           </Link>
         ))}
       </div>

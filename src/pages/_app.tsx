@@ -45,8 +45,8 @@ const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
 const UserOptions = () => {
   const router = useRouter();
-  const { data, status } = useSession();
   const ref = useRef<HTMLDivElement>(null);
+  const { data, status } = useSession();
   const [search, setSearch] = useState('');
   const [menu, setMenu] = useMenuToggle(ref, false);
 
@@ -59,6 +59,12 @@ const UserOptions = () => {
     },
     { enabled: status === 'authenticated', refetchOnMount: false }
   );
+
+  // Disable Menu on router switch (Eslint needs to be ignored)
+  useEffect(() => {
+    setMenu(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.pathname]);
 
   return (
     <div className="flex flex-row flex-nowrap mb-8 relative">
@@ -99,7 +105,7 @@ const UserOptions = () => {
                   <Image
                     className="rounded-lg"
                     priority={true}
-                    layout="fill"
+                    fill={true}
                     src={data ? data?.user?.image || '' : ''}
                     alt="Book covers"
                   />
@@ -120,10 +126,11 @@ const UserOptions = () => {
             <nav className="">
               <ul className="">
                 <li>
-                  <Link href="/user/settings/account">
-                    <a className="block w-full text-left p-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30 transition-colors">
-                      Settings
-                    </a>
+                  <Link
+                    className="block w-full text-left p-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30 transition-colors"
+                    href="/user/settings/account"
+                  >
+                    Settings
                   </Link>
                 </li>
 
@@ -142,26 +149,29 @@ const UserOptions = () => {
                 {userData && userData.user && userData.user.role === 'ADMIN' ? (
                   <>
                     <li>
-                      <Link href="/admin/book/create">
-                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
-                          Create Book
-                        </a>
+                      <Link
+                        className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
+                        href="/admin/book/create"
+                      >
+                        Create Book
                       </Link>
                     </li>
 
                     <li>
-                      <Link href="/admin/author/create">
-                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
-                          Create Author
-                        </a>
+                      <Link
+                        className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
+                        href="/admin/author/create"
+                      >
+                        Create Author
                       </Link>
                     </li>
 
                     <li>
-                      <Link href="/admin/author/manage">
-                        <a className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark">
-                          Manage Author
-                        </a>
+                      <Link
+                        className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
+                        href="/admin/author/manage"
+                      >
+                        Manage Author
                       </Link>
                     </li>
                   </>
@@ -185,17 +195,16 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
         isMatch ? 'border-blue-500' : 'border-transparent'
       }`}
     >
-      <Link href={to}>
-        <a
-          className={`block w-full text-center text-lg py-2 ${
-            isMatch
-              ? 'text-custom-text-light dark:text-custom-text-dark'
-              : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
-          }`}
-          aria-current={isMatch ? 'page' : 'false'}
-        >
-          {label}
-        </a>
+      <Link
+        className={`block w-full text-center text-lg py-2 ${
+          isMatch
+            ? 'text-custom-text-light dark:text-custom-text-dark'
+            : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
+        }`}
+        aria-current={isMatch ? 'page' : 'false'}
+        href={to}
+      >
+        {label}
       </Link>
     </li>
   );
@@ -303,7 +312,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <Auth auth={(Component as any).auth}>
               <Header setTheme={setTheme} />
 
-              <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
+              <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
                 <UserOptions />
                 <Component {...pageProps} />
               </main>
@@ -312,7 +321,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         ) : (
           <>
             <Header setTheme={setTheme} />
-            <main className="flex-grow bg-custom-bg-light dark:bg-custom-bg-dark p-3 overflow-y-auto">
+            <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
               <UserOptions />
               <Component {...pageProps} />
             </main>

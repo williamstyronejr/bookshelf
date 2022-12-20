@@ -149,8 +149,11 @@ const SettingsPage: NextPage<{}> = () => {
                 : 'md:border-transparent md:hover:border-gray-200 hover:bg-custom-bg-off-light hover:dark:bg-custom-bg-off-dark'
             }`}
             >
-              <Link href="/user/settings/account">
-                <a className="block w-full py-3 md:py-4">Account</a>
+              <Link
+                className="block w-full py-3 md:py-4"
+                href="/user/settings/account"
+              >
+                Account
               </Link>
             </li>
           </ul>

@@ -56,10 +56,9 @@ const FileInput = ({
         {fileUrl ? (
           <div className="relative h-full w-auto mx-auto">
             <Image
-              className="rounded-lg"
+              className="rounded-lg object-contain"
               priority={true}
-              objectFit="contain"
-              layout="fill"
+              fill={true}
               src={fileUrl}
               alt="Preview Cover"
             />

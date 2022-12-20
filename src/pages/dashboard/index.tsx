@@ -30,10 +30,11 @@ const DashboardPage: NextPage = () => {
         <div className="flex mb-3">
           <h3 className="flex-grow font-medium">Currently Books</h3>
 
-          <Link href="/dashboard/reservations">
-            <a className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark">
-              See more
-            </a>
+          <Link
+            className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark"
+            href="/dashboard/reservations"
+          >
+            See more
           </Link>
         </div>
 
@@ -61,7 +62,7 @@ const DashboardPage: NextPage = () => {
               key={`favorite-genre-${genreCount.id}`}
             >
               <Link href={`/library/search?genre=${genreCount.id}`}>
-                <a className="">{genreCount.genre.name}</a>
+                {genreCount.genre.name}
               </Link>
             </li>
           ))}
@@ -84,7 +85,7 @@ const DashboardPage: NextPage = () => {
               key={`favorite-author-${author.id}`}
             >
               <Link href={`/author/${author.id}/${author.slug}`}>
-                <a className="">{author.name}</a>
+                {author.name}
               </Link>
             </li>
           ))}

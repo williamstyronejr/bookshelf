@@ -18,10 +18,11 @@ const NotAvailable: FC<{ title: string }> = ({ title }) => (
   <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
     <i className="text-6xl mb-4 fas fa-exclamation" />
     {title} is not longer available
-    <Link href="/library">
-      <a className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light hover:dark:text-custom-text-link-hover-dark">
-        Go back to Library
-      </a>
+    <Link
+      className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light hover:dark:text-custom-text-link-hover-dark"
+      href="/library"
+    >
+      Go back to Library
     </Link>
   </section>
 );
@@ -54,10 +55,11 @@ const Completed = () => (
 
     <p className="mb-4">Come pickup your book at the library.</p>
 
-    <Link href="/dashboard">
-      <a className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light dark:hover:text-custom-text-link-hover-dark">
-        Go back to Dashboard
-      </a>
+    <Link
+      className="text-custom-text-link-light dark:text-custom-text-link-dark hover:text-custom-text-link-hover-light dark:hover:text-custom-text-link-hover-dark"
+      href="/dashboard"
+    >
+      Go back to Dashboard
     </Link>
   </section>
 );
@@ -199,10 +201,9 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
         <aside className="mr-4 mb-4 md:mb-0 flex-grow">
           <div className="relative w-52 h-60 mx-auto md:mx-0">
             <Image
-              className="rounded-lg"
+              className="rounded-lg object-contain"
               priority={true}
-              layout="fill"
-              objectFit="contain"
+              fill={true}
               src={book.displayImage}
               alt="Book covers"
             />
@@ -212,10 +213,11 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             {book.title}
           </div>
 
-          <Link href={`/author/${book.author.id}/${book.author.slug}`}>
-            <a className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light hover:dark:text-custom-text-dark">
-              {book.author.name}
-            </a>
+          <Link
+            className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light hover:dark:text-custom-text-dark"
+            href={`/author/${book.author.id}/${book.author.slug}`}
+          >
+            {book.author.name}
           </Link>
         </aside>
 

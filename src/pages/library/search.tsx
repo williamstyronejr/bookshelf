@@ -109,34 +109,34 @@ export default function SearchPage() {
                   }`}
                 >
                   <Link href={`/book/${book.id}/${book.slug}`}>
-                    <a>
-                      <div
-                        className={`relative w-32 h-44 ${
-                          viewMode === 'list' ? 'mr-4' : ''
-                        }`}
-                      >
-                        <Image
-                          className="rounded-lg"
-                          priority={true}
-                          layout="fill"
-                          src={book.displayImage}
-                          alt="Book cover"
-                        />
-                      </div>
-                    </a>
+                    <div
+                      className={`relative w-32 h-44 ${
+                        viewMode === 'list' ? 'mr-4' : ''
+                      }`}
+                    >
+                      <Image
+                        className="rounded-lg"
+                        priority={true}
+                        fill={true}
+                        src={book.displayImage}
+                        alt="Book cover"
+                      />
+                    </div>
                   </Link>
 
                   <div>
-                    <Link href={`/book/${book.id}/${book.slug}`}>
-                      <a className="block font-medium whitespace-nowrap text-ellipsis overflow-hidden">
-                        {book.title}
-                      </a>
+                    <Link
+                      className="block font-medium whitespace-nowrap text-ellipsis overflow-hidden"
+                      href={`/book/${book.id}/${book.slug}`}
+                    >
+                      {book.title}
                     </Link>
 
                     <Link
+                      className="text-gray-600"
                       href={`/author/${book.author.id}/${book.author.slug}`}
                     >
-                      <a className="text-gray-600">{book.author.name}</a>
+                      {book.author.name}
                     </Link>
                   </div>
                 </li>

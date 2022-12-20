@@ -10,7 +10,7 @@ export default function Document() {
         />
       </Head>
 
-      <body>
+      <body className="max-w-1920 mx-auto">
         <Main />
         <NextScript />
       </body>
