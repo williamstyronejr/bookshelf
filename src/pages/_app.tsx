@@ -43,11 +43,38 @@ const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
   );
 };
 
+const Search: FC<{}> = () => {
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+
+  return (
+    <div className="flex-grow relative pr-6">
+      <div className="w-full max-w-lg relative">
+        <input
+          className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+          name="search"
+          type="text"
+          placeholder="Search by title, author, tags, etc"
+          value={search}
+          onChange={(evt) => setSearch(evt.target.value)}
+          onKeyDown={(evt) => {
+            if (evt.key === 'Enter' && search !== '')
+              router.push(`/library/search?q=${search}`);
+          }}
+        />
+
+        <button className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+          <i className="focus-within:text-black fas fa-search transition-colors" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const UserOptions = () => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const { data, status } = useSession();
-  const [search, setSearch] = useState('');
   const [menu, setMenu] = useMenuToggle(ref, false);
 
   const { data: userData } = useQuery(
@@ -67,24 +94,7 @@ const UserOptions = () => {
   }, [router.pathname]);
 
   return (
-    <div className="flex flex-row flex-nowrap mb-8 relative">
-      <div className="flex-grow relative pr-6">
-        <i className="focus-within:text-black absolute top-4 left-2 text-slate-400 fas fa-search" />
-
-        <input
-          className="py-3 pl-8 bg-transparent border w-full max-w-xs rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
-          name="search"
-          type="text"
-          placeholder="Search by title, author, tags, etc"
-          value={search}
-          onChange={(evt) => setSearch(evt.target.value)}
-          onKeyDown={(evt) => {
-            if (evt.key === 'Enter' && search !== '')
-              router.push(`/library/search?q=${search}`);
-          }}
-        />
-      </div>
-
+    <div className="flex flex-row flex-nowrap relative">
       {status !== 'loading' ? (
         <div ref={ref}>
           <button
@@ -190,64 +200,64 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
   const isMatch = router.pathname === to;
 
   return (
-    <li
-      className={`mb-2 mt-2 border-l-2 ${
-        isMatch ? 'border-blue-500' : 'border-transparent'
-      }`}
-    >
-      <Link
-        className={`block w-full text-center text-lg py-2 ${
-          isMatch
-            ? 'text-custom-text-light dark:text-custom-text-dark'
-            : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
+    <li className={`mb-2 mt-2 md:my-0 md:px-4`}>
+      <div
+        className={`md:mx-6 border-b-2 ${
+          isMatch ? 'border-b-blue-500' : 'border-b-transparent'
         }`}
-        aria-current={isMatch ? 'page' : 'false'}
-        href={to}
       >
-        {label}
-      </Link>
+        <Link
+          className={`block w-full text-center text-lg py-2 ${
+            isMatch
+              ? 'text-custom-text-light dark:text-custom-text-dark'
+              : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
+          }`}
+          aria-current={isMatch ? 'page' : 'false'}
+          href={to}
+        >
+          {label}
+        </Link>
+      </div>
     </li>
   );
 };
 
 const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
-  const { status } = useSession();
   const [menu, setMenu] = useState(true);
 
   return (
-    <header
-      className={`flex flex-col flex-nowrap relative bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark shrink-0 transition-width ${
-        menu ? 'w-64' : 'w-14'
-      }`}
-    >
-      <div className="mb-4 mt-4 flex items-center justify-center">
-        <button type="button" className="" onClick={() => setMenu(!menu)}>
-          <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
-        </button>
+    <header className="relative w-full px-8 bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-row flex-nowrap mb-4 pt-4 items-center justify-center align-middle">
+          <button
+            type="button"
+            className="block md:hidden"
+            onClick={() => setMenu(!menu)}
+          >
+            <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
+          </button>
 
-        <h3
-          className={`${
-            menu ? '' : 'hidden'
-          } ml-4 mr-10 text-center text-custom-text-light dark:text-custom-text-dark`}
-        >
-          Readly
-        </h3>
+          <Link
+            href="/"
+            className="ml-4 mr-10 text-center text-xl font-bold text-custom-text-light dark:text-custom-text-dark"
+          >
+            Readly
+          </Link>
+
+          <Search />
+
+          <UserOptions />
+        </div>
+
+        <nav className={`md:block ${menu ? '' : 'hidden'}`}>
+          <ul className="flex flex-row flex-nowrap md:justify-center divide-x-2 divide-solid divide-slate-500">
+            <NavLink to="/library" label="Books" />
+            <NavLink to="/dashboard" label="Dashboard" />
+            <NavLink to="/user/lists/favorites" label="Favorites" />
+            <NavLink to="/dashboard/reservations" label="Reservation" />
+          </ul>
+        </nav>
       </div>
-
-      <nav className={`flex-grow ${menu ? '' : 'hidden'}`}>
-        <ul className="">
-          <NavLink to="/" label="Home" />
-          {status === 'authenticated' ? (
-            <>
-              <NavLink to="/dashboard" label="Dashboard" />
-              <NavLink to="/user/lists/favorites" label="Favorites" />
-              <NavLink to="/dashboard/reservations" label="Reservation" />
-            </>
-          ) : null}
-        </ul>
-      </nav>
-
-      <ThemeToggle setTheme={setTheme} />
     </header>
   );
 };
@@ -312,8 +322,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <Auth auth={(Component as any).auth}>
               <Header setTheme={setTheme} />
 
-              <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
-                <UserOptions />
+              <main className="flex-grow p-3 bg-custom-bg-light dark:bg-custom-bg-dark">
                 <Component {...pageProps} />
               </main>
             </Auth>
@@ -321,8 +330,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         ) : (
           <>
             <Header setTheme={setTheme} />
-            <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
-              <UserOptions />
+            <main className="flex-grow pt-3 bg-custom-bg-light dark:bg-custom-bg-dark">
               <Component {...pageProps} />
             </main>
           </>
