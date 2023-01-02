@@ -69,4 +69,31 @@ export const BookItem = ({ book }: { book: any }) => (
   </div>
 );
 
+export const GenreItem = ({
+  image,
+  name,
+  id,
+}: {
+  name: string;
+  image: string;
+  id: string;
+}) => (
+  <div className="relative h-52 shrink-0 w-40 mr-6 max-w-[175px]">
+    <Image
+      className="rounded-lg"
+      priority={true}
+      fill={true}
+      alt="Genre Cover"
+      src={image}
+    />
+
+    <Link
+      className="flex flex-row flex-nowrap absolute top-0 right-0 w-full h-full justify-center items-center z-10 font-bold bg-black/70 text-white"
+      href={`/library/search?genre=${id}`}
+    >
+      {name}
+    </Link>
+  </div>
+);
+
 export default Carousel;
