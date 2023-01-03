@@ -207,11 +207,7 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
         }`}
       >
         <Link
-          className={`block w-full text-center text-lg py-2 ${
-            isMatch
-              ? 'text-custom-text-light dark:text-custom-text-dark'
-              : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
-          }`}
+          className="block w-full text-center text-lg py-2  transition-colors text-custom-text-light dark:text-custom-text-dark hover:text-custom-text-link-light dark:hover:text-custom-text-link-dark"
           aria-current={isMatch ? 'page' : 'false'}
           href={to}
         >
@@ -249,14 +245,17 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
           <UserOptions />
         </div>
 
+        <div
+          className={`${
+            menu ? 'block' : 'hidden'
+          } md:hidden w-screen h-screen absolute top-0 left-0 bg-black/40 z-10`}
+        />
         <nav
           className={`md:block ${
             menu ? '' : 'hidden'
-          } fixed md:static top-0 left-0 h-screen md:h-auto px-4 py-20 md:p-0 z-30 bg-sky-500`}
+          } fixed md:static top-0 left-0 w-44 md:w-full h-screen md:h-auto px-4 py-20 md:p-0 z-30 bg-custom-bg-light dark:bg-custom-bg-dark`}
         >
-          <div className={`${menu ? 'block' : 'hidden'}`} />
-
-          <ul className="flex flex-col md:flex-row flex-nowrap md:justify-center divide-x-2 divide-solid divide-slate-500">
+          <ul className="flex flex-col md:flex-row flex-nowrap relative md:justify-center md:divide-x-2 divide-solid divide-slate-500">
             <NavLink to="/library" label="Books" />
             <NavLink to="/dashboard" label="Dashboard" />
             <NavLink to="/user/lists/favorites" label="Favorites" />
