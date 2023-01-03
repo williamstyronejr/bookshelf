@@ -3,6 +3,7 @@ import { useState, SyntheticEvent } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
+import Section from '../../../components/ui/Section';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
 import { validateAuthor } from '../../../utils/validation';
@@ -51,7 +52,7 @@ const AuthorCreatePage: NextPage = () => {
   }
 
   return (
-    <section>
+    <Section>
       <Head>
         <title>Create Author</title>
       </Head>
@@ -102,7 +103,7 @@ const AuthorCreatePage: NextPage = () => {
           </button>
         </div>
       </form>
-    </section>
+    </Section>
   );
 };
 

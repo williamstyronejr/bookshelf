@@ -49,7 +49,6 @@ export default function HomePage({
   topBooks: any;
   genreList: any;
 }) {
-  console.log(genreList);
   return (
     <>
       <Head>

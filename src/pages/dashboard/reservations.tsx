@@ -18,7 +18,7 @@ const ReservationsPage: NextPage = () => {
   );
 
   return (
-    <section>
+    <section className="max-w-6xl mx-auto">
       <Head>
         <title>Reservations</title>
       </Head>

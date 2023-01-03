@@ -11,6 +11,7 @@ import AdminMenu from '../../../../components/AdminMenu';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
+import Section from '../../../../components/ui/Section';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -138,7 +139,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
   );
 
   return (
-    <section className="">
+    <Section>
       <Head>
         <title>{book.title}</title>
       </Head>
@@ -253,7 +254,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

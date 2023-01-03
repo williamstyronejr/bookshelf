@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { signIn } from 'next-auth/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import Section from '../../../components/ui/Section';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
 import LoadingWheel from '../../../components/LoadingWheel';
@@ -129,7 +130,7 @@ const SettingsPage: NextPage<{}> = () => {
   );
 
   return (
-    <section className="max-w-2xl mx-auto">
+    <Section>
       <Head>
         <title>Settings</title>
       </Head>
@@ -176,7 +177,7 @@ const SettingsPage: NextPage<{}> = () => {
           ) : null}
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

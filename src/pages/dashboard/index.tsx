@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Carousel, { BookItem } from '../../components/Carousel';
 import RefetchError from '../../components/RefetchError';
 import LoadingWheel from '../../components/LoadingWheel';
+import Section from '../../components/ui/Section';
 
 const DashboardPage: NextPage = () => {
   const { data, isLoading, error, refetch } = useQuery(
@@ -21,7 +22,7 @@ const DashboardPage: NextPage = () => {
   if (error) return <RefetchError refetch={refetch} />;
 
   return (
-    <section className="">
+    <Section>
       <Head>
         <title>Dashboard</title>
       </Head>
@@ -97,7 +98,7 @@ const DashboardPage: NextPage = () => {
           ) : null}
         </ul>
       </div>
-    </section>
+    </Section>
   );
 };
 

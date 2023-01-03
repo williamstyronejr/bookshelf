@@ -227,7 +227,7 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
   return (
     <header className="relative w-full px-8 bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex flex-row flex-nowrap mb-4 pt-4 items-center justify-center align-middle">
           <button
             type="button"

@@ -9,6 +9,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import AdminMenu from '../../../components/AdminMenu';
 import { prisma } from '../../../utils/db';
 import RefetchError from '../../../components/RefetchError';
+import Section from '../../../components/ui/Section';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -95,7 +96,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   });
 
   return (
-    <section className="w-full">
+    <Section>
       <Head>
         <title>{authorData.name}</title>
       </Head>
@@ -195,7 +196,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
           ) : null}
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

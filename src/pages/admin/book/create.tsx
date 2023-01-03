@@ -3,6 +3,7 @@ import { useState, SyntheticEvent } from 'react';
 import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import Section from '../../../components/ui/Section';
 import Input from '../../../components/Input';
 import FileInput from '../../../components/FileInput';
 import InputSuggestion from '../../../components/InputSuggestion';
@@ -49,7 +50,7 @@ const CreateBookPage: NextPage = () => {
   if (data) router.push(`/book/${data.id}/${data.slug}`);
 
   return (
-    <section>
+    <Section>
       <Head>
         <title>Create Book</title>
       </Head>
@@ -164,7 +165,7 @@ const CreateBookPage: NextPage = () => {
           Create Book
         </button>
       </form>
-    </section>
+    </Section>
   );
 };
 

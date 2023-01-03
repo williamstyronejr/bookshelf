@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
-import { prisma } from '../../utils/db';
+import Section from '../../components/ui/Section';
 import Carousel, { BookItem } from '../../components/Carousel';
+import { prisma } from '../../utils/db';
 
 export const getServerSideProps = async () => {
   let mostRecentBooks = await prisma.book.findMany({
@@ -71,7 +72,7 @@ export default function LibraryPage({
   trendingGenres: any;
 }) {
   return (
-    <section className="max-w-7xl mx-auto">
+    <Section>
       <Head>
         <title>Home</title>
       </Head>
@@ -134,6 +135,6 @@ export default function LibraryPage({
             : null}
         </ul>
       </div>
-    </section>
+    </Section>
   );
 }

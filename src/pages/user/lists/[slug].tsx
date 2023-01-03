@@ -9,6 +9,7 @@ import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
+import Section from '../../../components/ui/Section';
 import LoadingWheel from '../../../components/LoadingWheel';
 import RefetchError from '../../../components/RefetchError';
 
@@ -69,10 +70,11 @@ const UserListPage: NextPage = () => {
   });
 
   return (
-    <section>
+    <Section>
       <Head>
         <title>Favorites</title>
       </Head>
+
       <header>
         <h4 className="font-semibold text-xl">Favorites</h4>
       </header>
@@ -144,7 +146,7 @@ const UserListPage: NextPage = () => {
           ) : null}
         </ul>
       </div>
-    </section>
+    </Section>
   );
 };
 

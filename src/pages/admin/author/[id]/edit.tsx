@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
+import Section from '../../../../components/ui/Section';
 import Input from '../../../../components/Input';
 import FileInput from '../../../../components/FileInput';
 import { prisma } from '../../../../utils/db';
@@ -84,7 +85,7 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   if (data) router.push(`/author/${data.author.id}/${data.author.slug}`);
 
   return (
-    <section>
+    <Section>
       <Head>
         <title>{authorData.name} - Edit</title>
       </Head>
@@ -136,7 +137,7 @@ const AuthorEditPage: NextPage<{ authorData: any }> = ({ authorData }) => {
           Update Author
         </button>
       </form>
-    </section>
+    </Section>
   );
 };
 
