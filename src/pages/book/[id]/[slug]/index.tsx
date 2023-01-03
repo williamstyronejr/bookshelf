@@ -92,18 +92,50 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       },
     };
 
+  const booksInGenre = await prisma.book.findMany({
+    take: 8,
+    where: {
+      id: {
+        not: book.id,
+      },
+      BookGenres: {
+        some: {
+          genreId: book.BookGenres[0].genreId,
+        },
+      },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      publisher: true,
+      Review: true,
+      BookGenres: {
+        include: {
+          genre: true,
+        },
+      },
+    },
+  });
+
   return {
     props: {
       book,
+      booksInGenre: JSON.parse(JSON.stringify(booksInGenre)),
       availableCount: Math.max(0, book.copiesCount - onHoldCount),
     },
   };
 };
 
-const BookPage: NextPage<{ book: any; availableCount: number }> = ({
-  book,
-  availableCount,
-}) => {
+const BookPage: NextPage<{
+  book: any;
+  availableCount: number;
+  booksInGenre: any;
+}> = ({ book, availableCount, booksInGenre }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -144,10 +176,10 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
         <title>{book.title}</title>
       </Head>
 
-      <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
+      <header className="flex flex-col md:flex-row flex-nowrap items-center md:items-start mb-4 px-4 md:px-0 ">
         <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0 md:mr-4">
           <Image
-            className="rounded-lg object-contain"
+            className="rounded-lg"
             priority={true}
             fill={true}
             src={book.displayImage}
@@ -155,7 +187,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
           />
         </div>
 
-        <div className="w-full">
+        <div className="mx-4">
           <div className="text-right">
             <AdminMenu
               links={[
@@ -167,7 +199,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             />
           </div>
 
-          <h3 className="text-xl text-center mb-2 md:text-left">
+          <h3 className="text-xl text-center md:text-left mb-2 font-semibold">
             {book.title}
           </h3>
 
@@ -195,16 +227,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
               {infoExpand ? 'Read Less' : 'Read More'}
             </button>
 
-            <div className="py-4 text-lg">{availableCount} Books Left </div>
-
             <div className="py-2 flex flex-row flex-nowrap justify-center md:block">
-              <Link
-                className="rounded-3xl px-4 py-4 mr-4 bg-[#21a953] text-white"
-                href={`/book/${book.id}/${book.slug}/reserve`}
-              >
-                Reserve Today!
-              </Link>
-
               {status === 'authenticated' ? (
                 <button
                   type="button"
@@ -223,14 +246,32 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             </div>
           </div>
         </div>
+
+        <div className="w-full md:w-auto shrink-0 py-2 border-2 rounded">
+          <div className="py-4 text-lg px-4 border-b-2">
+            <h3 className="font-semibold text-2xl py-2">Available now</h3>
+            <span className="font-bold">{availableCount}</span> Books Left{' '}
+          </div>
+
+          <div className="my-4 px-4">
+            <Link
+              className="block rounded-md px-6 py-2 bg-[#21a953] text-white"
+              href={`/book/${book.id}/${book.slug}/reserve`}
+            >
+              Reserve Today!
+            </Link>
+          </div>
+        </div>
       </header>
 
-      <hr />
+      <hr className="my-10" />
 
-      <div className="md:text-center md:w-80 mx-auto">
-        <h4 className="font-medium text-2xl my-4">Product Details</h4>
+      <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto">
+        <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
+          Product Details
+        </h4>
 
-        <div>
+        <div className="flex-grow">
           <div className="my-2">
             <div className="w-3/6 inline-block">Publisher:</div>
             <div className="w-3/6 inline-block">{book.publisher.name}</div>
@@ -252,6 +293,31 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             <div className="w-3/6 inline-block">Page Count:</div>
             <div className="w-3/6 inline-block">{book.pageCount} Pages</div>
           </div>
+        </div>
+      </div>
+
+      <hr className="my-10" />
+
+      <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto">
+        <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
+          Recommend Titles
+        </h4>
+
+        <div className="flex flex-col md:flex-row flex-grow items-center md:items-start flex-nowrap">
+          {booksInGenre.map((book) => (
+            <Link
+              key={`recommend-${book.id}`}
+              className="block relative w-32 h-52"
+              href={`/book/${book.id}/${book.slug}`}
+            >
+              <Image
+                className="rounded-lg object-contain"
+                fill={true}
+                src={book.displayImage}
+                alt="Book Cover"
+              />
+            </Link>
+          ))}
         </div>
       </div>
     </Section>

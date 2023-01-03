@@ -231,7 +231,7 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
         <div className="flex flex-row flex-nowrap mb-4 pt-4 items-center justify-center align-middle">
           <button
             type="button"
-            className="block md:hidden"
+            className="block md:hidden z-50"
             onClick={() => setMenu(!menu)}
           >
             <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
@@ -249,8 +249,14 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
           <UserOptions />
         </div>
 
-        <nav className={`md:block ${menu ? '' : 'hidden'}`}>
-          <ul className="flex flex-row flex-nowrap md:justify-center divide-x-2 divide-solid divide-slate-500">
+        <nav
+          className={`md:block ${
+            menu ? '' : 'hidden'
+          } fixed md:static top-0 left-0 h-screen md:h-auto px-4 py-20 md:p-0 z-30 bg-sky-500`}
+        >
+          <div className={`${menu ? 'block' : 'hidden'}`} />
+
+          <ul className="flex flex-col md:flex-row flex-nowrap md:justify-center divide-x-2 divide-solid divide-slate-500">
             <NavLink to="/library" label="Books" />
             <NavLink to="/dashboard" label="Dashboard" />
             <NavLink to="/user/lists/favorites" label="Favorites" />
