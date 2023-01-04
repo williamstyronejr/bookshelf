@@ -192,7 +192,7 @@ export function validateBook({
     isbn13?: string;
     copiesCount?: string;
     description?: string;
-    publishDate?: string;
+    publishedDate?: string;
   } = {};
 
   if (typeof title === 'string') {
