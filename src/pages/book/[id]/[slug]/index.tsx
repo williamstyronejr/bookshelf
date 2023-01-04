@@ -1,5 +1,5 @@
-import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
+import type { GetServerSidePropsResult, NextPage } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
@@ -131,11 +131,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-const BookPage: NextPage<{
-  book: any;
-  availableCount: number;
-  booksInGenre: any;
-}> = ({ book, availableCount, booksInGenre }) => {
+// book: any;
+// availableCount: number;
+// booksInGenre: any;
+const BookPage: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ book, availableCount, booksInGenre }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -302,7 +303,7 @@ const BookPage: NextPage<{
         </h4>
 
         <div className="flex flex-col md:flex-row md:flex-wrap w-0 flex-grow items-center md:items-start">
-          {booksInGenre.map((book) => (
+          {booksInGenre.map((book: any) => (
             <Link
               key={`recommend-${book.id}`}
               className="block relative shrink-0 w-32 h-52 md:mr-5 md:mb-5"
