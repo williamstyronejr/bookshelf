@@ -8,6 +8,13 @@ const { EMAIL_FROM, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } =
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  pages: {
+    signIn: '/signin',
+    signOut: '/',
+    error: '/signin',
+    newUser: '/dashboard',
+    verifyRequest: '/verify',
+  },
   providers: [
     EmailProvider({
       type: 'email',

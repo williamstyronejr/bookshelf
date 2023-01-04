@@ -7,7 +7,7 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
+import { SessionProvider, useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
@@ -101,9 +101,7 @@ const UserOptions = () => {
             className=""
             type="button"
             onClick={() => {
-              if (status === 'unauthenticated') {
-                return signIn();
-              }
+              if (status === 'unauthenticated') return router.push('/signin');
               setMenu(!menu);
             }}
           >
@@ -154,10 +152,10 @@ const UserOptions = () => {
                   </button>
                 </li>
 
-                <hr />
-
                 {userData && userData.user && userData.user.role === 'ADMIN' ? (
                   <>
+                    <hr />
+
                     <li>
                       <Link
                         className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
@@ -219,7 +217,7 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
 };
 
 const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
-  const [menu, setMenu] = useState(true);
+  const [menu, setMenu] = useState(false);
 
   return (
     <header className="relative w-full px-8 bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark">
@@ -292,7 +290,7 @@ const Auth: FC<{
     return <Loading text="Checking Auth" />;
 
   if (!data || error) {
-    router.replace('/api/auth/signin');
+    router.replace('/signin');
     return <Loading text="Checking auth" />;
   }
 
