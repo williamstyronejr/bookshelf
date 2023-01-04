@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
 const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
   return (
     <button
-      className="my-4"
+      className="blockmy-4 mx-auto"
       onClick={() => {
         setTheme((curr: string) => (curr === 'light' ? 'dark' : 'light'));
       }}
@@ -71,7 +71,7 @@ const Search: FC<{}> = () => {
   );
 };
 
-const UserOptions = () => {
+const UserOptions: FC<{ setTheme: Function }> = ({ setTheme }) => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const { data, status } = useSession();
@@ -186,6 +186,7 @@ const UserOptions = () => {
                 ) : null}
               </ul>
             </nav>
+            <ThemeToggle setTheme={setTheme} />
           </div>
         </div>
       ) : null}
@@ -240,7 +241,7 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
           <Search />
 
-          <UserOptions />
+          <UserOptions setTheme={setTheme} />
         </div>
 
         <div
@@ -248,6 +249,7 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
             menu ? 'block' : 'hidden'
           } md:hidden w-screen h-screen absolute top-0 left-0 bg-black/40 z-10`}
         />
+
         <nav
           className={`md:block ${
             menu ? '' : 'hidden'
