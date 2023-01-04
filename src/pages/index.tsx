@@ -116,7 +116,7 @@ export default function HomePage({
 
         <div className="">
           <Carousel>
-            {genreList.map(({ genre, book }) => (
+            {genreList.map(({ genre, book }: { genre: any; book: any }) => (
               <GenreItem
                 key={`genre-${genre.id}`}
                 name={genre.name}
