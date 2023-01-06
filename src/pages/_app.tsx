@@ -12,6 +12,7 @@ import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
 import useMenuToggle from '../components/useMenuToggle';
+import EditBookPage from './admin/book/[id]/edit';
 
 const isBrowserDefaultDark = () =>
   window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -33,7 +34,7 @@ const queryClient = new QueryClient({
 const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
   return (
     <button
-      className="blockmy-4 mx-auto"
+      className="block my-4 mx-auto"
       onClick={() => {
         setTheme((curr: string) => (curr === 'light' ? 'dark' : 'light'));
       }}
@@ -219,6 +220,17 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
 
 const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
   const [menu, setMenu] = useState(false);
+
+  useEffect(() => {
+    const closeOnEsc = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') setMenu(false);
+    };
+
+    document.addEventListener('keydown', closeOnEsc);
+    return () => {
+      document.removeEventListener('keydown', closeOnEsc);
+    };
+  }, []);
 
   return (
     <header className="relative w-full px-8 bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark">
