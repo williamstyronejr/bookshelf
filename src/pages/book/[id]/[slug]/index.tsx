@@ -1,4 +1,4 @@
-import type { GetServerSidePropsResult, NextPage } from 'next';
+import type { NextPage } from 'next';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -131,9 +131,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-// book: any;
-// availableCount: number;
-// booksInGenre: any;
 const BookPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ book, availableCount, booksInGenre }) => {
@@ -206,7 +203,10 @@ const BookPage: NextPage<
 
           <div className="mb-6 text-sm text-center md:text-left">
             <span>by </span>
-            <Link href={`/author/${book.author.id}/${book.author.slug}`}>
+            <Link
+              className="hover:text-custom-text-link-light dark:hover:text-custom-text-link-dark"
+              href={`/author/${book.author.id}/${book.author.slug}`}
+            >
               {book.author.name}
             </Link>
             <hr />
@@ -238,7 +238,7 @@ const BookPage: NextPage<
 
           <div className="my-4 px-4">
             <Link
-              className="block rounded-md px-6 py-2 bg-[#21a953] text-white"
+              className="block rounded-md px-6 py-2 bg-[#21a953] hover:bg-[#149b19] text-white"
               href={`/book/${book.id}/${book.slug}/reserve`}
             >
               Reserve Today!

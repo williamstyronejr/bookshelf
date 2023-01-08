@@ -46,11 +46,70 @@ const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
 const Search: FC<{}> = () => {
   const router = useRouter();
+  const [dropDown, setDropDown] = useState(false);
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    const onEsc = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') setDropDown(false);
+    };
+
+    if (dropDown) document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [dropDown]);
+
+  useEffect(() => {
+    setDropDown(false);
+  }, [router.asPath]);
+
   return (
-    <div className="flex-grow relative pr-6">
-      <div className="w-full max-w-lg relative">
+    <div className="flex-grow pr-6">
+      <div className="block md:hidden text-right">
+        <button
+          className="text-slate-400 hover:text-slate-700"
+          onClick={() => setDropDown((old) => !old)}
+        >
+          <i className="text-2xl fas fa-search transition-colors" />
+        </button>
+
+        <div
+          className={`${
+            dropDown ? 'block' : 'hidden'
+          } fixed top-0 left-0 w-full h-screen bg-black/40 z-40`}
+        />
+
+        <div
+          className={`${
+            dropDown ? 'block' : 'hidden'
+          } md:hidden absolute w-full top-0 left-0 p-4 z-50 bg-custom-bg-light`}
+        >
+          <div className="relative">
+            <input
+              className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+              name="search"
+              type="text"
+              placeholder="Search by title, author, tags, etc"
+              value={search}
+              onChange={(evt) => setSearch(evt.target.value)}
+              onKeyDown={(evt) => {
+                if (evt.key === 'Enter' && search !== '')
+                  router.push(`/library/search?q=${search}`);
+              }}
+            />
+
+            <button
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              onClick={() => {
+                router.push(`/library/search?q=${search}`);
+              }}
+            >
+              <i className="focus-within:text-black fas fa-search transition-colors" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden md:block w-full max-w-lg relative">
         <input
           className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
           name="search"
@@ -339,7 +398,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <Auth auth={(Component as any).auth}>
               <Header setTheme={setTheme} />
 
-              <main className="flex-grow p-3 bg-custom-bg-light dark:bg-custom-bg-dark">
+              <main className="h-auto p-3 bg-custom-bg-light dark:bg-custom-bg-dark">
                 <Component {...pageProps} />
               </main>
             </Auth>
@@ -347,7 +406,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         ) : (
           <>
             <Header setTheme={setTheme} />
-            <main className="flex-grow pt-3 bg-custom-bg-light dark:bg-custom-bg-dark">
+            <main className="pt-3 bg-custom-bg-light dark:bg-custom-bg-dark">
               <Component {...pageProps} />
             </main>
           </>

@@ -73,16 +73,16 @@ export default function HomePage({
             </Link>
           </header>
 
-          <div className="md:order-2 md:w-1/2 h-80">
-            <div className="absolute w-44 h-72 z-[2] right-56 border-8 border-slate-50 bg-slate-50">
+          <div className="relative md:static md:w-1/2 h-80 md:order-2">
+            <div className="absolute w-44 h-72 z-[2] right-0 md:right-56 border-8 border-slate-50 bg-slate-50">
               <Image className="" fill={true} src="/book2.png" alt="" />
             </div>
 
-            <div className="absolute w-44 h-72 z-[3] right-40 -translate-y-5 border-8 border-slate-50 bg-slate-50">
+            <div className="absolute w-44 h-72 z-[3] -left-20 md:left-auto md:right-40 -translate-y-5 border-8 border-slate-50 bg-slate-50">
               <Image className="" fill={true} src="/book1.jpeg" alt="" />
             </div>
 
-            <div className="absolute w-44 h-72 z-[1] right-24  translate-y-5 border-8 border-slate-50 bg-slate-50">
+            <div className="absolute w-44 h-72 z-[1] md:right-24  translate-y-5 border-8 border-slate-50 bg-slate-50">
               <Image className="" fill={true} src="/book3.jpeg" alt="" />
             </div>
           </div>
@@ -158,15 +158,15 @@ export default function HomePage({
           </h4>
 
           <div className="flex flex-row flex-nowrap justify-center pt-10">
-            <div className="relative w-36 h-52">
+            <div className="relative w-28 h-40 md:w-36 md:h-52">
               <Image className="" fill={true} src="/book2.png" alt="" />
             </div>
 
-            <div className="relative w-36 h-52 scale-125 mx-8">
+            <div className="relative w-28 h-40 md:w-36 md:h-52 scale-125 mx-2 md:mx-8 z-10">
               <Image className="" fill={true} src="/book1.jpeg" alt="" />
             </div>
 
-            <div className="relative w-36 h-52">
+            <div className="relative w-28 h-40 md:w-36 md:h-52">
               <Image className="" fill={true} src="/book3.jpeg" alt="" />
             </div>
           </div>
@@ -183,9 +183,9 @@ export default function HomePage({
         />
       </section>
 
-      <section className="max-w-4xl mx-auto pt-20">
+      <section className="max-w-4xl mx-auto my-40">
         <header className="text-center">
-          <h3 className="text-4xl font-bold text-center">
+          <h3 className="text-4xl md:text-6xl font-bold text-center my-10">
             Reserve Your Books Today
           </h3>
 
@@ -198,7 +198,7 @@ export default function HomePage({
         </header>
       </section>
 
-      <div className="relative w-full h-80 mt-20">
+      <div className="relative w-full h-80">
         <Image
           className="object-cover top-0"
           fill={true}

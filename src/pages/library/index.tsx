@@ -108,9 +108,9 @@ export default function LibraryPage({
             ? trendingGenres.map((data: any) => (
                 <li
                   key={`trending-genre-${data.genre.id}`}
-                  className="w-32 text-center py-4"
+                  className="w-32 text-center py-4 mx-auto"
                 >
-                  <div className="relative w-32 h-52 mx-auto mb-4 border-2 border-transparent hover:border-black rounded-lg">
+                  <div className="relative w-32 h-52 mx-auto mb-4 rounded-lg hover:scale-110 transition-transform">
                     <Link href={`/book/${data.book.id}/${data.book.slug}`}>
                       <Image
                         className="rounded-lg"
@@ -124,7 +124,7 @@ export default function LibraryPage({
 
                   <div>
                     <Link
-                      className="hover:underline hover:text-custom-text-highlight-light dark:hover:text-custom-text-highlight-dark"
+                      className="hover:underline hover:text-custom-text-link-light transition-colors"
                       href={`/library/search?genre=${data.genre.id}`}
                     >
                       {data.genre.name}

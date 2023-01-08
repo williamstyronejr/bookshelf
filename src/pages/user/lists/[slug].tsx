@@ -135,12 +135,15 @@ const UserListPage: NextPage = () => {
           data.pages &&
           data.pages.length === 1 &&
           data.pages[0].results.length === 0 ? (
-            <li>List is empty</li>
+            <li className="font-semibold text-3xl text-center py-8">
+              There are no items in this list
+            </li>
           ) : null}
 
           {error ? <RefetchError refetch={refetch} /> : null}
+
           {isFetching || hasNextPage ? (
-            <div ref={sentryRef}>
+            <div ref={sentryRef} className="py-20">
               <LoadingWheel />
             </div>
           ) : null}
