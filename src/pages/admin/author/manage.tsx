@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
+import Section from '../../../components/ui/Section';
 import RefetchError from '../../../components/RefetchError';
 import LoadingWheel from '../../../components/LoadingWheel';
 import Modal from '../../../components/Modal';
@@ -110,7 +111,7 @@ const ManageAuthorsPage: NextPage = () => {
   );
 
   return (
-    <section className="max-w-3xl mx-auto">
+    <Section>
       <Head>
         <title>Manage Authors</title>
       </Head>
@@ -162,7 +163,7 @@ const ManageAuthorsPage: NextPage = () => {
           </button>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

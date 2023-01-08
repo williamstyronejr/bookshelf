@@ -7,11 +7,12 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { SessionProvider, useSession, signOut, signIn } from 'next-auth/react';
+import { SessionProvider, useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
 import useMenuToggle from '../components/useMenuToggle';
+import EditBookPage from './admin/book/[id]/edit';
 
 const isBrowserDefaultDark = () =>
   window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -33,7 +34,7 @@ const queryClient = new QueryClient({
 const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
   return (
     <button
-      className="my-4"
+      className="block my-4 mx-auto"
       onClick={() => {
         setTheme((curr: string) => (curr === 'light' ? 'dark' : 'light'));
       }}
@@ -43,11 +44,97 @@ const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
   );
 };
 
-const UserOptions = () => {
+const Search: FC<{}> = () => {
+  const router = useRouter();
+  const [dropDown, setDropDown] = useState(false);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const onEsc = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') setDropDown(false);
+    };
+
+    if (dropDown) document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [dropDown]);
+
+  useEffect(() => {
+    setDropDown(false);
+  }, [router.asPath]);
+
+  return (
+    <div className="flex-grow pr-6">
+      <div className="block md:hidden text-right">
+        <button
+          className="text-slate-400 hover:text-slate-700"
+          onClick={() => setDropDown((old) => !old)}
+        >
+          <i className="text-2xl fas fa-search transition-colors" />
+        </button>
+
+        <div
+          className={`${
+            dropDown ? 'block' : 'hidden'
+          } fixed top-0 left-0 w-full h-screen bg-black/40 z-40`}
+        />
+
+        <div
+          className={`${
+            dropDown ? 'block' : 'hidden'
+          } md:hidden absolute w-full top-0 left-0 p-4 z-50 bg-custom-bg-light`}
+        >
+          <div className="relative">
+            <input
+              className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+              name="search"
+              type="text"
+              placeholder="Search by title, author, tags, etc"
+              value={search}
+              onChange={(evt) => setSearch(evt.target.value)}
+              onKeyDown={(evt) => {
+                if (evt.key === 'Enter' && search !== '')
+                  router.push(`/library/search?q=${search}`);
+              }}
+            />
+
+            <button
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              onClick={() => {
+                router.push(`/library/search?q=${search}`);
+              }}
+            >
+              <i className="focus-within:text-black fas fa-search transition-colors" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden md:block w-full max-w-lg relative">
+        <input
+          className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
+          name="search"
+          type="text"
+          placeholder="Search by title, author, tags, etc"
+          value={search}
+          onChange={(evt) => setSearch(evt.target.value)}
+          onKeyDown={(evt) => {
+            if (evt.key === 'Enter' && search !== '')
+              router.push(`/library/search?q=${search}`);
+          }}
+        />
+
+        <button className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+          <i className="focus-within:text-black fas fa-search transition-colors" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const UserOptions: FC<{ setTheme: Function }> = ({ setTheme }) => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const { data, status } = useSession();
-  const [search, setSearch] = useState('');
   const [menu, setMenu] = useMenuToggle(ref, false);
 
   const { data: userData } = useQuery(
@@ -67,33 +154,14 @@ const UserOptions = () => {
   }, [router.pathname]);
 
   return (
-    <div className="flex flex-row flex-nowrap mb-8 relative">
-      <div className="flex-grow relative pr-6">
-        <i className="focus-within:text-black absolute top-4 left-2 text-slate-400 fas fa-search" />
-
-        <input
-          className="py-3 pl-8 bg-transparent border w-full max-w-xs rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
-          name="search"
-          type="text"
-          placeholder="Search by title, author, tags, etc"
-          value={search}
-          onChange={(evt) => setSearch(evt.target.value)}
-          onKeyDown={(evt) => {
-            if (evt.key === 'Enter' && search !== '')
-              router.push(`/library/search?q=${search}`);
-          }}
-        />
-      </div>
-
+    <div className="flex flex-row flex-nowrap relative">
       {status !== 'loading' ? (
         <div ref={ref}>
           <button
             className=""
             type="button"
             onClick={() => {
-              if (status === 'unauthenticated') {
-                return signIn();
-              }
+              if (status === 'unauthenticated') return router.push('/signin');
               setMenu(!menu);
             }}
           >
@@ -144,10 +212,10 @@ const UserOptions = () => {
                   </button>
                 </li>
 
-                <hr />
-
                 {userData && userData.user && userData.user.role === 'ADMIN' ? (
                   <>
+                    <hr />
+
                     <li>
                       <Link
                         className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-custom-bg-off-dark"
@@ -178,6 +246,7 @@ const UserOptions = () => {
                 ) : null}
               </ul>
             </nav>
+            <ThemeToggle setTheme={setTheme} />
           </div>
         </div>
       ) : null}
@@ -190,64 +259,81 @@ const NavLink = ({ to, label }: { to: string; label: string }) => {
   const isMatch = router.pathname === to;
 
   return (
-    <li
-      className={`mb-2 mt-2 border-l-2 ${
-        isMatch ? 'border-blue-500' : 'border-transparent'
-      }`}
-    >
-      <Link
-        className={`block w-full text-center text-lg py-2 ${
-          isMatch
-            ? 'text-custom-text-light dark:text-custom-text-dark'
-            : 'text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark'
+    <li className={`mb-2 mt-2 md:my-0 md:px-4`}>
+      <div
+        className={`md:mx-6 border-b-2 ${
+          isMatch ? 'border-b-blue-500' : 'border-b-transparent'
         }`}
-        aria-current={isMatch ? 'page' : 'false'}
-        href={to}
       >
-        {label}
-      </Link>
+        <Link
+          className="block w-full text-center text-lg py-2  transition-colors text-custom-text-light dark:text-custom-text-dark hover:text-custom-text-link-light dark:hover:text-custom-text-link-dark"
+          aria-current={isMatch ? 'page' : 'false'}
+          href={to}
+        >
+          {label}
+        </Link>
+      </div>
     </li>
   );
 };
 
 const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
-  const { status } = useSession();
-  const [menu, setMenu] = useState(true);
+  const [menu, setMenu] = useState(false);
+
+  useEffect(() => {
+    const closeOnEsc = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') setMenu(false);
+    };
+
+    document.addEventListener('keydown', closeOnEsc);
+    return () => {
+      document.removeEventListener('keydown', closeOnEsc);
+    };
+  }, []);
 
   return (
-    <header
-      className={`flex flex-col flex-nowrap relative bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark shrink-0 transition-width ${
-        menu ? 'w-64' : 'w-14'
-      }`}
-    >
-      <div className="mb-4 mt-4 flex items-center justify-center">
-        <button type="button" className="" onClick={() => setMenu(!menu)}>
-          <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
-        </button>
+    <header className="relative w-full px-8 bg-custom-bg-light dark:bg-custom-bg-dark text-custom-text-light dark:text-custom-text-dark">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-row flex-nowrap mb-4 pt-4 items-center justify-center align-middle">
+          <button
+            type="button"
+            className="block md:hidden z-50"
+            onClick={() => setMenu(!menu)}
+          >
+            <i className="text-3xl text-custom-text-light dark:text-custom-text-dark fas fa-bars" />
+          </button>
 
-        <h3
+          <Link
+            href="/"
+            className="ml-4 mr-10 text-center text-xl font-bold text-custom-text-light dark:text-custom-text-dark"
+          >
+            Readly
+          </Link>
+
+          <Search />
+
+          <UserOptions setTheme={setTheme} />
+        </div>
+
+        <div
           className={`${
+            menu ? 'block' : 'hidden'
+          } md:hidden w-screen h-screen absolute top-0 left-0 bg-black/40 z-10`}
+        />
+
+        <nav
+          className={`md:block ${
             menu ? '' : 'hidden'
-          } ml-4 mr-10 text-center text-custom-text-light dark:text-custom-text-dark`}
+          } fixed md:static top-0 left-0 w-44 md:w-full h-screen md:h-auto px-4 py-20 md:p-0 z-30 bg-custom-bg-light dark:bg-custom-bg-dark`}
         >
-          Readly
-        </h3>
+          <ul className="flex flex-col md:flex-row flex-nowrap relative md:justify-center md:divide-x-2 divide-solid divide-slate-500">
+            <NavLink to="/library" label="Books" />
+            <NavLink to="/dashboard" label="Dashboard" />
+            <NavLink to="/user/lists/favorites" label="Favorites" />
+            <NavLink to="/dashboard/reservations" label="Reservation" />
+          </ul>
+        </nav>
       </div>
-
-      <nav className={`flex-grow ${menu ? '' : 'hidden'}`}>
-        <ul className="">
-          <NavLink to="/" label="Home" />
-          {status === 'authenticated' ? (
-            <>
-              <NavLink to="/dashboard" label="Dashboard" />
-              <NavLink to="/user/lists/favorites" label="Favorites" />
-              <NavLink to="/dashboard/reservations" label="Reservation" />
-            </>
-          ) : null}
-        </ul>
-      </nav>
-
-      <ThemeToggle setTheme={setTheme} />
     </header>
   );
 };
@@ -277,7 +363,7 @@ const Auth: FC<{
     return <Loading text="Checking Auth" />;
 
   if (!data || error) {
-    router.replace('/api/auth/signin');
+    router.replace('/signin');
     return <Loading text="Checking auth" />;
   }
 
@@ -312,8 +398,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <Auth auth={(Component as any).auth}>
               <Header setTheme={setTheme} />
 
-              <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
-                <UserOptions />
+              <main className="h-auto p-3 bg-custom-bg-light dark:bg-custom-bg-dark">
                 <Component {...pageProps} />
               </main>
             </Auth>
@@ -321,8 +406,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         ) : (
           <>
             <Header setTheme={setTheme} />
-            <main className="flex-grow p-3 overflow-y-auto bg-custom-bg-light dark:bg-custom-bg-dark">
-              <UserOptions />
+            <main className="pt-3 bg-custom-bg-light dark:bg-custom-bg-dark">
               <Component {...pageProps} />
             </main>
           </>

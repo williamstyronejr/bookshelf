@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
@@ -11,6 +11,7 @@ import AdminMenu from '../../../../components/AdminMenu';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
+import Section from '../../../../components/ui/Section';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -91,18 +92,48 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       },
     };
 
+  const booksInGenre = await prisma.book.findMany({
+    take: 8,
+    where: {
+      id: {
+        not: book.id,
+      },
+      BookGenres: {
+        some: {
+          genreId: book.BookGenres[0].genreId,
+        },
+      },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      publisher: true,
+      Review: true,
+      BookGenres: {
+        include: {
+          genre: true,
+        },
+      },
+    },
+  });
+
   return {
     props: {
       book,
+      booksInGenre: JSON.parse(JSON.stringify(booksInGenre)),
       availableCount: Math.max(0, book.copiesCount - onHoldCount),
     },
   };
 };
 
-const BookPage: NextPage<{ book: any; availableCount: number }> = ({
-  book,
-  availableCount,
-}) => {
+const BookPage: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ book, availableCount, booksInGenre }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -138,13 +169,13 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
   );
 
   return (
-    <section className="">
+    <Section>
       <Head>
         <title>{book.title}</title>
       </Head>
 
-      <header className="flex flex-col flex-nowrap items-center md:items-start mb-4 md:flex-row">
-        <div className="relative w-full md:w-50 h-48 md:h-60 mb-10 md:mb-0 md:mr-4">
+      <header className="flex flex-col md:flex-row flex-nowrap max-w-5xl items-center md:items-start mb-4 mx-auto px-4">
+        <div className="relative w-full md:w-44 h-48 md:h-60 mb-10 md:mb-0 md:mr-4 grow-0 shrink-0">
           <Image
             className="rounded-lg object-contain"
             priority={true}
@@ -154,7 +185,7 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
           />
         </div>
 
-        <div className="w-full">
+        <div className="flex-grow mx-4 mb-6 md:mb-0">
           <div className="text-right">
             <AdminMenu
               links={[
@@ -166,13 +197,16 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             />
           </div>
 
-          <h3 className="text-xl text-center mb-2 md:text-left">
+          <h3 className="text-xl text-center md:text-left mb-2 font-semibold">
             {book.title}
           </h3>
 
           <div className="mb-6 text-sm text-center md:text-left">
             <span>by </span>
-            <Link href={`/author/${book.author.id}/${book.author.slug}`}>
+            <Link
+              className="hover:text-custom-text-link-light dark:hover:text-custom-text-link-dark"
+              href={`/author/${book.author.id}/${book.author.slug}`}
+            >
               {book.author.name}
             </Link>
             <hr />
@@ -193,43 +227,50 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
             >
               {infoExpand ? 'Read Less' : 'Read More'}
             </button>
+          </div>
+        </div>
 
-            <div className="py-4 text-lg">{availableCount} Books Left </div>
+        <div className="w-full md:w-auto shrink-0 py-2 border-2 rounded">
+          <div className="py-4 text-lg px-4 border-b-2 text-center md:text-left">
+            <h3 className="py-2 font-semibold text-2xl">Available now</h3>
+            <span className="font-bold">{availableCount}</span> Books Left{' '}
+          </div>
 
-            <div className="py-2 flex flex-row flex-nowrap justify-center md:block">
-              <Link
-                className="rounded-3xl px-4 py-4 mr-4 bg-[#21a953] text-white"
-                href={`/book/${book.id}/${book.slug}/reserve`}
+          <div className="my-4 px-4">
+            <Link
+              className="block rounded-md px-6 py-2 bg-[#21a953] hover:bg-[#149b19] text-white"
+              href={`/book/${book.id}/${book.slug}/reserve`}
+            >
+              Reserve Today!
+            </Link>
+
+            {status === 'authenticated' ? (
+              <button
+                type="button"
+                className="block text-2xl mt-4 mx-auto"
+                onClick={() => {
+                  mutate();
+                }}
               >
-                Reserve Today!
-              </Link>
-
-              {status === 'authenticated' ? (
-                <button
-                  type="button"
-                  className=" text-2xl"
-                  onClick={() => {
-                    mutate();
-                  }}
-                >
-                  {isFavorited ? (
-                    <i className="fas fa-heart" />
-                  ) : (
-                    <i className="far fa-heart" />
-                  )}
-                </button>
-              ) : null}
-            </div>
+                {isFavorited ? (
+                  <i className="fas fa-heart" />
+                ) : (
+                  <i className="far fa-heart" />
+                )}
+              </button>
+            ) : null}
           </div>
         </div>
       </header>
 
-      <hr />
+      <hr className="my-10" />
 
-      <div className="md:text-center md:w-80 mx-auto">
-        <h4 className="font-medium text-2xl my-4">Product Details</h4>
+      <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4">
+        <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
+          Product Details
+        </h4>
 
-        <div>
+        <div className="flex-grow">
           <div className="my-2">
             <div className="w-3/6 inline-block">Publisher:</div>
             <div className="w-3/6 inline-block">{book.publisher.name}</div>
@@ -253,7 +294,33 @@ const BookPage: NextPage<{ book: any; availableCount: number }> = ({
           </div>
         </div>
       </div>
-    </section>
+
+      <hr className="my-10" />
+
+      <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
+        <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
+          Recommend Titles
+        </h4>
+
+        <div className="flex flex-col md:flex-row md:flex-wrap w-0 flex-grow items-center md:items-start">
+          {booksInGenre.map((book: any) => (
+            <Link
+              key={`recommend-${book.id}`}
+              className="block relative shrink-0 w-32 h-52 md:mr-5 md:mb-5"
+              href={`/book/${book.id}/${book.slug}`}
+              title={book.title}
+            >
+              <Image
+                className="rounded-lg"
+                fill={true}
+                src={book.displayImage}
+                alt="Book Cover"
+              />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </Section>
   );
 };
 

@@ -7,6 +7,7 @@ import Head from 'next/head';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import RefetchError from '../../components/RefetchError';
 import LoadingWheel from '../../components/LoadingWheel';
+import Section from '../../components/ui/Section';
 
 export default function SearchPage() {
   const { query, isReady } = useRouter();
@@ -55,7 +56,7 @@ export default function SearchPage() {
   });
 
   return (
-    <section className="flex flex-col flex-nowrap">
+    <Section className="flex flex-col flex-nowrap px-4">
       <Head>
         <title>{query ? query.q : ''} - Search</title>
       </Head>
@@ -82,7 +83,7 @@ export default function SearchPage() {
         </button>
       </header>
 
-      <div className="flex-grow h-1 max-w-[800px]">
+      <div className="flex-grow pt-3 pb-8">
         {error ? <RefetchError refetch={refetch} /> : null}
 
         {isLoading ? (
@@ -94,7 +95,7 @@ export default function SearchPage() {
         <ul
           className={`${
             viewMode === 'grid'
-              ? 'grid grid-cols-[repeat(auto-fit,_8rem)] gap-6'
+              ? 'grid grid-cols-[repeat(auto-fit,_10rem)] gap-6 justify-center'
               : 'flex flex-col flex-nowrap divide-y'
           }`}
         >
@@ -105,12 +106,14 @@ export default function SearchPage() {
                   key={book.id}
                   title={book.title}
                   className={`${
-                    viewMode === 'grid' ? '' : 'flex flex-row flex-nowrap py-6'
+                    viewMode === 'grid'
+                      ? 'w-40'
+                      : 'flex flex-row flex-nowrap py-6 w-full'
                   }`}
                 >
                   <Link href={`/book/${book.id}/${book.slug}`}>
                     <div
-                      className={`relative w-32 h-44 ${
+                      className={`relative w-40 h-56 ${
                         viewMode === 'list' ? 'mr-4' : ''
                       }`}
                     >
@@ -124,7 +127,9 @@ export default function SearchPage() {
                     </div>
                   </Link>
 
-                  <div>
+                  <div
+                    className={`${viewMode === 'grid' ? '' : 'w-0 flex-grow'}`}
+                  >
                     <Link
                       className="block font-medium whitespace-nowrap text-ellipsis overflow-hidden"
                       href={`/book/${book.id}/${book.slug}`}
@@ -150,6 +155,6 @@ export default function SearchPage() {
           ) : null}
         </ul>
       </div>
-    </section>
+    </Section>
   );
 }

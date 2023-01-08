@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
-    <Html>
+    <Html className="bg-custom-bg-light dark:bg-custom-bg-dark">
       <Head>
         <link
           rel="stylesheet"
@@ -10,7 +10,7 @@ export default function Document() {
         />
       </Head>
 
-      <body className="max-w-1920 mx-auto">
+      <body className="max-w-1920 mx-auto bg-custom-light dark:bg-custom-bg-dark">
         <Main />
         <NextScript />
       </body>

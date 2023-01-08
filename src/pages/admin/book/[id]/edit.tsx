@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import Section from '../../../../components/ui/Section';
 import Input from '../../../../components/Input';
 import InputSuggestion from '../../../../components/InputSuggestion';
 import FileInput from '../../../../components/FileInput';
@@ -93,7 +94,7 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
   if (data) router.push(`/book/${data.id}/${data.slug}`);
 
   return (
-    <section>
+    <Section>
       <Head>
         <title>{book.title} - Edit</title>
       </Head>
@@ -229,7 +230,7 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
           </button>
         </div>
       </form>
-    </section>
+    </Section>
   );
 };
 

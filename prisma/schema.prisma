@@ -42,7 +42,7 @@ model User {
   name           String?
   email          String?          @unique
   emailVerified  DateTime?        @map("email_verified")
-  image          String?          @default("user%2Fdefault.jpeg")
+  image          String?          @default("/defaultProfile.jpeg")
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @default(now()) @map("updated_at")
   role           Role             @default(USER)

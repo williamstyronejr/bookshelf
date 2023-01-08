@@ -2,27 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
 import { prisma } from '../utils/db';
-import Carousel, { BookItem } from '../components/Carousel';
+import Carousel, { BookItem, GenreItem } from '../components/Carousel';
 
 export const getServerSideProps = async () => {
-  let mostRecentBooks = await prisma.book.findMany({
-    take: 20,
-    orderBy: [
-      {
-        createdAt: 'asc',
-      },
-    ],
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-    },
-  });
-
   let topBooks = await prisma.book.findMany({
     take: 20,
     include: {
@@ -36,7 +18,7 @@ export const getServerSideProps = async () => {
     },
   });
 
-  const trendingGenres = await prisma.bookGenres.findMany({
+  const genreList = await prisma.bookGenres.findMany({
     take: 10,
     select: {
       genre: true,
@@ -54,86 +36,176 @@ export const getServerSideProps = async () => {
   // Hacky way of dealing with Date Object not having a toJSON
   return {
     props: {
-      mostRecentBooks: JSON.parse(JSON.stringify(mostRecentBooks)),
       topBooks: JSON.parse(JSON.stringify(topBooks)),
-      trendingGenres: JSON.parse(JSON.stringify(trendingGenres)),
+      genreList: JSON.parse(JSON.stringify(genreList)),
     },
   };
 };
 
-export default function LibraryPage({
+export default function HomePage({
   topBooks,
-  mostRecentBooks,
-  trendingGenres,
+  genreList,
 }: {
   topBooks: any;
-  mostRecentBooks: any;
-  trendingGenres: any;
+  genreList: any;
 }) {
   return (
-    <section className="max-w-7xl mx-auto">
+    <>
       <Head>
         <title>Home</title>
       </Head>
-      <header className="">
-        <h4 className="my-6 text-xl font-medium text-center">Most Popular</h4>
-        <Carousel>
-          {topBooks
-            ? topBooks.map((book: any) => (
-                <BookItem key={`popular-book-${book.id}`} book={book} />
-              ))
-            : null}
-        </Carousel>
-      </header>
 
-      <div className="block">
-        <h4 className="my-6 text-xl font-medium text-center">New Releases</h4>
-        <Carousel>
-          {mostRecentBooks
-            ? mostRecentBooks.map((book: any) => (
-                <BookItem key={`recent-book-${book.id}`} book={book} />
-              ))
-            : null}
-        </Carousel>
+      <section className="relative py-10 h-[600px]">
+        <div className="flex flex-col md:flex-row flex-nowrap items-center h-full relative max-w-4xl mx-auto px-4">
+          <header className="order-2 md:order-1 md:w-1/2 pr-4 text-center md:text-left">
+            <h3 className="font-bold text-4xl">Newest Releases</h3>
+
+            <p className="py-4">
+              Come visit today to reserve the newest releases and particate in
+              our local activities!
+            </p>
+
+            <Link
+              className="inline-block my-6 px-6 py-2 rounded text-white transition-colors bg-custom-text-link-light hover:bg-custom-text-link-hover-light "
+              href="/library"
+            >
+              Visit Library
+            </Link>
+          </header>
+
+          <div className="relative md:static md:w-1/2 h-80 md:order-2">
+            <div className="absolute w-44 h-72 z-[2] right-0 md:right-56 border-8 border-slate-50 bg-slate-50">
+              <Image className="" fill={true} src="/book2.png" alt="" />
+            </div>
+
+            <div className="absolute w-44 h-72 z-[3] -left-20 md:left-auto md:right-40 -translate-y-5 border-8 border-slate-50 bg-slate-50">
+              <Image className="" fill={true} src="/book1.jpeg" alt="" />
+            </div>
+
+            <div className="absolute w-44 h-72 z-[1] md:right-24  translate-y-5 border-8 border-slate-50 bg-slate-50">
+              <Image className="" fill={true} src="/book3.jpeg" alt="" />
+            </div>
+          </div>
+        </div>
+
+        {/* <svg
+          className="absolute top-0 right-0 h-96"
+          viewBox="0 60 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            className=""
+            fill="#FF0066"
+            d="M28.3,-34.9C33.5,-23.1,32.5,-11.5,32,-0.5C31.5,10.6,31.7,21.2,26.4,28.9C21.2,36.6,10.6,41.4,-5.7,47.1C-21.9,52.7,-43.9,59.3,-59.9,51.6C-76,43.9,-86.3,21.9,-80.6,5.7C-74.9,-10.6,-53.4,-21.2,-37.3,-33C-21.2,-44.9,-10.6,-57.9,0.5,-58.4C11.5,-58.8,23.1,-46.7,28.3,-34.9Z"
+            transform="translate(100 100)"
+          />
+        </svg> */}
+      </section>
+
+      <section className="max-w-4xl mx-auto my-20 px-4">
+        <header className="flex flex-row flex-nowrap justify-between items-center py-6">
+          <h3 className="font-bold text-3xl">Genres</h3>
+
+          <Link
+            className="text-custom-text-link-light hover:text-custom-text-link-hover-light dark:text-custom-text-link-dark dark:hover:text-custom-text-link-hover-dark"
+            href="/library/genres"
+          >
+            See All
+          </Link>
+        </header>
+
+        <div className="">
+          <Carousel>
+            {genreList.map(({ genre, book }: { genre: any; book: any }) => (
+              <GenreItem
+                key={`genre-${genre.id}`}
+                name={genre.name}
+                id={genre.id}
+                image={book.displayImage}
+              />
+            ))}
+          </Carousel>
+        </div>
+      </section>
+
+      <section className="max-w-4xl mx-auto my-20 px-4">
+        <header className="flex flex-row flex-nowrap justify-between py-4">
+          <h3 className="font-bold text-3xl">Popular Books</h3>
+
+          <Link
+            className="text-custom-text-link-light hover:text-custom-text-link-hover-light dark:text-custom-text-link-dark dark:hover:text-custom-text-link-hover-dark"
+            href="/library"
+          >
+            See All
+          </Link>
+        </header>
+
+        <div className="">
+          <Carousel>
+            {topBooks
+              ? topBooks.map((book: any) => (
+                  <BookItem key={`popular-book-${book.id}`} book={book} />
+                ))
+              : null}
+          </Carousel>
+        </div>
+      </section>
+
+      <section className="relative py-4 h-[500px] bg-black">
+        <header className="relative z-20 py-6">
+          <h4 className="w-1/2 text-center font-semibold text-3xl text-white  mx-auto py-5">
+            Discovery New Fantasy Worlds With These Books
+          </h4>
+
+          <div className="flex flex-row flex-nowrap justify-center pt-10">
+            <div className="relative w-28 h-40 md:w-36 md:h-52">
+              <Image className="" fill={true} src="/book2.png" alt="" />
+            </div>
+
+            <div className="relative w-28 h-40 md:w-36 md:h-52 scale-125 mx-2 md:mx-8 z-10">
+              <Image className="" fill={true} src="/book1.jpeg" alt="" />
+            </div>
+
+            <div className="relative w-28 h-40 md:w-36 md:h-52">
+              <Image className="" fill={true} src="/book3.jpeg" alt="" />
+            </div>
+          </div>
+        </header>
+
+        <div className="absolute w-full h-full top-0 left-0 z-10 bg-black/30" />
+
+        <Image
+          className="rounded-lg"
+          priority={true}
+          fill={true}
+          src="/fantasyBackdrop.png"
+          alt=""
+        />
+      </section>
+
+      <section className="max-w-4xl mx-auto my-40">
+        <header className="text-center">
+          <h3 className="text-4xl md:text-6xl font-bold text-center my-10">
+            Reserve Your Books Today
+          </h3>
+
+          <Link
+            className="inline-block my-6 px-10 py-2 rounded text-white transition-colors bg-custom-text-link-light hover:bg-custom-text-link-hover-light "
+            href="/library"
+          >
+            Visit Library
+          </Link>
+        </header>
+      </section>
+
+      <div className="relative w-full h-80">
+        <Image
+          className="object-cover top-0"
+          fill={true}
+          src="/footer2.jpeg"
+          alt=""
+        />
       </div>
-
-      <div className="">
-        <h4 className="my-6 text-xl font-medium text-center">
-          Trending Genres
-        </h4>
-
-        <ul className="grid grid-cols-[repeat(auto-fit,_minmax(min(100%/3,_max(8rem,_100%/5)),_1fr))] gap-4 max-w-2xl mx-auto divide">
-          {trendingGenres
-            ? trendingGenres.map((data: any) => (
-                <li
-                  key={`trending-genre-${data.genre.id}`}
-                  className="w-32 text-center py-4"
-                >
-                  <div className="relative w-32 h-52 mx-auto mb-4 border-2 border-transparent hover:border-black rounded-lg">
-                    <Link href={`/book/${data.book.id}/${data.book.slug}`}>
-                      <Image
-                        className="rounded-lg"
-                        priority={true}
-                        fill={true}
-                        src={data.book.displayImage}
-                        alt="Book cover"
-                      />
-                    </Link>
-                  </div>
-
-                  <div>
-                    <Link
-                      className="hover:underline hover:text-custom-text-highlight-light dark:hover:text-custom-text-highlight-dark"
-                      href={`/library/search?genre=${data.genre.id}`}
-                    >
-                      {data.genre.name}
-                    </Link>
-                  </div>
-                </li>
-              ))
-            : null}
-        </ul>
-      </div>
-    </section>
+    </>
   );
 }

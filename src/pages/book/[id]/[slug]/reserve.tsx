@@ -7,10 +7,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Redis from 'ioredis';
 import dayjs from 'dayjs';
-import { signIn } from 'next-auth/react';
-import { prisma } from '../../../../utils/db';
-import { getServerAuthSession } from '../../../../utils/serverSession';
 import Head from 'next/head';
+import { signIn } from 'next-auth/react';
+import Section from '../../../../components/ui/Section';
+import { getServerAuthSession } from '../../../../utils/serverSession';
+import { prisma } from '../../../../utils/db';
 
 const redisClient = new Redis(process.env.REDIS_URL?.toString() || '');
 
@@ -178,7 +179,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
   if (mutatedData) return <Completed />;
 
   return (
-    <section className="relative max-w-2xl md:mx-auto">
+    <Section>
       <Head>
         <title>Reservation</title>
       </Head>
@@ -300,7 +301,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
           </button>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 
