@@ -158,6 +158,7 @@ const UserOptions: FC<{ setTheme: Function }> = ({ setTheme }) => {
       {status !== 'loading' ? (
         <div ref={ref}>
           <button
+            data-cy="user-menu"
             className=""
             type="button"
             onClick={() => {
