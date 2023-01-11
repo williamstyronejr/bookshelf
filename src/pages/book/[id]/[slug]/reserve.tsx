@@ -47,7 +47,10 @@ const Timedout = ({ reload }: { reload: Function }) => {
 };
 
 const Completed = () => (
-  <section className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center">
+  <section
+    data-cy="form-success"
+    className="flex flex-col flex-nowrap w-full flex-grow justify-center items-center"
+  >
     <i className="text-8xl text-blue-600 my-8 far fa-check-circle" />
 
     <h3 className="font-semibold text-2xl text-center">
@@ -241,7 +244,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             className={`w-full px-4 py-2 rounded-md mb-2 mx-auto bg-custom-bg-off-light dark:bg-custom-bg-off-dark border ${
               fieldError.reserveLength ? 'border-red-500' : ''
             }`}
-            aria-label="menu"
+            data-cy="reserve-length"
             type="button"
             onClick={() => setMenu((old) => !old)}
           >
@@ -261,6 +264,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             <button
               className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
               type="button"
+              data-cy="reserve-length-7"
               onClick={() => {
                 setReserveLength('7');
                 setMenu(false);
@@ -272,6 +276,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             <button
               className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
               type="button"
+              data-cy="reserve-length-14"
               onClick={() => {
                 setReserveLength('14');
                 setMenu(false);
@@ -283,6 +288,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
             <button
               className="w-full py-2 hover:bg-slate-300 dark:hover:bg-gray-700"
               type="button"
+              data-cy="reserve-length-30"
               onClick={() => {
                 setReserveLength('30');
                 setMenu(false);
@@ -293,8 +299,10 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
           </div>
 
           <button
+            data-cy="reserve-book"
             className="text-white w-full py-2 px-4 mt-4 rounded-md bg-custom-btn-submit"
             onClick={() => mutate({ reserveLength })}
+            type="button"
             disabled={isMutating}
           >
             Create Reservation

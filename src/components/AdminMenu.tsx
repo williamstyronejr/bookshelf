@@ -7,7 +7,7 @@ import useMenuToggle from './useMenuToggle';
 const AdminMenu: FC<{
   links: Array<{ title: string; href: string }>;
 }> = ({ links }) => {
-  const { status } = useSession({ required: true });
+  const { status } = useSession();
   const ref = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useMenuToggle(ref, false);
 
@@ -25,12 +25,23 @@ const AdminMenu: FC<{
     { enabled: status !== 'loading' }
   );
 
-  if (error || isFetching || !userData || userData.user.role !== 'ADMIN')
+  if (
+    error ||
+    isFetching ||
+    !userData ||
+    !userData.user ||
+    userData.user.role !== 'ADMIN'
+  )
     return null;
 
   return (
     <div ref={ref} className="relative">
-      <button className="text-2xl" type="button" onClick={() => setMenu(!menu)}>
+      <button
+        data-cy="admin-menu"
+        className="text-2xl"
+        type="button"
+        onClick={() => setMenu(!menu)}
+      >
         <i className="fas fa-cog" />
       </button>
 

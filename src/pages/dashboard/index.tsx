@@ -27,6 +27,7 @@ const DashboardPage: NextPage = () => {
         <title>Dashboard</title>
       </Head>
       <h2 className="font-medium my-4">Dashboard</h2>
+
       <div className="shadow-md rounded p-6 mb-4 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <div className="flex mb-3">
           <h3 className="flex-grow font-medium">Currently Books</h3>

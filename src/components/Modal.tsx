@@ -15,6 +15,7 @@ const Modal: React.FC<{
         <div>{children}</div>
 
         <button
+          data-cy="modal-confirm"
           className="bg-custom-btn-submit text-center text-white px-4 py-2 rounded-lg"
           type="button"
           onClick={() => onSuccess()}
@@ -23,6 +24,7 @@ const Modal: React.FC<{
         </button>
 
         <button
+          data-cy="modal-cancel"
           className="bg-red-500 text-center text-white px-4 py-2 mt-2 rounded-lg"
           type="button"
           onClick={() => onClose()}

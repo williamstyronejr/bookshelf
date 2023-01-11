@@ -39,7 +39,10 @@ const SigninPage = ({
           <h2 className="font-bold text-4xl text-center py-8">Sign in</h2>
 
           {query && query.error && query.error === 'SessionRequired' ? (
-            <div className="px-4 py-4 text-center text-lg font-medium">
+            <div
+              data-cy="auth-error-session"
+              className="px-4 py-4 text-center text-lg font-medium"
+            >
               Login Required
             </div>
           ) : null}
@@ -47,7 +50,10 @@ const SigninPage = ({
           {query &&
           query.error &&
           possibleErrors.includes(query.error.toString()) ? (
-            <div className="w-full px-4 py-6 mb-6 rounded-lg bg-red-500">
+            <div
+              datat-cy="auth-error"
+              className="w-full px-4 py-6 mb-6 rounded-lg bg-red-500"
+            >
               An error occurred during request, please try again.
             </div>
           ) : null}
@@ -64,14 +70,18 @@ const SigninPage = ({
                 ? 'border-red-500 focus:shadow-[0_0_0_1px_rgba(244,33,46,1)]'
                 : 'border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]'
             }  outline-0`}
-            // type="email"
             id="email"
             name="email"
             placeholder="email@example.com"
           />
 
           {query.error && query.error === 'EmailSignin' ? (
-            <span className="block text-red-500 text-sm">Invalid email</span>
+            <span
+              data-cy="auth-error-field"
+              className="block text-red-500 text-sm"
+            >
+              Invalid email
+            </span>
           ) : null}
         </label>
 
