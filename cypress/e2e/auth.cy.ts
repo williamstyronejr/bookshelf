@@ -1,4 +1,4 @@
-describe('Signin', () => {
+describe('Signin/Signup', () => {
   beforeEach(() => {
     cy.visit('/');
     cy.get("[data-cy='user-menu']").click();
@@ -25,5 +25,27 @@ describe('Signin', () => {
       cy.visit(link);
       cy.clearInbox();
     });
+  });
+});
+
+describe('Log out', () => {
+  const email = 'email@email.com';
+
+  before(() => {
+    cy.loginUserByEmail(email);
+  });
+
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('Logging out should redirect a user to homepage and update user menu to signin', () => {
+    cy.contains(email).should('have.length.at.least', 1);
+    cy.get("[data-cy='user-menu']").click();
+    cy.get('[data-cy="logout"]').click();
+
+    cy.contains('Signin').should('have.length.at.least', 1);
+    cy.get("[data-cy='user-menu']").click();
+    cy.location('pathname').should('eq', '/signin');
   });
 });
