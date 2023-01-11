@@ -124,6 +124,7 @@ const InputSuggestion = ({
 
       <div className="mt-2 absolute w-full top-16">
         <ul
+          data-cy="input-suggestion-list"
           className="block relative bg-white text-black z-10 w-full max-h-40 overflow-y-auto"
           tabIndex={-1}
           onMouseEnter={() => setMouseOnList(true)}
@@ -131,7 +132,7 @@ const InputSuggestion = ({
         >
           {data && focus
             ? data.map((author: any) => (
-                <li key={`author-${author.id}`}>
+                <li key={`author-${author.id}`} data-cy="input-suggestion">
                   <button
                     className="block w-full px-4 py-2 text-left border-b-2 border-slate-500/50 hover:bg-slate-200 focus:bg-slate-200"
                     type="button"

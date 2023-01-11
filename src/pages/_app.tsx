@@ -205,6 +205,7 @@ const UserOptions: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
                 <li>
                   <button
+                    data-cy="logout"
                     type="button"
                     className="block w-full text-left p-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30 transition-colors"
                     onClick={() => signOut()}

@@ -47,7 +47,9 @@ const Input = ({
       )}
 
       {error ? (
-        <span className="block text-red-500 text-sm">{error}</span>
+        <span data-cy="input-error" className="block text-red-500 text-sm">
+          {error}
+        </span>
       ) : null}
     </label>
   );

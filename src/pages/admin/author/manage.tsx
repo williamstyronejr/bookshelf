@@ -122,7 +122,10 @@ const ManageAuthorsPage: NextPage = () => {
 
       {error ? <RefetchError refetch={refetch} /> : null}
 
-      <ul className="flex flex-col flex-nowrap divide-y-2">
+      <ul
+        data-cy="author-manage-list"
+        className="flex flex-col flex-nowrap divide-y-2"
+      >
         {data
           ? data.results.map((author: any) => (
               <AuthorItem

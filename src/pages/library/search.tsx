@@ -93,6 +93,7 @@ export default function SearchPage() {
         ) : null}
 
         <ul
+          data-cy="search-results"
           className={`${
             viewMode === 'grid'
               ? 'grid grid-cols-[repeat(auto-fit,_10rem)] gap-6 justify-center'
@@ -147,13 +148,22 @@ export default function SearchPage() {
                 </li>
               ))
             )}
-
-          {query.q && hasNextPage ? (
-            <li className="h-40 flex-grow" ref={sentryRef}>
-              <LoadingWheel />
-            </li>
-          ) : null}
         </ul>
+
+        {data && data.pages && data.pages[0].results.length === 0 ? (
+          <div
+            className="font-medium text-xl text-center"
+            data-cy="search-empty"
+          >
+            No results found
+          </div>
+        ) : null}
+
+        {query.q && hasNextPage ? (
+          <li className="h-40 flex-grow" ref={sentryRef}>
+            <LoadingWheel />
+          </li>
+        ) : null}
       </div>
     </Section>
   );

@@ -86,6 +86,7 @@ const UserListPage: NextPage = () => {
                 page.results.map(({ book }: { book: any }) => (
                   <li
                     key={book.id}
+                    data-cy="favorite-item"
                     className="flex flex-col items-center md:flex-row flex-nowrap my-4 border py-2 px-2 rounded-lg"
                   >
                     <Link href={`/book/${book.id}/${book.slug}`}>

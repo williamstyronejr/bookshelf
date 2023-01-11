@@ -44,6 +44,7 @@ const Carousel: FC<{ children: ReactNode }> = ({ children }) => {
 export const BookItem = ({ book }: { book: any }) => (
   <div className="relative shrink-0 w-40 mr-6 max-w-[175px]">
     <Link
+      data-cy="carousel-book"
       href={`/book/${book.id}/${book.slug}`}
       className="hover:text-custom-text-link-light hover:text-custom-text-link-dark"
     >

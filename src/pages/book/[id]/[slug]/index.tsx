@@ -8,10 +8,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
 import AdminMenu from '../../../../components/AdminMenu';
+import Section from '../../../../components/ui/Section';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
-import Section from '../../../../components/ui/Section';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -238,6 +238,7 @@ const BookPage: NextPage<
 
           <div className="my-4 px-4">
             <Link
+              data-cy="reserve"
               className="block rounded-md px-6 py-2 bg-[#21a953] hover:bg-[#149b19] text-white"
               href={`/book/${book.id}/${book.slug}/reserve`}
             >
@@ -246,7 +247,9 @@ const BookPage: NextPage<
 
             {status === 'authenticated' ? (
               <button
+                aria-label={isFavorited ? 'Favorited' : 'Favorite'}
                 type="button"
+                data-cy="favorite"
                 className="block text-2xl mt-4 mx-auto"
                 onClick={() => {
                   mutate();

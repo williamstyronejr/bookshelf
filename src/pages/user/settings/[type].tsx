@@ -68,13 +68,19 @@ const AccountForm = ({
 
       <header>
         {success ? (
-          <div className="py-4 px-2 text-center rounded-md bg-green-500 text-white">
+          <div
+            data-cy="form-success"
+            className="py-4 px-2 text-center rounded-md bg-green-500 text-white"
+          >
             Account has successfully been updated.
           </div>
         ) : null}
 
         {error ? (
-          <div className="py-4 px-2 text-center rounded-md bg-red-500 text-white">
+          <div
+            data-cy="form-error"
+            className="py-4 px-2 text-center rounded-md bg-red-500 text-white"
+          >
             Unexpected error occurred, please try again.
           </div>
         ) : null}
