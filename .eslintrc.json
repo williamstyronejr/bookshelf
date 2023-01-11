@@ -5,7 +5,13 @@
     "node": true,
     "es2020": true
   },
-  "extends": ["eslint:recommended", "next", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "next",
+    "plugin:cypress/recommended",
+    "prettier"
+  ],
+  "plugins": ["cypress"],
   "rules": {
     "no-unused-vars": ["warn"]
   }
