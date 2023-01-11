@@ -1,53 +1,8 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
 
 const inboxId = Cypress.env('MAILTRAP_INBOX');
 const token = Cypress.env('MAILTRAP_KEY');
 const accountId = Cypress.env('MAILTRAP_ACCOUNT_ID');
-
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      getLastEmail(): Chainable<any>;
-      clearInbox(): Chainable<any>;
-    }
-  }
-}
 
 Cypress.Commands.add('getLastEmail', () => {
   function requestEmail() {
@@ -72,6 +27,7 @@ Cypress.Commands.add('getLastEmail', () => {
           }).then((res) => {
             if (res.body) return res.body;
 
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
             cy.wait(1000);
             return requestEmail();
           });
@@ -90,5 +46,24 @@ Cypress.Commands.add('clearInbox', () => {
     },
     method: 'PATCH',
     url: `https://mailtrap.io/api/accounts/${accountId}/inboxes/${inboxId}/clean`,
+  });
+});
+
+Cypress.Commands.add('loginUserByEmail', (email: string) => {
+  cy.session([email], () => {
+    cy.visit('/');
+    cy.get("[data-cy='user-menu']").click();
+
+    cy.get('input[name="email"]').type(email);
+    cy.get('button[type="submit"]').click();
+
+    cy.location('pathname').should('eq', '/verify');
+
+    cy.getLastEmail().then((html) => {
+      const link = html.match(/href="([^"]*)/)[1];
+      cy.expect(link).to.contains('/api/auth/callback/email');
+      cy.visit(link);
+      cy.clearInbox();
+    });
   });
 });
