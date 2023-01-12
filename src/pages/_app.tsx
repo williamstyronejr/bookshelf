@@ -12,7 +12,6 @@ import Link from 'next/link';
 import Loading from '../components/Loading';
 import Image from 'next/image';
 import useMenuToggle from '../components/useMenuToggle';
-import EditBookPage from './admin/book/[id]/edit';
 
 const isBrowserDefaultDark = () =>
   window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -46,8 +45,9 @@ const ThemeToggle: FC<{ setTheme: Function }> = ({ setTheme }) => {
 
 const Search: FC<{}> = () => {
   const router = useRouter();
-  const [dropDown, setDropDown] = useState(false);
   const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropDown, setDropDown] = useMenuToggle(dropdownRef);
 
   useEffect(() => {
     const onEsc = (evt: KeyboardEvent) => {
@@ -56,18 +56,25 @@ const Search: FC<{}> = () => {
 
     if (dropDown) document.addEventListener('keydown', onEsc);
     return () => document.removeEventListener('keydown', onEsc);
-  }, [dropDown]);
+  }, [dropDown, setDropDown]);
 
   useEffect(() => {
     setDropDown(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
   return (
     <div className="flex-grow pr-6">
-      <div className="block md:hidden text-right">
+      <div
+        className={`${
+          dropDown ? 'block md:hidden' : 'hidden'
+        } fixed top-0 left-0 w-full h-screen bg-black/40 z-40`}
+      />
+
+      <div ref={dropdownRef} className="block md:hidden text-right">
         <button
           className="text-slate-400 hover:text-slate-700"
-          onClick={() => setDropDown((old) => !old)}
+          onClick={() => setDropDown((old: boolean) => !old)}
         >
           <i className="text-2xl fas fa-search transition-colors" />
         </button>
@@ -75,13 +82,7 @@ const Search: FC<{}> = () => {
         <div
           className={`${
             dropDown ? 'block' : 'hidden'
-          } fixed top-0 left-0 w-full h-screen bg-black/40 z-40`}
-        />
-
-        <div
-          className={`${
-            dropDown ? 'block' : 'hidden'
-          } md:hidden absolute w-full top-0 left-0 p-4 z-50 bg-custom-bg-light`}
+          } md:hidden absolute w-full top-0 left-0 p-4 z-50 bg-custom-bg-light dark:bg-custom-bg-dark`}
         >
           <div className="relative">
             <input
@@ -108,7 +109,6 @@ const Search: FC<{}> = () => {
           </div>
         </div>
       </div>
-
       <div className="hidden md:block w-full max-w-lg relative">
         <input
           className="py-3 pl-4 pr-12 bg-transparent border w-full rounded-lg border-custom-text-light-subtle focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]"
