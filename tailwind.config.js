@@ -78,6 +78,7 @@ module.exports = {
         custom: {
           background: 'var(--background)',
           'btn-submit': '#3b5dd6',
+          'btn-submit-hover': '#2a34b1',
           'bg-light': '#ffffff',
           'bg-dark': '#212224',
           'bg-off-light': '#f6f8fb',
