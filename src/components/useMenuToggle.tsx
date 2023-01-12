@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from 'react';
 
 // eslint-disable-next-line no-unused-vars
-type Data = [boolean, (value: boolean) => void];
+type Data = [boolean, any];
 
 const useMenuToggle = (
   ref: RefObject<HTMLElement>,
@@ -9,7 +9,8 @@ const useMenuToggle = (
 ): Data => {
   const [menuActive, setMenuActive] = useState(initState);
 
-  const toggleMenu = (val: boolean) => setMenuActive(val);
+  const toggleMenu = (val: boolean | ((val: boolean) => boolean)) =>
+    setMenuActive(val);
 
   useEffect(() => {
     const clickHandler = (evt: MouseEvent) => {
