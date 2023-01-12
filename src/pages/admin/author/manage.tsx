@@ -44,7 +44,8 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
     <li className="flex flex-row flex-nowrap w-full p-2 py-6 rounded">
       {modal ? (
         <Modal onSuccess={() => mutate()} onClose={() => setModal(false)}>
-          Are you sure you want to delete Author: {author.name}
+          Are you sure you want to delete Author:
+          <span className="block text-center pt-3">{author.name}</span>
         </Modal>
       ) : null}
 
