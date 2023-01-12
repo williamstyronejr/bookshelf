@@ -68,7 +68,9 @@ const SigninPage = ({
 
           <input
             className={`w-full bg-white text-black py-2 px-4 border rounded  ${
-              query && query.error && possibleErrors.includes(query.error)
+              query &&
+              query.error &&
+              possibleErrors.includes(query.error.toString())
                 ? 'border-red-500 focus:shadow-[0_0_0_1px_rgba(244,33,46,1)]'
                 : 'border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]'
             }  outline-0`}
