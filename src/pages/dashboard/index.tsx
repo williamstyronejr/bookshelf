@@ -30,7 +30,7 @@ const DashboardPage: NextPage = () => {
 
       <div className="shadow-md rounded p-6 mb-4 bg-custom-bg-off-light dark:bg-custom-bg-off-dark">
         <div className="flex mb-3">
-          <h3 className="flex-grow font-medium">Currently Books</h3>
+          <h3 className="flex-grow font-medium">Books on Reserve</h3>
 
           <Link
             className="text-custom-text-light-subtle dark:text-custom-text-dark-subtle hover:text-custom-text-light dark:hover:text-custom-text-dark"
