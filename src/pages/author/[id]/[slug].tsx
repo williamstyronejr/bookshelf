@@ -101,8 +101,8 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
         <title>{authorData.name}</title>
       </Head>
 
-      <header className="flex flex-row flex-nowrap w-full pt-4 pb-8 justify-between">
-        <h3>{authorData.name}</h3>
+      <header className="flex flex-row flex-nowrap w-full pt-10 pb-20 px-4 justify-between">
+        <h3 className="text-2xl font-bold">{authorData.name}</h3>
 
         <AdminMenu
           links={[
@@ -114,9 +114,9 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
         />
       </header>
 
-      <div className="flex flex-col md:flex-row flex-nowrap ">
-        <aside className="w-42 shrink-0 mr-10">
-          <div className="relative w-32 h-32">
+      <div className="flex flex-col md:flex-row flex-nowrap px-4 items-center md:items-start">
+        <aside className="w-42 shrink-0 md:mr-10 text-center md:text-left">
+          <div className="relative w-32 h-32 mx-auto">
             <Image
               className="rounded-full"
               priority={true}
@@ -146,37 +146,42 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                 page.results.map((book: any) => (
                   <li
                     key={book.id}
-                    className="flex flex-col flex-nowrap md:flex-row flex-grow w-full py-2 my-4 border-b-2"
+                    className="flex flex-col flex-nowrap md:flex-row flex-grow w-full py-8 my-8 border-b-2"
                   >
-                    <div className="shrink-0 relative w-40 h-52 mx-auto">
-                      <Image
-                        className="rounded-lg"
-                        priority={true}
-                        fill={true}
-                        src={book.displayImage}
-                        alt="Book covers"
-                      />
+                    <div className="relative w-44 h-56 shrink-0 mx-auto mb-8 transition-transform hover:scale-110">
+                      <Link
+                        href={`/book/${book.id}/${book.author.slug}`}
+                        className="scale-110"
+                      >
+                        <Image
+                          className="rounded-lg"
+                          priority={true}
+                          fill={true}
+                          src={book.displayImage}
+                          alt="Book covers"
+                        />
+                      </Link>
                     </div>
 
                     <div className="flex-grow md:ml-4">
                       <Link
-                        className="font-medium"
+                        className="font-medium hover:text-custom-text-link-hover-light"
                         href={`/book/${book.id}/${book.slug}`}
                       >
                         {book.title}
                       </Link>
 
                       <Link
-                        className="block text-gray-600"
+                        className="block text-gray-600 hover:text-custom-text-link-hover-light"
                         href={`/author/${book.author.id}/${book.author.slug}`}
                       >
                         {book.author.name}
                       </Link>
                     </div>
 
-                    <div className="shrink-0 py-5 md:p-0 flex-grow">
+                    <div className="shrink-0 py-5 md:p-0">
                       <Link
-                        className="block w-full text-center md:inline py-4 px-2 bg-sky-500 rounded-lg"
+                        className="block w-full text-center md:inline py-4 px-2 rounded-lg transition-colors text-white bg-custom-btn-submit hover:bg-custom-btn-submit-hover"
                         href={`/book/${book.id}/${book.slug}/reserve`}
                       >
                         Reserve

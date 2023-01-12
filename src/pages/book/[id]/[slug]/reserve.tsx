@@ -201,7 +201,7 @@ const ReservationPage: NextPage<{ book: any; available: any }> = ({
         </div>
       </header>
 
-      <div className="flex flex-col md:flex-row flex-nowrap px-4 text-center md:text-left">
+      <div className="flex flex-col md:flex-row flex-nowrap max-w-2xl mx-auto px-4 text-center md:text-left items-center md:items-start">
         <aside className="mr-4 mb-4 md:mb-0 flex-grow">
           <div className="relative w-52 h-60 mx-auto md:mx-0">
             <Image

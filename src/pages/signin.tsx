@@ -1,6 +1,7 @@
 import { NextPageContext, InferGetServerSidePropsType } from 'next';
 import { getCsrfToken } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import Section from '../components/ui/Section';
 
 const possibleErrors = [
@@ -13,27 +14,28 @@ const possibleErrors = [
   'Default',
 ];
 
-// 'EmailSignin',
-// 'SessionRequired',
-
 export async function getServerSideProps(context: NextPageContext) {
   const csrfToken = await getCsrfToken(context);
   return {
     props: { csrfToken },
   };
 }
+
 const SigninPage = ({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { query } = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const isError = query && query.error && query.error === '';
   return (
     <Section>
       <form
         className="flex flex-col flex-nowrap max-w-xl mx-auto px-4 mt-8"
         method="POST"
         action="/api/auth/signin/email"
+        onSubmit={() => {
+          setLoading(true);
+        }}
       >
         <header>
           <h2 className="font-bold text-4xl text-center py-8">Sign in</h2>
@@ -66,7 +68,7 @@ const SigninPage = ({
 
           <input
             className={`w-full bg-white text-black py-2 px-4 border rounded  ${
-              query && query.error && query.error
+              query && query.error && possibleErrors.includes(query.error)
                 ? 'border-red-500 focus:shadow-[0_0_0_1px_rgba(244,33,46,1)]'
                 : 'border-slate-500 focus:shadow-[0_0_0_1px_rgba(59,93,214,1)]'
             }  outline-0`}
@@ -85,7 +87,7 @@ const SigninPage = ({
           ) : null}
         </label>
 
-        <button className="btn-submit mt-10" type="submit">
+        <button className="btn-submit mt-10" type="submit" disabled={loading}>
           Sign in with Email
         </button>
       </form>
