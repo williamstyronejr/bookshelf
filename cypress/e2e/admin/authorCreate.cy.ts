@@ -52,9 +52,42 @@ describe('Admin users', () => {
     cy.get('[data-cy="input-error"').should('have.length.at.least', 1);
   });
 
+  it('Invalid bio (over 1000 characters) should display input error', () => {
+    const name = 'Testng';
+    const bio = 'x'.repeat(1200);
+
+    cy.get('input[name="name"]').type(name);
+    cy.get('textarea[name="bio"]').type(bio);
+    cy.get('button[type="submit"]').click();
+
+    cy.get('[data-cy="input-error"').should('have.length.at.least', 1);
+  });
+
   it('Valid inputs should redirect to author page', () => {
     const name = 'New author name1';
     const bio = 'This bio';
+    cy.get('input[name="name"]').type(name);
+    cy.get('textarea[name="bio"]').type(bio);
+    cy.get('button[type="submit"]').click();
+
+    cy.location('pathname').should('not.contain', '/admin/author/create');
+    cy.contains(name).should('exist');
+  });
+
+  it('Creating two valid author with same name should show no error ', () => {
+    const name = 'Edwin Larry';
+    const bio = 'This bio';
+
+    cy.get('input[name="name"]').type(name);
+    cy.get('textarea[name="bio"]').type(bio);
+    cy.get('button[type="submit"]').click();
+
+    cy.location('pathname').should('not.contain', '/admin/author/create');
+    cy.contains(name).should('exist');
+
+    cy.get("[data-cy='user-menu']").click();
+    cy.contains('Create Author').click();
+
     cy.get('input[name="name"]').type(name);
     cy.get('textarea[name="bio"]').type(bio);
     cy.get('button[type="submit"]').click();
