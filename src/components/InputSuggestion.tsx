@@ -149,11 +149,7 @@ const InputSuggestion = ({
               ))
             : null}
 
-          {data &&
-          focus &&
-          !isFetching &&
-          value.trim() !== '' &&
-          data.length === 0 ? (
+          {data && focus && !isFetching && value.trim() !== '' ? (
             <li>
               <button
                 className="block w-full px-4 py-2 text-left border-b-2 border-slate-500/50 hover:bg-slate-200"
