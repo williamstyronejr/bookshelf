@@ -176,6 +176,8 @@ export function validateBook({
   copiesCount,
   description,
   publishedDate,
+  series,
+  order,
 }: {
   title?: string;
   author?: string;
@@ -184,6 +186,8 @@ export function validateBook({
   copiesCount?: string;
   description?: string;
   publishedDate?: string;
+  series?: string;
+  order?: string;
 }) {
   const errors: {
     title?: string;
@@ -193,6 +197,8 @@ export function validateBook({
     copiesCount?: string;
     description?: string;
     publishedDate?: string;
+    series?: string;
+    order?: string;
   } = {};
 
   if (typeof title === 'string') {
@@ -247,6 +253,20 @@ export function validateBook({
       errors.description = 'Must provide a book description';
   } else {
     errors.description = 'Must provide a book description';
+  }
+
+  if (typeof series === 'string') {
+    const seriesId = parseInt(series);
+    if (isNaN(seriesId)) errors.series = 'Must provide valid series';
+
+    if (typeof order === 'string') {
+      const orderNum = parseInt(order);
+      if (isNaN(orderNum)) errors.order = 'Order should be a number';
+
+      if (order === '') errors.order = 'Must provide order of book in series';
+    } else {
+      errors.order = 'Must provide order of book in series';
+    }
   }
 
   return {
