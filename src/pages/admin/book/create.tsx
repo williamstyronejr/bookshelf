@@ -161,6 +161,28 @@ const CreateBookPage: NextPage = () => {
           />
         </fieldset>
 
+        <fieldset>
+          <h3 className="">Book Series (Optional)</h3>
+
+          <div className="px-4">
+            <InputSuggestion
+              name="series"
+              placeholder="Series Name"
+              label="Name"
+              url="/api/series"
+              error={fieldErrors.series}
+            />
+
+            <Input
+              type="text"
+              name="order"
+              placeholder="Book # in Series"
+              label="Series Order"
+              error={fieldErrors.order}
+            />
+          </div>
+        </fieldset>
+
         <button className="btn-submit" type="submit" disabled={isLoading}>
           Create Book
         </button>
