@@ -51,8 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     },
   });
 
-  book = JSON.parse(JSON.stringify(book));
-  if (!book) return { notFound: true };
+  if (book === null) return { notFound: true };
 
   // Stats logging for users visits
   if (session && session.user && session.user.id) {
@@ -122,10 +121,31 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     },
   });
 
+  const booksByAuthor = await prisma.book.findMany({
+    take: 8,
+    where: {
+      author: {
+        id: book.author.id,
+      },
+      id: { not: book.id },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      publisher: true,
+    },
+  });
+
   return {
     props: {
-      book,
+      book: JSON.parse(JSON.stringify(book)),
       booksInGenre: JSON.parse(JSON.stringify(booksInGenre)),
+      booksByAuthor: JSON.parse(JSON.stringify(booksByAuthor)),
       availableCount: Math.max(0, book.copiesCount - onHoldCount),
     },
   };
@@ -133,7 +153,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const BookPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ book, availableCount, booksInGenre }) => {
+> = ({ book, availableCount, booksInGenre, booksByAuthor }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -300,6 +320,31 @@ const BookPage: NextPage<
 
       <hr className="my-10" />
 
+      {booksByAuthor.length > 0 ? (
+        <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
+          <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
+            Author Books
+          </h4>
+
+          <div className="flex flex-col md:flex-row md:flex-wrap w-0 flex-grow items-center md:items-start">
+            {booksByAuthor.map((book: any) => (
+              <Link
+                key={`recommend-${book.id}`}
+                className="block relative shrink-0 w-32 h-52 md:mr-5 md:mb-5"
+                href={`/book/${book.id}/${book.slug}`}
+                title={book.title}
+              >
+                <Image
+                  className="rounded-lg"
+                  fill={true}
+                  src={book.displayImage}
+                  alt="Book Cover"
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
         <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
           Recommend Titles
