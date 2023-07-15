@@ -17,6 +17,7 @@ type Data = {
 type ErrorResponse = {
   title?: string;
   author?: string;
+  series?: string;
 };
 
 export default async function handler(
@@ -76,12 +77,28 @@ export default async function handler(
       },
     });
 
+    let series = null;
+    if (fields.series) {
+      series = await prisma.series.findUnique({
+        where: { id: parseInt(fields.series) },
+      });
+      if (!series)
+        return res.status(400).json({ series: 'This series does not exist.' });
+
+      await prisma.bookSeries.create({
+        data: {
+          bookId: book.id,
+          seriesId: series.id,
+          order: parseInt(fields.order),
+        },
+      });
+    }
+
     res.status(200).json({
       id: book.id.toString(),
       slug: book.slug,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send('');
   }
 }
