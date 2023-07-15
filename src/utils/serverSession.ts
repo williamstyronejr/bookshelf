@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { unstable_getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth/next';
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
 import { authOptions } from '../pages/api/auth/[...nextauth]';
 import { prisma } from './db';
@@ -13,7 +13,7 @@ export async function getServerAuthSession(ctx: {
       });
   res: NextApiResponse | ServerResponse;
 }) {
-  return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
+  return await getServerSession(ctx.req, ctx.res, authOptions);
 }
 
 export async function getUserDataFromSession(ctx: {
