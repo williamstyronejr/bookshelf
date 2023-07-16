@@ -12,6 +12,7 @@ import Section from '../../../../components/ui/Section';
 import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
+import Carousel, { BookItem } from '../../../../components/Carousel';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -141,10 +142,27 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     },
   });
 
+  const booksInSeries = await prisma.series.findFirst({
+    where: {
+      BookSeries: {
+        some: { bookId: book.id },
+      },
+    },
+    include: {
+      BookSeries: {
+        orderBy: [{ order: 'asc' }],
+        include: {
+          book: true,
+        },
+      },
+    },
+  });
+
   return {
     props: {
       book: JSON.parse(JSON.stringify(book)),
       booksInGenre: JSON.parse(JSON.stringify(booksInGenre)),
+      booksInSeries: JSON.parse(JSON.stringify(booksInSeries)),
       booksByAuthor: JSON.parse(JSON.stringify(booksByAuthor)),
       availableCount: Math.max(0, book.copiesCount - onHoldCount),
     },
@@ -153,7 +171,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const BookPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ book, availableCount, booksInGenre, booksByAuthor }) => {
+> = ({ book, availableCount, booksInGenre, booksByAuthor, booksInSeries }) => {
   const queryClient = useQueryClient();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
@@ -288,6 +306,22 @@ const BookPage: NextPage<
 
       <hr className="my-10" />
 
+      {booksInSeries ? (
+        <div className="md:flex md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto mb-6 px-4">
+          <h4 className="font-semibold text-blue-700 md:w-40 mb-4 md:mb-0 text-2xl">
+            <Link href={`/series/${booksInSeries.id}`}>Series</Link>
+          </h4>
+
+          <div className="flex flex-col md:flex-row md:flex-wrap md:w-0 grow items-center md:items-start">
+            <Carousel>
+              {booksInSeries.BookSeries.map(({ book }) => (
+                <BookItem key={`series-${book.id}`} book={book} />
+              ))}
+            </Carousel>
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4">
         <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
           Product Details
@@ -317,20 +351,19 @@ const BookPage: NextPage<
           </div>
         </div>
       </div>
-
       <hr className="my-10" />
 
       {booksByAuthor.length > 0 ? (
-        <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
+        <div className="md:flex md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
           <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
             Author Books
           </h4>
 
-          <div className="flex flex-col md:flex-row md:flex-wrap w-0 flex-grow items-center md:items-start">
+          <div className="flex flex-col md:flex-row md:flex-wrap md:w-0 grow items-center md:items-start">
             {booksByAuthor.map((book: any) => (
               <Link
-                key={`recommend-${book.id}`}
-                className="block relative shrink-0 w-32 h-52 md:mr-5 md:mb-5"
+                key={`author-books-${book.id}`}
+                className="block relative shrink-0 w-44 h-64 md:w-32 md:h-52 md:mr-5 mb-5"
                 href={`/book/${book.id}/${book.slug}`}
                 title={book.title}
               >
@@ -345,16 +378,17 @@ const BookPage: NextPage<
           </div>
         </div>
       ) : null}
-      <div className="flex flex-col md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
+
+      <div className="md:flex md:flex-row flex-nowrap max-w-3xl text-center md:text-left mx-auto px-4 pb-10">
         <h4 className="font-semibold md:w-60 mb-4 md:mb-0 text-2xl">
           Recommend Titles
         </h4>
 
-        <div className="flex flex-col md:flex-row md:flex-wrap w-0 flex-grow items-center md:items-start">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:w-0 grow items-center md:items-start">
           {booksInGenre.map((book: any) => (
             <Link
               key={`recommend-${book.id}`}
-              className="block relative shrink-0 w-32 h-52 md:mr-5 md:mb-5"
+              className="block relative shrink-0 w-44 h-64 md:w-32 md:h-52 md:mr-5 mb-5"
               href={`/book/${book.id}/${book.slug}`}
               title={book.title}
             >
