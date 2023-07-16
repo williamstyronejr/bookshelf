@@ -65,12 +65,14 @@ export const BookItem = ({ book }: { book: any }) => (
       </>
     </Link>
 
-    <Link
-      className="block text-gray-600"
-      href={`/author/${book.author.id}/${book.author.slug}`}
-    >
-      {book.author.name}
-    </Link>
+    {book.author ? (
+      <Link
+        className="block text-gray-600"
+        href={`/author/${book.author.id}/${book.author.slug}`}
+      >
+        {book.author.name}
+      </Link>
+    ) : null}
   </div>
 );
 
