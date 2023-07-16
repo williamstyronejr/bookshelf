@@ -5,6 +5,7 @@ import Section from '../../components/ui/Section';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Book } from '@prisma/client';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (!ctx.params || !ctx.params.id)
@@ -93,7 +94,7 @@ const SeriesPage: NextPage<
           {series.BookSeries.length === 0 ? (
             <div className="">No Books listed in this series</div>
           ) : (
-            series.BookSeries.map(({ book }) => (
+            series.BookSeries.map(({ book }: { book: Book }) => (
               <div
                 key={`book-${book.id}`}
                 className="md:flex md:flex-row md:flex-nowrap mb-8 md:h-64"

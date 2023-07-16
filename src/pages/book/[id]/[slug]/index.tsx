@@ -13,6 +13,7 @@ import { prisma } from '../../../../utils/db';
 import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
 import Carousel, { BookItem } from '../../../../components/Carousel';
+import { Book } from '@prisma/client';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -314,7 +315,7 @@ const BookPage: NextPage<
 
           <div className="flex flex-col md:flex-row md:flex-wrap md:w-0 grow items-center md:items-start">
             <Carousel>
-              {booksInSeries.BookSeries.map(({ book }) => (
+              {booksInSeries.BookSeries.map(({ book }: { book: Book }) => (
                 <BookItem key={`series-${book.id}`} book={book} />
               ))}
             </Carousel>
