@@ -7,7 +7,6 @@ const Modal: React.FC<{
 }> = ({ onSuccess, onClose, children }) => {
   useEffect(() => {
     const onEsc = (evt: KeyboardEvent) => {
-      console.log(evt.key);
       if (evt.key === 'Escape') onClose();
     };
 

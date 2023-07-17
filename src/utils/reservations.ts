@@ -26,9 +26,5 @@ export async function getTakenBookCount(bookId: number): Promise<number> {
   });
 
   const currentHolds = await getCurrentReservationHolds(bookId);
-
-  console.log(activeReservation);
-  console.log(currentHolds);
-
   return activeReservation.length + currentHolds;
 }

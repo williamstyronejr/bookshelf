@@ -166,7 +166,6 @@ export default async function handler(
       slug: book.slug,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send('');
   }
 }

@@ -75,7 +75,6 @@ export default async function handler(
       favoriteAuthor,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).end();
   }
 }

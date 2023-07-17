@@ -70,7 +70,6 @@ export default async function handler(
       reservation: JSON.parse(JSON.stringify(reservation)),
     });
   } catch (err) {
-    console.log(err);
     res.status(500).end();
   }
 }

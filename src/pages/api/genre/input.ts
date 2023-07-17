@@ -30,7 +30,6 @@ export default async function handler(
       results: genres,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send('');
   }
 }

@@ -34,7 +34,6 @@ export default async function handler(
       results,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send('');
   }
 }

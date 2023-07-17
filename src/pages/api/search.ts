@@ -57,7 +57,6 @@ export default async function handler(
       results: JSON.parse(JSON.stringify(results)),
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).end();
   }
 }

@@ -43,8 +43,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 const SeriesPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ series, author }) => {
-  console.log(author);
-
   return (
     <Section>
       <Head>
