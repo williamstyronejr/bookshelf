@@ -115,7 +115,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       </header>
 
       <div className="flex flex-col md:flex-row flex-nowrap px-4 items-center md:items-start">
-        <aside className="w-42 shrink-0 md:mr-10 text-center md:text-left">
+        <aside className="w-44 shrink-0 grow-0 md:mr-10 text-center md:text-left">
           <div className="relative w-32 h-32 mx-auto">
             <Image
               className="rounded-full"
@@ -130,7 +130,8 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
             <h4 className="font-semibold text-sm py-4">
               About {authorData.name}
             </h4>
-            <p className="pt-2 pb-8">
+
+            <p className="pt-2 pb-8 w-full whitespace-pre-line">
               {authorData.bio || 'This author has no biography'}
             </p>
           </div>
