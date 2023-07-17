@@ -255,7 +255,7 @@ export function validateBook({
     errors.description = 'Must provide a book description';
   }
 
-  if (typeof series === 'string') {
+  if (typeof series === 'string' && series !== '') {
     const seriesId = parseInt(series);
     if (isNaN(seriesId)) errors.series = 'Must provide valid series';
 

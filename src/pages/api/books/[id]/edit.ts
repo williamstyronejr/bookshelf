@@ -107,7 +107,59 @@ export default async function handler(
           },
         },
       },
+      include: {
+        BookSeries: true,
+      },
     });
+
+    if (fields.series) {
+      if (book) {
+        const series = await prisma.series.findUnique({
+          where: {
+            id: parseInt(fields.series),
+          },
+        });
+
+        if (series) {
+          if (book.BookSeries.length > 0) {
+            if (book.BookSeries[0].seriesId !== parseInt(fields.series)) {
+              await Promise.all([
+                prisma.bookSeries.create({
+                  data: {
+                    bookId: book.id,
+                    seriesId: series.id,
+                    order: parseInt(fields.order),
+                  },
+                }),
+                prisma.bookSeries.delete({
+                  where: {
+                    id: book.BookSeries[0].id,
+                  },
+                }),
+              ]);
+            } else {
+              // Order was changed
+              await prisma.bookSeries.update({
+                where: {
+                  id: book.BookSeries[0].id,
+                },
+                data: {
+                  order: parseInt(fields.order),
+                },
+              });
+            }
+          } else {
+            await prisma.bookSeries.create({
+              data: {
+                bookId: book.id,
+                seriesId: series.id,
+                order: parseInt(fields.order),
+              },
+            });
+          }
+        }
+      }
+    }
 
     res.status(200).json({
       id: book.id.toString(),

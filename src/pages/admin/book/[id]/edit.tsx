@@ -19,21 +19,32 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   if (!query.id) return { props: { book: null } };
   try {
-    const book = await prisma.book.findUnique({
-      where: {
-        id: parseInt(query.id.toString()),
-      },
-      include: {
-        author: true,
-        publisher: true,
-        language: true,
-        BookGenres: {
-          include: {
-            genre: true,
+    const bookId = parseInt(query.id.toString());
+    const [book, bookSeries] = await Promise.all([
+      prisma.book.findUnique({
+        where: {
+          id: bookId,
+        },
+        include: {
+          author: true,
+          publisher: true,
+          language: true,
+          BookGenres: {
+            include: {
+              genre: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.bookSeries.findFirst({
+        where: {
+          bookId,
+        },
+        include: {
+          series: true,
+        },
+      }),
+    ]);
 
     if (!book)
       return {
@@ -44,6 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         book: JSON.parse(JSON.stringify(book)),
+        bookSeries: bookSeries,
       },
     };
   } catch (err) {
@@ -54,7 +66,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 };
 
-const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
+const EditBookPage: NextPage<{ book: any; bookSeries: any }> = ({
+  book,
+  bookSeries,
+}) => {
   const [fieldErrors, setFieldErrors] = React.useState<any>({});
   const router = useRouter();
 
@@ -222,6 +237,31 @@ const EditBookPage: NextPage<{ book: any }> = ({ book }) => {
             initialValue={book.pageCount}
             error={fieldErrors.pageCount}
           />
+        </fieldset>
+
+        <fieldset>
+          <h3 className="">Book Series (Optional)</h3>
+
+          <div className="px-4">
+            <InputSuggestion
+              name="series"
+              placeholder="Series Name"
+              label="Name"
+              url="/api/series"
+              error={fieldErrors.series}
+              initialHiddenValue={bookSeries ? bookSeries.series.id : undefined}
+              initialValue={bookSeries ? bookSeries.series.name : ''}
+            />
+
+            <Input
+              type="text"
+              name="order"
+              placeholder="Book # in Series"
+              label="Series Order"
+              error={fieldErrors.order}
+              initialValue={bookSeries ? bookSeries.order : ''}
+            />
+          </div>
         </fieldset>
 
         <div className="text-center">
