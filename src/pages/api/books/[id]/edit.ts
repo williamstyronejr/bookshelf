@@ -27,7 +27,7 @@ export default async function handler(
     method,
     query: { id },
   } = req;
-  if (method !== 'POST' || !id) return res.status(404).send('');
+  if (method !== 'POST' || !id) return res.status(404).end();
 
   try {
     const { session, user } = await getUserDataFromSession({ req, res });
