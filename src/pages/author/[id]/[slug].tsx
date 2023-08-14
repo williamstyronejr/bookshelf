@@ -104,14 +104,14 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       <header className="flex flex-row flex-nowrap w-full pt-10 pb-20 px-4 justify-between">
         <h3 className="text-2xl font-bold">{authorData.name}</h3>
 
-        <AdminMenu
-          links={[
-            {
-              title: 'Edit Author',
-              href: `/admin/author/${authorData.id}/edit`,
-            },
-          ]}
-        />
+        <AdminMenu>
+          <Link
+            className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+            href={`/admin/author/${authorData.id}/edit`}
+          >
+            Edit Author
+          </Link>
+        </AdminMenu>
       </header>
 
       <div className="flex flex-col md:flex-row flex-nowrap px-4 items-center md:items-start">
