@@ -20,7 +20,7 @@ const FileInput = ({
   const [remove, setRemove] = useState(false);
   const [value, setValue] = useState<File | undefined>();
   const [fileUrl, setFileUrl] = useState<string | undefined>(
-    initialValue || ''
+    initialValue || defaultUrl || ''
   );
 
   useEffect(() => {
@@ -93,9 +93,7 @@ const FileInput = ({
           <button
             className="block w-full text-center pt-5 hover:text-slate-800 dark:hover:text-slate-300 disabled:text-gray-500 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-500 transition-colors"
             type="button"
-            disabled={
-              remove || initialValue === fileUrl || fileUrl === defaultUrl
-            }
+            disabled={remove || fileUrl === defaultUrl}
             onClick={() => {
               setRemove(true);
               setFileUrl(defaultUrl);
