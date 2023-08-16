@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import { useState } from 'react';
 import { NextPage } from 'next/types';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -6,10 +7,12 @@ import Link from 'next/link';
 import Head from 'next/head';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import useDeleteAuthor from '../../../hooks/api/DeleteAuthor';
 import AdminMenu from '../../../components/AdminMenu';
-import { prisma } from '../../../utils/db';
 import RefetchError from '../../../components/RefetchError';
 import Section from '../../../components/ui/Section';
+import Modal from '../../../components/Modal';
+import { prisma } from '../../../utils/db';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -56,7 +59,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
-  const { query } = useRouter();
+  const [deleteModal, setDeleteModal] = useState(false);
+  const router = useRouter();
 
   const {
     data,
@@ -70,7 +74,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
     ['author'],
     async ({ pageParam = 0 }) => {
       const res = await fetch(
-        `/api/author/${query.id}/books?page=${pageParam}&limit=10`
+        `/api/author/${router.query.id}/books?page=${pageParam}&limit=10`
       );
       if (res.statusText !== 'OK') {
         throw new Error('Invalid request');
@@ -83,9 +87,15 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       getNextPageParam: (lastPage) =>
         lastPage.nextPage ? lastPage.nextPage : undefined,
       keepPreviousData: true,
-      enabled: !!query.id,
+      enabled: !!router.query.id,
     }
   );
+
+  const { mutate: deleteAuthor } = useDeleteAuthor({
+    onSuccess: (data: any) => {
+      if (data.success) router.push('/');
+    },
+  });
 
   const [sentryRef] = useInfiniteScroll({
     loading: isFetchingNextPage || isFetching,
@@ -100,18 +110,35 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
       <Head>
         <title>{authorData.name}</title>
       </Head>
+      {deleteModal ? (
+        <Modal
+          onSuccess={() => deleteAuthor({ id: authorData.id })}
+          onClose={() => setDeleteModal(false)}
+        >
+          Are you sure you want to delete Author:
+          <span className="block text-center pt-3">{authorData.name}</span>
+        </Modal>
+      ) : null}
 
       <header className="flex flex-row flex-nowrap w-full pt-10 pb-20 px-4 justify-between">
         <h3 className="text-2xl font-bold">{authorData.name}</h3>
 
-        <AdminMenu
-          links={[
-            {
-              title: 'Edit Author',
-              href: `/admin/author/${authorData.id}/edit`,
-            },
-          ]}
-        />
+        <AdminMenu>
+          <Link
+            className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+            href={`/admin/author/${authorData.id}/edit`}
+          >
+            Edit Author
+          </Link>
+
+          <button
+            type="button"
+            className="block w-full text-left text-red-500 px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+            onClick={() => setDeleteModal(true)}
+          >
+            Delete Author
+          </button>
+        </AdminMenu>
       </header>
 
       <div className="flex flex-col md:flex-row flex-nowrap px-4 items-center md:items-start">
@@ -192,7 +219,9 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
                 ))
               )}
 
-            {query.id && hasNextPage ? <li ref={sentryRef}>Loading</li> : null}
+            {router.query.id && hasNextPage ? (
+              <li ref={sentryRef}>Loading</li>
+            ) : null}
           </ul>
 
           {error ? (

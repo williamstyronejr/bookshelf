@@ -309,7 +309,7 @@ const Header: FC<{ setTheme: Function }> = ({ setTheme }) => {
             href="/"
             className="ml-4 mr-10 text-center text-xl font-bold text-custom-text-light dark:text-custom-text-dark"
           >
-            Readly
+            OpenLib
           </Link>
 
           <Search />

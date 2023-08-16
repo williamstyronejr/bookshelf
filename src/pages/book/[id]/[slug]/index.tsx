@@ -1,12 +1,13 @@
 import type { NextPage } from 'next';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 import AdminMenu from '../../../../components/AdminMenu';
 import Section from '../../../../components/ui/Section';
 import { prisma } from '../../../../utils/db';
@@ -14,6 +15,7 @@ import { getServerAuthSession } from '../../../../utils/serverSession';
 import { getTakenBookCount } from '../../../../utils/reservations';
 import Carousel, { BookItem } from '../../../../components/Carousel';
 import { Book } from '@prisma/client';
+import useDeleteBook from '../../../../hooks/api/DeleteBook';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession({ req: ctx.req, res: ctx.res });
@@ -174,6 +176,7 @@ const BookPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ book, availableCount, booksInGenre, booksByAuthor, booksInSeries }) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { status } = useSession();
   const [infoExpand, setInfoExpand] = useState(false);
 
@@ -207,6 +210,14 @@ const BookPage: NextPage<
     }
   );
 
+  const { mutate: deleteBook, data: deletionData } = useDeleteBook();
+
+  useEffect(() => {
+    if (deletionData) {
+      if (deletionData.success) router.push('/');
+    }
+  }, [deletionData, router]);
+
   return (
     <Section>
       <Head>
@@ -226,14 +237,24 @@ const BookPage: NextPage<
 
         <div className="flex-grow mx-4 mb-6 md:mb-0">
           <div className="text-right">
-            <AdminMenu
-              links={[
-                {
-                  title: 'Edit Book',
-                  href: `/admin/book/${book.id}/edit`,
-                },
-              ]}
-            />
+            <AdminMenu>
+              <>
+                <Link
+                  className="block w-full text-left px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+                  href={`/admin/book/${book.id}/edit`}
+                >
+                  Edit Book
+                </Link>
+
+                <button
+                  type="button"
+                  className="block w-full text-left text-red-500 px-2 py-2 hover:bg-custom-bg-off-light dark:hover:bg-gray-400/30"
+                  onClick={() => deleteBook({ id: book.id })}
+                >
+                  Delete Book
+                </button>
+              </>
+            </AdminMenu>
           </div>
 
           <h3 className="text-xl text-center md:text-left mb-2 font-semibold">

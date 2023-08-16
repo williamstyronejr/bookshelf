@@ -1,11 +1,9 @@
-import { Author } from '@prisma/client';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../../utils/db';
 import { getUserDataFromSession } from '../../../../utils/serverSession';
 
 type Data = {
   success: boolean;
-  author: Author | null;
 };
 
 export default async function handler(
@@ -17,8 +15,7 @@ export default async function handler(
     query: { id },
   } = req;
 
-  if (method !== 'DELETE') return res.status(404).end();
-  if (!id) return res.status(404).end();
+  if (method !== 'POST' || !id) return res.status(404).end();
 
   try {
     const { session, user } = await getUserDataFromSession({ req, res });
@@ -28,17 +25,16 @@ export default async function handler(
       return res.status(403).end();
     }
 
-    const author = await prisma.author.delete({
+    const deleteBook = await prisma.book.delete({
       where: {
         id: parseInt(id.toString()),
       },
     });
 
-    return res.status(200).json({
-      success: !!author,
-      author: JSON.parse(JSON.stringify(author)),
-    });
+    if (!deleteBook) return res.status(404).end();
+
+    return res.status(200).json({ success: true });
   } catch (err) {
-    return res.status(500).end();
+    res.status(500).end();
   }
 }
