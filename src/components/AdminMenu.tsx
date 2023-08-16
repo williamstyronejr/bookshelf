@@ -43,7 +43,7 @@ const AdminMenu = ({ children }: { children: ReactNode }) => {
       </button>
 
       <div
-        className={`absolute w-32 right-0 z-10  bg-custom-bg-light dark:bg-custom-bg-off-dark  py-4 px-2 rounded-lg shadow-md ${
+        className={`absolute w-36 right-0 z-10  bg-custom-bg-light dark:bg-custom-bg-off-dark  py-4 px-2 rounded-lg shadow-md ${
           menu ? 'block' : 'hidden'
         }`}
       >
