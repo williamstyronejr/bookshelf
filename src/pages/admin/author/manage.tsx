@@ -2,48 +2,37 @@ import type { NextPage } from 'next';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
+import useDeleteAuthor from '../../../hooks/api/DeleteAuthor';
 import Section from '../../../components/ui/Section';
 import RefetchError from '../../../components/RefetchError';
 import LoadingWheel from '../../../components/LoadingWheel';
 import Modal from '../../../components/Modal';
 
-const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
+const AuthorItem = ({ author }: { author: any }) => {
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation(
-    ['remove-author'],
-    async () => {
-      const res = await fetch(`/api/author/${author.id}`, {
-        method: 'POST',
-      });
-
-      if (res.ok) return await res.json();
-      if (res.status === 403) return push('/');
-      if (res.status === 401) return push('/api/auth/signin');
-
-      throw new Error('An unexpected error occurred, please try again.');
+  const { mutate } = useDeleteAuthor({
+    onSuccess: (data: any) => {
+      setModal(false);
+      if (data.success) {
+        queryClient.invalidateQueries(['author-manage']);
+      }
     },
-    {
-      onSuccess: (data) => {
-        setModal(false);
-        if (data.success) {
-          queryClient.invalidateQueries(['author-manage']);
-        }
-      },
-      onError: () => {
-        setModal(false);
-      },
-    }
-  );
+    onError: () => {
+      setModal(false);
+    },
+  });
 
   return (
     <li className="flex flex-row flex-nowrap w-full p-2 py-6 rounded">
       {modal ? (
-        <Modal onSuccess={() => mutate()} onClose={() => setModal(false)}>
+        <Modal
+          onSuccess={() => mutate({ id: author.id })}
+          onClose={() => setModal(false)}
+        >
           Are you sure you want to delete Author:
           <span className="block text-center pt-3">{author.name}</span>
         </Modal>
@@ -95,7 +84,6 @@ const AuthorItem = ({ author, push }: { author: any; push: Function }) => {
 };
 
 const ManageAuthorsPage: NextPage = () => {
-  const router = useRouter();
   const [page, setPage] = useState(0);
 
   const { data, isFetching, isLoading, error, refetch } = useQuery(
@@ -129,11 +117,7 @@ const ManageAuthorsPage: NextPage = () => {
       >
         {data
           ? data.results.map((author: any) => (
-              <AuthorItem
-                push={router.push}
-                author={author}
-                key={`author-${author.id}`}
-              />
+              <AuthorItem author={author} key={`author-${author.id}`} />
             ))
           : null}
       </ul>
