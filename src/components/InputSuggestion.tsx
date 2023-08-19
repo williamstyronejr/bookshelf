@@ -1,5 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+function useDebounce(value: string, time = 1000) {
+  const [debounceValue, setDebounceValue] = useState(value);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebounceValue(value);
+    }, time);
+
+    return () => clearTimeout(timeout);
+  }, [value, time]);
+
+  return debounceValue;
+}
 
 const InputSuggestion = ({
   name,
@@ -23,17 +37,18 @@ const InputSuggestion = ({
   const [mouseOnList, setMouseOnList] = useState(false);
   const [focus, setFocus] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const debounceValue = useDebounce(value);
 
   const { data, isFetching } = useQuery(
-    ['suggestion', value],
+    ['suggestion', debounceValue],
     async ({ signal }) => {
-      const res = await fetch(`${url}/input?name=${value}`, { signal });
+      const res = await fetch(`${url}/input?name=${debounceValue}`, { signal });
 
       if (res.ok) return (await res.json()).results;
       throw new Error('Error occurred during request, please try again.');
     },
     {
-      enabled: !!value && focus,
+      enabled: !!debounceValue && focus,
       retry: false,
       onSuccess: () => {
         setRequestError(null);
