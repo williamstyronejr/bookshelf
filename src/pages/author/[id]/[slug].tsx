@@ -13,6 +13,7 @@ import RefetchError from '../../../components/RefetchError';
 import Section from '../../../components/ui/Section';
 import Modal from '../../../components/Modal';
 import { prisma } from '../../../utils/db';
+import LoadingWheel from '../../../components/LoadingWheel';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
@@ -65,6 +66,7 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
   const {
     data,
     error,
+    isLoading,
     isFetching,
     hasNextPage,
     fetchNextPage,
@@ -166,7 +168,12 @@ const AuthorPage: NextPage<{ authorData: any }> = ({ authorData }) => {
 
         <div className="flex-grow">
           <h4 className="font-medium mb-2">Titles by {authorData.name}</h4>
+
           <hr />
+
+          {isLoading ? (
+            <LoadingWheel className="text-center text-4xl mt-10" />
+          ) : null}
 
           <ul className="flex flex-col flex-nowrap">
             {data &&
