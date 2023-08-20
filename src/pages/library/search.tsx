@@ -31,12 +31,8 @@ export default function SearchPage() {
         }&page=${pageParam}&limit=10`
       );
 
-      if (res.statusText !== 'OK') {
-        throw new Error('Invalid request');
-      }
-
-      const body = await res.json();
-      return body;
+      if (res.ok) return await res.json();
+      throw new Error('Invalid request');
     },
     {
       getNextPageParam: (lastPage) => {
