@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import Carousel, { BookItem } from '../../components/Carousel';
 import RefetchError from '../../components/RefetchError';
@@ -8,12 +9,15 @@ import LoadingWheel from '../../components/LoadingWheel';
 import Section from '../../components/ui/Section';
 
 const DashboardPage: NextPage = () => {
+  const router = useRouter();
+
   const { data, isLoading, error, refetch } = useQuery(
     ['dashboard'],
     async () => {
       const res = await fetch('/api/users/dashboard');
 
       if (res.ok) return await res.json();
+      if (res.status === 401) return router.push('/api/auth/signin');
       throw new Error('An unexpected error occurred, please try again.');
     }
   );
