@@ -33,7 +33,7 @@ const UserListPage: NextPage = () => {
       );
 
       if (res.ok) return await res.json();
-      throw new Error('Invalid request');
+      throw new Error('An unexpected error occurred, please try again.');
     },
     {
       getNextPageParam: (lastPage) => {
@@ -52,7 +52,7 @@ const UserListPage: NextPage = () => {
       });
 
       if (res.ok) return await res.json();
-      throw new Error('Invalid request');
+      throw new Error('An unexpected error occurred, please try again.');
     },
     {
       onSuccess: () => {
